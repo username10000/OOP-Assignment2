@@ -5,6 +5,7 @@ int cellsPerLine;
 int cellsPerCol;
 int cellsPerHeight;
 int startCell, endCell;
+int lastCheck = millis();
 float screenSize;
 float gap;
 float screenWidth, screenHeight;
@@ -68,6 +69,7 @@ void draw()
     line(border.get("left"), border.get("top") + cellSize * i, border.get("left") + screenWidth, border.get("top") + cellSize * i);
   }
   
+  // Draw the occupied cells
   for (int i = 0 ; i < endCell - startCell ; i++)
   {
     for (int j = 0 ; j < cellsPerLine ; j++)
@@ -80,35 +82,8 @@ void draw()
     }
   }
   
+  // Check if the mouse is hovering something
   mouseHover();
-  
-  /*
-  noFill();
-  rect(border.get("left"), border.get("top"), screenSize, screenSize);
-  
-  rect(border.get("left") + screenSize + gap, border.get("top"), width - border.get("left") - border.get("right") - screenSize - gap, screenSize);
-  
-  for (int i = 0 ; i <= cellsPerLine ; i++)
-  {
-    // Vertical lines
-    line(map(i, 0, cellsPerLine, border.get("left"), border.get("left") + screenSize), border.get("top"), map(i, 0, cellsPerLine, border.get("left"), border.get("left") + screenSize), border.get("top") + screenSize);
-    // Horizontal lines
-    line(border.get("left"), map(i, 0, cellsPerLine, border.get("top"), border.get("top") + screenSize), border.get("left") + screenSize, map(i, 0, cellsPerLine, border.get("top"), border.get("top") + screenSize));
-  }
-  
-  for (int i = 0 ; i < cellsPerLine ; i++)
-  {
-    for (int j = 0 ; j < cellsPerLine ; j++)
-    {
-      if (map[i][j])
-      {
-        float cellSize = screenSize / cellsPerLine;
-        fill(255);
-        rect(border.get("left") + j * cellSize, border.get("top") + i * cellSize, cellSize, cellSize);
-      }
-    }
-  }
-  */
 }
 
 void importMap()
@@ -147,19 +122,21 @@ void mouseHover()
   // Move the screen up
   if (mouseY < border.get("top"))
   {
-    if (startCell > 0)
+    if (startCell > 0 && millis()> lastCheck + 100)
     {
       startCell --;
       endCell --;
+      lastCheck = millis();
     }
   }
   // Move the screen down
   if (mouseY > border.get("top") + screenHeight)
   {
-    if (endCell < cellsPerCol)
+    if (endCell < cellsPerCol && millis()> lastCheck + 100)
     {
       startCell ++;
       endCell ++;
+      lastCheck = millis();
     }
   }
 }
