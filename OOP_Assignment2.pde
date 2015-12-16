@@ -63,12 +63,12 @@ void draw()
   for (int i = 0 ; i <= cellsPerLine ; i++)
   {
     // Vertical Lines
-    line(border.get("left") + cellSize * i, border.get("top"), border.get("left") + cellSize * i, border.get("top") + screenHeight);
+    //line(border.get("left") + cellSize * i, border.get("top"), border.get("left") + cellSize * i, border.get("top") + screenHeight);
   }
   for (int i = 0 ; i <= cellsPerHeight ; i++)
   {
     // Horizontal Lines
-    line(border.get("left"), border.get("top") + cellSize * i, border.get("left") + screenWidth, border.get("top") + cellSize * i);
+    //line(border.get("left"), border.get("top") + cellSize * i, border.get("left") + screenWidth, border.get("top") + cellSize * i);
   }
   
   // Draw the occupied cells
@@ -89,7 +89,7 @@ void draw()
   if (mousePosition.z == 0)
   {
     // Change the colour of the selected cell depending if it's a valid position
-    if (map[(int)mousePosition.x + startCell][(int)mousePosition.y] > 1)
+    if (map[(int)mousePosition.x + startCell][(int)mousePosition.y] >= 1)
     {
       stroke(255, 0, 0);
       fill(255, 0, 0, 50);
