@@ -111,12 +111,24 @@ void initialSettings()
   endCell = cellsPerHeight;
 }
 
-void addToArray(ArrayList<PVector> array, PVector curValue)
+boolean checkAround(PVector pos)
 {
-  PVector temp = new PVector(0, 0);
-  temp.x = curValue.x;
-  temp.y = curValue.y;
-  array.add(temp);
+  // Check the next position to verify if there are any roads around it
+  int count = 0;
+  
+  if (map[(int)pos.y - 1][(int)pos.x] == 1)
+    count ++;
+  if (map[(int)pos.y + 1][(int)pos.x] == 1)
+    count ++;
+  if (map[(int)pos.y][(int)pos.x - 1] == 1)
+    count ++;
+  if (map[(int)pos.y][(int)pos.x + 1] == 1)
+    count ++;
+  
+  if (count <= 1)
+    return true;
+  else
+    return false;
 }
 
 void randomMap()
@@ -138,54 +150,68 @@ void randomMap()
   // Allocate enough space for the 2D array
   map = new int[cellsPerCol][cellsPerLine];
   
-  // Add the tower to defend in the middle
-  map[cellsPerCol / 2][cellsPerLine / 2] = 9;
+  // Add the the destination
+  for (int i = 0 ; i < cellsPerLine ; i++)
+  {
+    map[cellsPerCol - 1][i] = 9;
+  }
   
-  ArrayList<PVector> road = new ArrayList<PVector>();
   PVector curRoad = new PVector((int)random(1, cellsPerLine - 2), 0);
+  PVector direction = new PVector(0, 1);
   
   // Add the first element
-  addToArray(road, curRoad);
   map[(int)curRoad.y][(int)curRoad.x] = 1;
   curRoad.y ++;
   
-  // Very inefficient!!!
-  while ((curRoad.x != cellsPerLine / 2 || curRoad.y != cellsPerCol / 2) && road.size() < 10)
+  // Make a random road until it reached the destination
+  while (curRoad.y != cellsPerCol - 2)
   {
-    PVector change = new PVector(0, (int)random(-1, 2));
-    
-    // Add next value of the road
-    addToArray(road, curRoad);
+    // Add the current road to the map
     map[(int)curRoad.y][(int)curRoad.x] = 1;
     
-    // Find next position of the road
-    if (change.y != 0)
+    // Change the direction
+    switch((int)random(0, 3))
     {
-      while (curRoad.y + change.y == 0 || curRoad.y + change.y == cellsPerCol - 1 || change.y == 0)
+      case 0:
       {
-        change.y = (int)random(-1, 2);
+        // Left
+        float temp = direction.x;
+        direction.x = (-1) * direction.y;
+        direction.y = (-1) * temp;
+        break;
       }
-    }
-    else
-    {
-      change.x = (int)random(-1, 2);
-      while(curRoad.x + change.x == 0 || curRoad.x + change.x == cellsPerLine - 1 || change.x == 0)
+      case 1:
       {
-        change.x = (int)random(-1, 2);
+        // Right
+        if (direction.x == 0)
+        {
+          direction.x = (-1) * direction.y;
+          direction.y = 0;
+        }
+        else
+        {
+          direction.y = direction.x;
+          direction.x = 0;
+        }
+        break;
+      }
+      default:
+      {
+        // Straight
+        break;
       }
     }
     
-    // Add the change to the current value of the road
-    curRoad.add(change);
+    // Go in that direction if possible
+    curRoad.add(direction);
+    if (curRoad.x == 0 || curRoad.x == cellsPerLine - 1 || curRoad.y == 0 || curRoad.y == cellsPerCol - 1 || direction.y == -1 || !checkAround(curRoad))
+    {
+      curRoad.sub(direction);
+    }
   }
   
-  /*
-  for (int i = 0 ; i < road.size() ; i++)
-  {
-    map[(int)road.get(i).y][(int)road.get(i).x] = 1;
-  }*/
-  
-  
+  // Add the final part of the road
+  map[(int)curRoad.y][(int)curRoad.x] = 1;
 }
 
 void importMap()
