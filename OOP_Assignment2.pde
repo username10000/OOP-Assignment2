@@ -1,8 +1,8 @@
 import java.util.Hashtable;
 import java.util.Map;
 
-int cellsPerLine;
-int cellsPerCol;
+//int cellsPerLine;
+//int cellsPerCol;
 int cellsPerHeight;
 int startCell, endCell;
 int lastCheck = millis();
@@ -10,9 +10,10 @@ float screenSize;
 float gap;
 float screenWidth, screenHeight;
 float cellSize;
-int[][] map;
+//int[][] map;
 Map<String, Float> border = new HashMap<String, Float>();
 PVector mousePosition = new PVector(-1, -1, -1);
+MapObject map1;
 
 void setup()
 {
@@ -26,7 +27,8 @@ void setup()
   //importMap();
   
   // Random map
-  randomMap();
+  map1 = new MapObject();
+  //randomMap();
   
   // Initial Settings
   initialSettings();
@@ -64,15 +66,15 @@ void draw()
   if (mousePosition.z == 0)
   {
     // Change the colour of the selected cell depending if it's a valid position
-    if (map[(int)mousePosition.x + startCell][(int)mousePosition.y] >= 1)
+    if (map1.map[(int)mousePosition.x + startCell][(int)mousePosition.y] >= 1)
     {
       stroke(255, 0, 0);
-      fill(255, 0, 0, 50);
+      fill(255, 0, 0, 100);
     }
     else
     {
       stroke(0, 255, 0);
-      fill(0, 255, 0, 50);
+      fill(0, 255, 0, 100);
     }
     rect(border.get("left") + mousePosition.y * cellSize, border.get("top") + mousePosition.x * cellSize, cellSize, cellSize);
   }
@@ -102,7 +104,7 @@ void initialSettings()
   screenHeight = height - border.get("top") - border.get("bottom");
   
   // Calculate the cell size
-  cellSize = screenWidth / cellsPerLine;
+  cellSize = screenWidth / map1.cellsPerLine;
   
   // Calculate how many rows of cols can fit on the screen and change the screen height and bottom border to match
   cellsPerHeight = (int)(screenHeight / cellSize);
@@ -111,7 +113,7 @@ void initialSettings()
   startCell = 0;
   endCell = cellsPerHeight;
 }
-
+/*
 boolean checkAround(PVector pos, int roadNo)
 {
   // Check the next position to verify if there are any roads around it
@@ -177,7 +179,7 @@ void randomMap()
     map[cellsPerCol - 1][i] = 10;
   }
   
-  int numRoads = 8;
+  int numRoads = 9;
   
   for (int i = 1 ; i <= numRoads ; i++)
   {
@@ -316,25 +318,31 @@ void importMap()
     }
     //println();
   }
-}
+}*/
 
 void drawRoad()
 {
   // Draw the occupied cells
   for (int i = 0 ; i < endCell - startCell ; i++)
   {
-    for (int j = 0 ; j < cellsPerLine ; j++)
+    for (int j = 0 ; j < map1.cellsPerLine ; j++)
     {
-      if (map[i + startCell][j] >= 1 && map[i + startCell][j] < 10)
+      if (map1.map[i + startCell][j] >= 1 && map1.map[i + startCell][j] < 10)
       {
         fill(255);
         stroke(255);
         rect(border.get("left") + j * cellSize, border.get("top") + i * cellSize, cellSize, cellSize);
       }
-      if (map[i + startCell][j] == 10)
+      if (map1.map[i + startCell][j] == 10)
       {
         fill(0, 255, 255);
         stroke(0, 255, 255);
+        rect(border.get("left") + j * cellSize, border.get("top") + i * cellSize, cellSize, cellSize);
+      }
+      if (map1.map[i + startCell][j] == 0)
+      {
+        fill(0, 92, 9);
+        stroke(0, 92, 9);
         rect(border.get("left") + j * cellSize, border.get("top") + i * cellSize, cellSize, cellSize);
       }
     }
@@ -349,7 +357,7 @@ void drawInfo()
   if (startCell != 0)
     text("/\\", width / 2, border.get("top"));
   textAlign(CENTER, TOP);
-  if (endCell != cellsPerCol)
+  if (endCell != map1.cellsPerCol)
     text("\\/", width / 2, height - border.get("bottom"));
 }
 
@@ -368,7 +376,7 @@ void mouseHover()
   // Move the screen down
   if (mouseY > border.get("top") + screenHeight)
   {
-    if (endCell < cellsPerCol && millis()> lastCheck + 100)
+    if (endCell < map1.cellsPerCol && millis()> lastCheck + 100)
     {
       startCell ++;
       endCell ++;
@@ -380,7 +388,7 @@ void mouseHover()
   if (mouseX > border.get("left") && mouseX < width - border.get("right") && mouseY > border.get("top") && mouseY < height - border.get("bottom"))
   {
     mousePosition.x = (int)map(mouseY, border.get("top"), height - border.get("bottom"), 0, cellsPerHeight);
-    mousePosition.y = (int)map(mouseX, border.get("left"), width - border.get("right"), 0, cellsPerLine);
+    mousePosition.y = (int)map(mouseX, border.get("left"), width - border.get("right"), 0, map1.cellsPerLine);
     mousePosition.z = 0;
   }
   else
