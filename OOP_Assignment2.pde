@@ -28,6 +28,7 @@ void setup()
   // Random map
   randomMap();
   
+  // Initial Settings
   initialSettings();
   
   // Change the size of the screen
@@ -111,21 +112,41 @@ void initialSettings()
   endCell = cellsPerHeight;
 }
 
-boolean checkAround(PVector pos)
+boolean checkAround(PVector pos, int roadNo)
 {
   // Check the next position to verify if there are any roads around it
   int count = 0;
   
-  if (map[(int)pos.y - 1][(int)pos.x] == 1)
+  if (map[(int)pos.y - 1][(int)pos.x] == roadNo)
     count ++;
-  if (map[(int)pos.y + 1][(int)pos.x] == 1)
+  if (map[(int)pos.y + 1][(int)pos.x] == roadNo)
     count ++;
-  if (map[(int)pos.y][(int)pos.x - 1] == 1)
+  if (map[(int)pos.y][(int)pos.x - 1] == roadNo)
     count ++;
-  if (map[(int)pos.y][(int)pos.x + 1] == 1)
+  if (map[(int)pos.y][(int)pos.x + 1] == roadNo)
     count ++;
   
   if (count <= 1)
+    return true;
+  else
+    return false;
+}
+
+boolean checkConnection(PVector pos, int roadNo)
+{
+  // Check if there is another road around that this road has intersected
+  int count = 0;
+  
+  if (map[(int)pos.y - 1][(int)pos.x] != roadNo && map[(int)pos.y - 1][(int)pos.x] != 0)
+    count ++;
+  if (map[(int)pos.y + 1][(int)pos.x] != roadNo && map[(int)pos.y + 1][(int)pos.x] != 0)
+    count ++;
+  if (map[(int)pos.y][(int)pos.x - 1] != roadNo && map[(int)pos.y][(int)pos.x - 1] != 0)
+    count ++;
+  if (map[(int)pos.y][(int)pos.x + 1] != roadNo && map[(int)pos.y][(int)pos.x + 1] != 0)
+    count ++;
+    
+  if (count > 0)
     return true;
   else
     return false;
@@ -153,65 +174,117 @@ void randomMap()
   // Add the the destination
   for (int i = 0 ; i < cellsPerLine ; i++)
   {
-    map[cellsPerCol - 1][i] = 9;
+    map[cellsPerCol - 1][i] = 10;
   }
   
-  PVector curRoad = new PVector((int)random(1, cellsPerLine - 2), 0);
-  PVector direction = new PVector(0, 1);
+  int numRoads = 8;
   
-  // Add the first element
-  map[(int)curRoad.y][(int)curRoad.x] = 1;
-  curRoad.y ++;
-  
-  // Make a random road until it reached the destination
-  while (curRoad.y != cellsPerCol - 2)
+  for (int i = 1 ; i <= numRoads ; i++)
   {
-    // Add the current road to the map
-    map[(int)curRoad.y][(int)curRoad.x] = 1;
-    
-    // Change the direction
+    PVector curRoad;
+    PVector direction;
     switch((int)random(0, 3))
     {
       case 0:
       {
-        // Left
-        float temp = direction.x;
-        direction.x = (-1) * direction.y;
-        direction.y = (-1) * temp;
+        // Start from top
+        curRoad = new PVector((int)random(1, cellsPerLine - 2), 0);
+        direction = new PVector(0, 1);
+        
+        while (map[(int)curRoad.y][(int)curRoad.x - 1] != 0 || map[(int)curRoad.y][(int)curRoad.x + 1] != 0 || map[(int)curRoad.y][(int)curRoad.x] != 0)
+        {
+          curRoad.x = (int)random(1, cellsPerLine - 2);
+        }
+        
         break;
       }
       case 1:
       {
-        // Right
-        if (direction.x == 0)
+        // Start from left
+        curRoad = new PVector(0, (int)random(1, cellsPerCol / 2));
+        direction = new PVector(1, 0);
+        
+        while (map[(int)curRoad.y - 1][(int)curRoad.x] != 0 || map[(int)curRoad.y + 1][(int)curRoad.x] != 0 || map[(int)curRoad.y][(int)curRoad.x] != 0)
         {
-          direction.x = (-1) * direction.y;
-          direction.y = 0;
+          curRoad.y = (int)random(1, cellsPerCol / 2);
         }
-        else
-        {
-          direction.y = direction.x;
-          direction.x = 0;
-        }
+        
         break;
       }
       default:
       {
-        // Straight
+        // Start from right
+        curRoad = new PVector(cellsPerLine - 1, (int)random(1, cellsPerCol / 2));
+        direction = new PVector(-1, 0);
+        
+        while (map[(int)curRoad.y - 1][(int)curRoad.x] != 0 || map[(int)curRoad.y + 1][(int)curRoad.x] != 0 || map[(int)curRoad.y][(int)curRoad.x] != 0)
+        {
+          curRoad.y = (int)random(1, cellsPerCol / 2);
+        }
+                
         break;
       }
     }
     
-    // Go in that direction if possible
+    // Add the first element
+    map[(int)curRoad.y][(int)curRoad.x] = i;
     curRoad.add(direction);
-    if (curRoad.x == 0 || curRoad.x == cellsPerLine - 1 || curRoad.y == 0 || curRoad.y == cellsPerCol - 1 || direction.y == -1 || !checkAround(curRoad))
+    
+    // Make a random road until it reached the destination
+    while (curRoad.y != cellsPerCol - 2 && !checkConnection(curRoad, i))
     {
-      curRoad.sub(direction);
+      // Add the current road to the map
+      map[(int)curRoad.y][(int)curRoad.x] = i;
+      
+      // Change the direction
+      switch((int)random(0, 3))
+      {
+        case 0:
+        {
+          // Left
+          float temp = direction.x;
+          direction.x = (-1) * direction.y;
+          direction.y = (-1) * temp;
+          break;
+        }
+        case 1:
+        {
+          // Right
+          if (direction.x == 0)
+          {
+            direction.x = (-1) * direction.y;
+            direction.y = 0;
+          }
+          else
+          {
+            direction.y = direction.x;
+            direction.x = 0;
+          }
+          break;
+        }
+        default:
+        {
+          // Straight
+          break;
+        }
+      }
+      
+      // Go in that direction if possible
+      curRoad.add(direction);
+      if ((int)curRoad.x == 0 || (int)curRoad.x == cellsPerLine - 1 || (int)curRoad.y == 0 || (int)curRoad.y == cellsPerCol - 1 || direction.y == -1)
+      {
+          curRoad.sub(direction);
+      }
+      else 
+      {
+        if (!checkAround(curRoad, i))
+          curRoad.sub(direction);
+      }
     }
+    
+    // Add the final part of the road
+    map[(int)curRoad.y][(int)curRoad.x] = i;
   }
-  
-  // Add the final part of the road
-  map[(int)curRoad.y][(int)curRoad.x] = 1;
 }
 
 void importMap()
@@ -252,13 +325,13 @@ void drawRoad()
   {
     for (int j = 0 ; j < cellsPerLine ; j++)
     {
-      if (map[i + startCell][j] == 1)
+      if (map[i + startCell][j] >= 1 && map[i + startCell][j] < 10)
       {
         fill(255);
         stroke(255);
         rect(border.get("left") + j * cellSize, border.get("top") + i * cellSize, cellSize, cellSize);
       }
-      if (map[i + startCell][j] == 9)
+      if (map[i + startCell][j] == 10)
       {
         fill(0, 255, 255);
         stroke(0, 255, 255);
