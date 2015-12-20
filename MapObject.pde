@@ -3,13 +3,15 @@ public class MapObject
   int[][] map;
   int cellsPerLine;
   int cellsPerCol;
+  int numRoads;
   
   MapObject(String name)
   {
     importMap(name);
   }
-  MapObject()
+  MapObject(int numRoads)
   {
+    this.numRoads = numRoads;
     randomMap();
   }
   
@@ -77,8 +79,6 @@ public class MapObject
     {
       map[cellsPerCol - 1][i] = 10;
     }
-    
-    int numRoads = 9;
     
     for (int i = 1 ; i <= numRoads ; i++)
     {

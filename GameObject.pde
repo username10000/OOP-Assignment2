@@ -1,15 +1,20 @@
-public class GameObject
+abstract public class GameObject
 {
   PVector position;
   boolean isAlive;
+  color colour;
   
-  public GameObject(float x, float y)
+  public GameObject(float x, float y, color colour)
   {
     position = new PVector(x, y);
+    this.colour = colour;
     isAlive = true;
   }
   public GameObject()
   {
-    this(width / 2, height / 2);
+    this(width / 2, height / 2, color(0, 0, 0));
   }
+  
+  abstract void render();
+  abstract void update();
 }
