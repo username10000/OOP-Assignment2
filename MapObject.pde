@@ -84,6 +84,8 @@ public class MapObject
     {
       PVector curRoad;
       PVector direction;
+      
+      // Put the start of the road on a random edge of the screen
       switch((int)random(0, 3))
       {
         case 0:

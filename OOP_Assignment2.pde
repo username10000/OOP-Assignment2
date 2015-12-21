@@ -3,7 +3,8 @@ import java.util.Map;
 
 int cellsPerHeight;
 int startCell, endCell;
-int lastCheck = millis();
+//int lastCheck = millis();
+int curMap = 0;
 float screenSize;
 float gap;
 float screenWidth, screenHeight;
@@ -73,7 +74,7 @@ void draw()
   if (mousePosition.z == 0)
   {
     // Change the colour of the selected cell depending if it's a valid position
-    if (maps[0].map[(int)mousePosition.y + startCell][(int)mousePosition.x] >= 1)
+    if (maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] >= 1)
     {
       stroke(255, 0, 0);
       fill(255, 0, 0, 100);
@@ -120,7 +121,7 @@ void initialSettings()
   screenHeight = height - border.get("top") - border.get("bottom");
   
   // Calculate the cell size
-  cellSize = screenWidth / maps[0].cellsPerLine;
+  cellSize = screenWidth / maps[curMap].cellsPerLine;
   
   // Calculate how many rows of cols can fit on the screen and change the screen height and bottom border to match
   cellsPerHeight = (int)(screenHeight / cellSize);
@@ -135,15 +136,15 @@ void drawRoad()
   // Draw the occupied cells
   for (int i = 0 ; i < endCell - startCell ; i++)
   {
-    for (int j = 0 ; j < maps[0].cellsPerLine ; j++)
+    for (int j = 0 ; j < maps[curMap].cellsPerLine ; j++)
     {
-      if (maps[0].map[i + startCell][j] >= 1 && maps[0].map[i + startCell][j] < 10)
+      if (maps[curMap].map[i + startCell][j] >= 1 && maps[curMap].map[i + startCell][j] < 10)
       {
         fill(255);
         stroke(255);
         rect(border.get("left") + j * cellSize, border.get("top") + i * cellSize + offset, cellSize, cellSize);
       }
-      if (maps[0].map[i + startCell][j] == 10)
+      if (maps[curMap].map[i + startCell][j] == 10)
       {
         fill(0, 255, 255);
         stroke(0, 255, 255);
@@ -154,15 +155,15 @@ void drawRoad()
   
   if (offset < 0)
   {
-    for (int j = 0 ; j < maps[0].cellsPerLine ; j++)
+    for (int j = 0 ; j < maps[curMap].cellsPerLine ; j++)
     {
-      if (maps[0].map[endCell][j] >= 1 && maps[0].map[endCell][j] < 10)
+      if (maps[curMap].map[endCell][j] >= 1 && maps[curMap].map[endCell][j] < 10)
       {
         fill(255);
         stroke(255);
         rect(border.get("left") + j * cellSize, border.get("top") + (endCell - startCell) * cellSize + offset, cellSize, cellSize);
       }
-      if (maps[0].map[endCell][j] == 10)
+      if (maps[curMap].map[endCell][j] == 10)
       {
         fill(0, 255, 255);
         stroke(0, 255, 255);
@@ -172,15 +173,15 @@ void drawRoad()
   }
   if (offset > 0)
   {
-    for (int j = 0 ; j < maps[0].cellsPerLine ; j++)
+    for (int j = 0 ; j < maps[curMap].cellsPerLine ; j++)
     {
-      if (maps[0].map[startCell - 1][j] >= 1 && maps[0].map[startCell - 1][j] < 10)
+      if (maps[curMap].map[startCell - 1][j] >= 1 && maps[curMap].map[startCell - 1][j] < 10)
       {
         fill(255);
         stroke(255);
         rect(border.get("left") + j * cellSize, border.get("top") + -1 * cellSize + offset, cellSize, cellSize);
       }
-      if (maps[0].map[startCell - 1][j] == 10)
+      if (maps[curMap].map[startCell - 1][j] == 10)
       {
         fill(0, 255, 255);
         stroke(0, 255, 255);
@@ -204,7 +205,7 @@ void drawInfo()
   if (startCell != 0)
     text("/\\", width / 2, border.get("top"));
   textAlign(CENTER, TOP);
-  if (endCell != maps[0].cellsPerCol)
+  if (endCell != maps[curMap].cellsPerCol)
     text("\\/", width / 2, height - border.get("bottom"));
 }
 
@@ -220,7 +221,7 @@ void mouseHover()
       {
         startCell --;
         endCell --;
-        lastCheck = millis();
+        //lastCheck = millis();
         offset = 0;
       }
     }
@@ -228,14 +229,14 @@ void mouseHover()
   // Move the screen down
   if (mouseY > border.get("top") + screenHeight)
   {
-    if (endCell < maps[0].cellsPerCol) // && millis()> lastCheck + 100
+    if (endCell < maps[curMap].cellsPerCol) // && millis()> lastCheck + 100
     {
       offset -= 10;
       if (offset < -cellSize)
       {
         startCell ++;
         endCell ++;
-        lastCheck = millis();
+        //lastCheck = millis();
         offset = 0;
       }
     }
@@ -244,7 +245,7 @@ void mouseHover()
   // Mark the selected cell
   if (mouseX > border.get("left") && mouseX < width - border.get("right") && mouseY > border.get("top") && mouseY < height - border.get("bottom"))
   {
-    mousePosition.x = (int)map(mouseX, border.get("left"), width - border.get("right"), 0, maps[0].cellsPerLine);
+    mousePosition.x = (int)map(mouseX, border.get("left"), width - border.get("right"), 0, maps[curMap].cellsPerLine);
     mousePosition.y = (int)map(mouseY, border.get("top") + offset, height - border.get("bottom") + offset, 0, cellsPerHeight);
     mousePosition.z = 0;
   }
