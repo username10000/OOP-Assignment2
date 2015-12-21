@@ -8,6 +8,7 @@ float screenSize;
 float gap;
 float screenWidth, screenHeight;
 float cellSize;
+float offset;
 Map<String, Float> border = new HashMap<String, Float>();
 PVector mousePosition = new PVector(-1, -1, -1);
 MapObject[] maps = new MapObject[9];
@@ -36,7 +37,7 @@ void setup()
   initialSettings();
 
   // New Enemy
-  enemy = new Enemy(width / 2, height / 2, 5, 50, color(random(0, 255), random(0, 255), random(0, 255)));
+  enemy = new Enemy(5, 50, color(random(0, 255), random(0, 255), random(0, 255)));
   
   // Change the size of the screen
   //surface.setSize(displayWidth / 2, displayHeight / 2);
@@ -72,7 +73,7 @@ void draw()
   if (mousePosition.z == 0)
   {
     // Change the colour of the selected cell depending if it's a valid position
-    if (maps[0].map[(int)mousePosition.x + startCell][(int)mousePosition.y] >= 1)
+    if (maps[0].map[(int)mousePosition.y + startCell][(int)mousePosition.x] >= 1)
     {
       stroke(255, 0, 0);
       fill(255, 0, 0, 100);
@@ -82,7 +83,7 @@ void draw()
       stroke(0, 255, 0);
       fill(0, 255, 0, 100);
     }
-    rect(border.get("left") + mousePosition.y * cellSize, border.get("top") + mousePosition.x * cellSize, cellSize, cellSize);
+    rect(border.get("left") + mousePosition.x * cellSize, border.get("top") + mousePosition.y * cellSize + offset, cellSize, cellSize);
   }
   // Do stuff if the cell is clicked on
   if (mousePosition.z == 1)
@@ -140,13 +141,50 @@ void drawRoad()
       {
         fill(255);
         stroke(255);
-        rect(border.get("left") + j * cellSize, border.get("top") + i * cellSize, cellSize, cellSize);
+        rect(border.get("left") + j * cellSize, border.get("top") + i * cellSize + offset, cellSize, cellSize);
       }
       if (maps[0].map[i + startCell][j] == 10)
       {
         fill(0, 255, 255);
         stroke(0, 255, 255);
-        rect(border.get("left") + j * cellSize, border.get("top") + i * cellSize, cellSize, cellSize);
+        rect(border.get("left") + j * cellSize, border.get("top") + i * cellSize + offset, cellSize, cellSize);
+      }
+    }
+  }
+  
+  if (offset < 0)
+  {
+    for (int j = 0 ; j < maps[0].cellsPerLine ; j++)
+    {
+      if (maps[0].map[endCell][j] >= 1 && maps[0].map[endCell][j] < 10)
+      {
+        fill(255);
+        stroke(255);
+        rect(border.get("left") + j * cellSize, border.get("top") + (endCell - startCell) * cellSize + offset, cellSize, cellSize);
+      }
+      if (maps[0].map[endCell][j] == 10)
+      {
+        fill(0, 255, 255);
+        stroke(0, 255, 255);
+        rect(border.get("left") + j * cellSize, border.get("top") + (endCell - startCell) * cellSize + offset, cellSize, cellSize);
+      }
+    }
+  }
+  if (offset > 0)
+  {
+    for (int j = 0 ; j < maps[0].cellsPerLine ; j++)
+    {
+      if (maps[0].map[startCell - 1][j] >= 1 && maps[0].map[startCell - 1][j] < 10)
+      {
+        fill(255);
+        stroke(255);
+        rect(border.get("left") + j * cellSize, border.get("top") + -1 * cellSize + offset, cellSize, cellSize);
+      }
+      if (maps[0].map[startCell - 1][j] == 10)
+      {
+        fill(0, 255, 255);
+        stroke(0, 255, 255);
+        rect(border.get("left") + j * cellSize, border.get("top") + -1 * cellSize + offset, cellSize, cellSize);
       }
     }
   }
@@ -175,29 +213,39 @@ void mouseHover()
   // Move the screen up
   if (mouseY < border.get("top"))
   {
-    if (startCell > 0 && millis()> lastCheck + 100)
+    if (startCell > 0) // && millis()> lastCheck + 100
     {
-      startCell --;
-      endCell --;
-      lastCheck = millis();
+      offset += 10;
+      if (offset > cellSize)
+      {
+        startCell --;
+        endCell --;
+        lastCheck = millis();
+        offset = 0;
+      }
     }
   }
   // Move the screen down
   if (mouseY > border.get("top") + screenHeight)
   {
-    if (endCell < maps[0].cellsPerCol && millis()> lastCheck + 100)
+    if (endCell < maps[0].cellsPerCol) // && millis()> lastCheck + 100
     {
-      startCell ++;
-      endCell ++;
-      lastCheck = millis();
+      offset -= 10;
+      if (offset < -cellSize)
+      {
+        startCell ++;
+        endCell ++;
+        lastCheck = millis();
+        offset = 0;
+      }
     }
   }
   
   // Mark the selected cell
   if (mouseX > border.get("left") && mouseX < width - border.get("right") && mouseY > border.get("top") && mouseY < height - border.get("bottom"))
   {
-    mousePosition.x = (int)map(mouseY, border.get("top"), height - border.get("bottom"), 0, cellsPerHeight);
-    mousePosition.y = (int)map(mouseX, border.get("left"), width - border.get("right"), 0, maps[0].cellsPerLine);
+    mousePosition.x = (int)map(mouseX, border.get("left"), width - border.get("right"), 0, maps[0].cellsPerLine);
+    mousePosition.y = (int)map(mouseY, border.get("top") + offset, height - border.get("bottom") + offset, 0, cellsPerHeight);
     mousePosition.z = 0;
   }
   else
