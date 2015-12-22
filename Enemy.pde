@@ -15,7 +15,7 @@ public class Enemy extends GameObject
     this.edges = edges;
     this.life = life;
     radius = map(edges, 5, 10, cellSize / 4, cellSize / 2);
-    speed = 0.005;
+    speed = 0.05;
     drawShape();
     cellPosition = getStart(1);
     direction = getDirection();
@@ -101,13 +101,31 @@ public class Enemy extends GameObject
   }
   private void updateDirection()
   { 
+    PVector tempDirection;
+    
+    if (direction.x == 0)
+    {
+      tempDirection = new PVector(direction.y, 0);
+    }
+    else
+    {
+      tempDirection = new PVector(0, (-1) * direction.x);
+    }
+    
     // Change the direction of the enemy
-    if (getValue((int)cellPosition.x + (-1) * (int)direction.y, (int)cellPosition.y + (-1) * (int)direction.x) >= 1)
+    if (getValue((int)cellPosition.x + (int)tempDirection.x, (int)cellPosition.y + (int)tempDirection.y) >= 1)
     {
       // Left
-      float temp = direction.x;
-      direction.x = (-1) * direction.y;
-      direction.y = (-1) * temp;
+      if (direction.x == 0)
+      {
+        direction.x = direction.y;
+        direction.y = 0;
+      }
+      else
+      {
+        direction.y = (-1) * direction.x;
+        direction.x = 0;
+      }
     }
     else
     {
@@ -143,10 +161,7 @@ public class Enemy extends GameObject
     // Find the next direction
     if (getValue((int)cellPosition.x + (int)direction.x, (int)cellPosition.y + (int)direction.y) == 0)
     {
-      println(direction.x, direction.y);
       updateDirection();
-      println(direction.x, direction.y);
-      println();
     }
 
     // Update the location of the enemy

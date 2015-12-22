@@ -27,7 +27,7 @@ void setup()
   //randomSeed(5000);
   
   // Change the size of the screen
-  surface.setSize(displayWidth / 2, displayHeight / 2);
+  //surface.setSize(displayWidth / 2, displayHeight / 2);
   
   // Import a map from a file
   //importMap = new MapObject("map.txt");
@@ -38,7 +38,7 @@ void setup()
     maps[i] = new MapObject(i + 1);
   }
   
-  maps[0] = new MapObject("map.txt");
+  //maps[0] = new MapObject("map.txt");
   
   String[] output = new String[maps[curMap].map.length];
   for (int i = 0 ; i < maps[curMap].map.length ; i++)
