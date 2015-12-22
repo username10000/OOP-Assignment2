@@ -57,7 +57,7 @@ void setup()
   initialSettings();
 
   // New Enemy
-  enemy = new Enemy(5, 50, color(random(0, 255), random(0, 255), random(0, 255)));
+  enemy = new Enemy(5, 50, color(random(0, 255), random(0, 255), random(0, 255)), 1);
 }
 
 void draw()

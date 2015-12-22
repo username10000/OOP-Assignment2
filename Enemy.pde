@@ -9,7 +9,7 @@ public class Enemy extends GameObject
   PVector direction;
   PVector shapeOffset;
   
-  Enemy(int edges, int life, color colour)
+  Enemy(int edges, int life, color colour, int road)
   {
     super(500, 500, colour);
     this.edges = edges;
@@ -17,13 +17,13 @@ public class Enemy extends GameObject
     radius = map(edges, 5, 10, cellSize / 4, cellSize / 2);
     speed = 0.05;
     drawShape();
-    cellPosition = getStart(1);
+    cellPosition = getStart(road);
     direction = getDirection();
     shapeOffset = new PVector(0, 0);
   }
   Enemy()
   {
-    this(5, 50, color(0, 0, 0));
+    this(5, 50, color(0, 0, 0), 1);
   }
   
   private void drawShape()

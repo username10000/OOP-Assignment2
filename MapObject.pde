@@ -143,9 +143,20 @@ public class MapObject
           case 0:
           {
             // Left
+            if (direction.x == 0)
+            {
+              direction.x = direction.y;
+              direction.y = 0;
+            }
+            else
+            {
+              direction.y = (-1) * direction.x;
+              direction.x = 0;
+            }
+            /*
             float temp = direction.x;
             direction.x = (-1) * direction.y;
-            direction.y = (-1) * temp;
+            direction.y = (-1) * temp;*/
             break;
           }
           case 1:
