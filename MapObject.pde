@@ -34,7 +34,6 @@ public class MapObject
     else
       return false;
   }
-  
   private boolean checkConnection(PVector pos, int roadNo)
   {
     // Check if there is another road around that this road has intersected
@@ -54,7 +53,6 @@ public class MapObject
     else
       return false;
   }
-  
   public void randomMap()
   {
     // Get a random odd value for the number of columns
@@ -189,7 +187,6 @@ public class MapObject
       map[(int)curRoad.y][(int)curRoad.x] = i;
     }
   }
-  
   public void importMap(String fileName)
   {
     // Read the file

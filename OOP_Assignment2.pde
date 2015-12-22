@@ -24,6 +24,10 @@ void setup()
   stroke(255);
   textAlign(CENTER);
   //randomSeed((int)random(5000));
+  //randomSeed(5000);
+  
+  // Change the size of the screen
+  surface.setSize(displayWidth / 2, displayHeight / 2);
   
   // Import a map from a file
   //importMap = new MapObject("map.txt");
@@ -34,14 +38,26 @@ void setup()
     maps[i] = new MapObject(i + 1);
   }
   
+  maps[0] = new MapObject("map.txt");
+  
+  String[] output = new String[maps[curMap].map.length];
+  for (int i = 0 ; i < maps[curMap].map.length ; i++)
+  {
+    for (int j = 0 ; j <maps[curMap].map[i].length ; j++)
+    {
+      if (j == 0)
+        output[i] = "" + maps[curMap].map[i][j];
+      else
+        output[i] = output[i] + maps[curMap].map[i][j];
+    }
+  }
+  saveStrings("array.txt", output);
+  
   // Initial Settings
   initialSettings();
 
   // New Enemy
   enemy = new Enemy(5, 50, color(random(0, 255), random(0, 255), random(0, 255)));
-  
-  // Change the size of the screen
-  //surface.setSize(displayWidth / 2, displayHeight / 2);
 }
 
 void draw()
