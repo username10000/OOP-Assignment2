@@ -5,6 +5,7 @@ int cellsPerHeight;
 int startCell, endCell;
 //int lastCheck = millis();
 int curMap = 0;
+int noEnemies = 5;
 float screenSize;
 float gap;
 float screenWidth, screenHeight;
@@ -14,7 +15,8 @@ Map<String, Float> border = new HashMap<String, Float>();
 PVector mousePosition = new PVector(-1, -1, -1);
 MapObject[] maps = new MapObject[9];
 MapObject importMap;
-Enemy enemy;
+ArrayList<GameObject> objects = new ArrayList<GameObject>();
+//Enemy enemy;
 
 void setup()
 {
@@ -40,6 +42,8 @@ void setup()
   
   //maps[0] = new MapObject("map.txt");
   
+  // Output current array
+  /*
   String[] output = new String[maps[curMap].map.length];
   for (int i = 0 ; i < maps[curMap].map.length ; i++)
   {
@@ -51,13 +55,13 @@ void setup()
         output[i] = output[i] + maps[curMap].map[i][j];
     }
   }
-  saveStrings("array.txt", output);
+  saveStrings("array.txt", output);*/
   
   // Initial Settings
   initialSettings();
 
   // New Enemy
-  enemy = new Enemy(5, 50, color(random(0, 255), random(0, 255), random(0, 255)), 1);
+  //createEnemy(1);
 }
 
 void draw()
@@ -109,8 +113,19 @@ void draw()
   }
   
   // Draw the entities
-  enemy.update();
-  enemy.render();
+  //enemy.update();
+  //enemy.render();
+  
+  for (int i = 0 ; i < objects.size() ; i++)
+  {
+    objects.get(i).render();
+    objects.get(i).update();
+  }
+  
+  if (noEnemies > 0)
+  {
+    createEnemy(1);
+  }
   
   // Draw all the information needed on the screen
   drawInfo();
@@ -270,5 +285,28 @@ void mouseHover()
     mousePosition.x = -1;
     mousePosition.y = -1;
     mousePosition.z = -1;
+  }
+}
+
+void createEnemy(int road)
+{
+  boolean empty = true;
+  for (int i = 0 ; i < objects.size() ; i++)
+  {
+    if (objects.get(i) instanceof Enemy)
+    {
+      Enemy enemy = (Enemy)objects.get(i);
+      if (enemy.cellPosition.y == 0 || enemy.cellPosition.x == 0 || enemy.cellPosition.x == maps[curMap].cellsPerLine - 1)
+      {
+        empty = false;
+      }
+    }
+  }
+  
+  if (empty)
+  {
+    Enemy enemy = new Enemy(5, 50, color(random(0, 255), random(0, 255), random(0, 255)), road);
+    objects.add(enemy);
+    noEnemies --;
   }
 }

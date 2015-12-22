@@ -159,6 +159,18 @@ public class Enemy extends GameObject
   public void update()
   {
     // Find the next direction
+    if (getValue((int)cellPosition.x + (int)direction.x, (int)cellPosition.y + (int)direction.y) == 10)
+    {
+      for (int i = 0 ; i < objects.size() ; i++)
+      {
+        Enemy enemy = (Enemy)objects.get(i);
+        if (enemy.cellPosition.x == cellPosition.x && enemy.cellPosition.y == cellPosition.y)
+        {
+          objects.remove(i);
+          break;
+        }
+      }
+    }
     if (getValue((int)cellPosition.x + (int)direction.x, (int)cellPosition.y + (int)direction.y) == 0)
     {
       updateDirection();
