@@ -144,6 +144,54 @@ public class Enemy extends GameObject
       } 
     }
   }
+  private boolean checkDirection(PVector cell, PVector dir)
+  {
+    boolean left = false, right = false, straight = false;
+    PVector tempCell;
+    PVector tempDir;
+    
+    if (cell.y == maps[curMap].cellsPerCol - 1)
+      return true;
+    if (cell.x == 0 || cell.x == maps[curMap].cellsPerLine - 1 || cell.y == 0)
+      return false;
+      
+    // Check Left
+    if (dir.x == 0)
+    {
+      tempDir = new PVector(cell.y, 0);
+    }
+    else
+    {
+      tempDir = new PVector(0, (-1) * cell.x);
+    }
+    tempCell = new PVector(cell.x + tempDir.x, cell.y + tempDir.y);
+    if (getValue((int)tempCell.x, (int)tempCell.x) >= 1)
+      left = checkDirection(tempCell, tempDir);
+    
+    // Check Right
+    if (dir.x == 0)
+    {
+      tempDir = new PVector((-1) * cell.y, 0);
+    }
+    else
+    {
+      tempDir = new PVector(0, cell.x);
+    }
+    tempCell = new PVector(cell.x + tempDir.x, cell.y + tempDir.y);
+    if (getValue((int)tempCell.x, (int)tempCell.x) >= 1)
+      right = checkDirection(tempCell, tempDir);
+    
+    // Check straight
+    tempCell = new PVector(cell.x + dir.x, cell.y + dir.y);
+    if (getValue((int)tempCell.x, (int)tempCell.x) >= 1)
+      straight = checkDirection(tempCell, tempDir);
+    
+    // If one of these is true then return true else false
+    if (left || right || straight)
+      return true;
+    else
+      return false;
+  }
   public void render()
   {
     // Render the enemy
@@ -184,11 +232,13 @@ public class Enemy extends GameObject
     {
       cellPosition.x += (int)shapeOffset.x;
       shapeOffset.x = 0;
+      //println(checkDirection(cellPosition, direction));
     }
     if (shapeOffset.y > 1 || shapeOffset.y < -1)
     {
       cellPosition.y += (int)shapeOffset.y;
       shapeOffset.y = 0;
+      //println(checkDirection(cellPosition, direction));
     }
     
     //cellPosition.add(PVector.mult(direction, speed));

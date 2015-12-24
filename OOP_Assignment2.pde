@@ -63,8 +63,8 @@ void setup()
   // New Enemy
   //createEnemy(1);
   noEnemies[0] = 5;
-  noEnemies[1] = 4;
-  noEnemies[2] = 3;
+  //noEnemies[1] = 4;
+  //noEnemies[2] = 3;
 }
 
 void draw()
