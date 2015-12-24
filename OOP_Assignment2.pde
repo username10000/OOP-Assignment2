@@ -4,8 +4,8 @@ import java.util.Map;
 int cellsPerHeight;
 int startCell, endCell;
 //int lastCheck = millis();
-int curMap = 0;
-int noEnemies = 5;
+int curMap = 8;
+int[] noEnemies = new int[9];
 float screenSize;
 float gap;
 float screenWidth, screenHeight;
@@ -62,6 +62,9 @@ void setup()
 
   // New Enemy
   //createEnemy(1);
+  noEnemies[0] = 5;
+  noEnemies[1] = 4;
+  noEnemies[2] = 3;
 }
 
 void draw()
@@ -106,25 +109,32 @@ void draw()
     }
     rect(border.get("left") + mousePosition.x * cellSize, border.get("top") + mousePosition.y * cellSize + offset, cellSize, cellSize);
   }
+  
   // Do stuff if the cell is clicked on
   if (mousePosition.z == 1)
   {
     // Check if the clicked cell is a tower and do things
   }
   
-  // Draw the entities
-  //enemy.update();
-  //enemy.render();
-  
+  // Update enemies
   for (int i = 0 ; i < objects.size() ; i++)
   {
-    objects.get(i).render();
     objects.get(i).update();
   }
   
-  if (noEnemies > 0)
+  // Render enemies
+  for (int i = 0 ; i < objects.size() ; i++)
   {
-    createEnemy(1);
+    objects.get(i).render();
+  }
+  
+  // Create enemies
+  for (int i = 0 ; i < noEnemies.length ; i++)
+  {
+    if (noEnemies[i] > 0 && i <= curMap)
+    {
+      createEnemy(i + 1);
+    }
   }
   
   // Draw all the information needed on the screen
@@ -240,6 +250,36 @@ void drawInfo()
     text("\\/", width / 2, height - border.get("bottom"));
 }
 
+
+void createEnemy(int road)
+{
+  // Assume the spawn point is empty
+  boolean empty = true;
+  
+  // Check if the spawn point of the road is empty
+  for (int i = 0 ; i < objects.size() ; i++)
+  {
+    if (objects.get(i) instanceof Enemy)
+    {
+      Enemy enemy = (Enemy)objects.get(i);
+      if ((enemy.cellPosition.y == 0 || enemy.cellPosition.x == 0 || enemy.cellPosition.x == maps[curMap].cellsPerLine - 1) && (enemy.road == road))
+      {
+        empty = false;
+      }
+    }
+  }
+  
+  // If the spawn point is empty add a new enemy
+  if (empty)
+  {
+    // Create a new enemy
+    Enemy enemy = new Enemy(5, 50, color(random(0, 255), random(0, 255), random(0, 255)), road);
+    objects.add(enemy);
+    // Decrease the amount of enemies in that road
+    noEnemies[road - 1] --;
+  }
+}
+
 void mouseHover()
 { 
   // Move the screen up
@@ -288,25 +328,11 @@ void mouseHover()
   }
 }
 
-void createEnemy(int road)
+void keyPressed()
 {
-  boolean empty = true;
-  for (int i = 0 ; i < objects.size() ; i++)
+  if (key >= '1' && key <= '9')
   {
-    if (objects.get(i) instanceof Enemy)
-    {
-      Enemy enemy = (Enemy)objects.get(i);
-      if (enemy.cellPosition.y == 0 || enemy.cellPosition.x == 0 || enemy.cellPosition.x == maps[curMap].cellsPerLine - 1)
-      {
-        empty = false;
-      }
-    }
-  }
-  
-  if (empty)
-  {
-    Enemy enemy = new Enemy(5, 50, color(random(0, 255), random(0, 255), random(0, 255)), road);
-    objects.add(enemy);
-    noEnemies --;
+    curMap = key - '0' - 1;
+    initialSettings();
   }
 }

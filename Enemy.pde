@@ -2,6 +2,7 @@ public class Enemy extends GameObject
 {
   int edges;
   int life;
+  int road;
   float radius;
   float speed;
   PShape polygon;
@@ -17,6 +18,7 @@ public class Enemy extends GameObject
     radius = map(edges, 5, 10, cellSize / 4, cellSize / 2);
     speed = 0.05;
     drawShape();
+    this.road = road;
     cellPosition = getStart(road);
     direction = getDirection();
     shapeOffset = new PVector(0, 0);
