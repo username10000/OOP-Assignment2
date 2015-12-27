@@ -4,6 +4,7 @@ public class MapObject
   int cellsPerLine;
   int cellsPerCol;
   int numRoads;
+  ArrayList<Integer> connections = new ArrayList<Integer>();
   
   MapObject(String name)
   {
@@ -12,6 +13,7 @@ public class MapObject
   MapObject(int numRoads)
   {
     this.numRoads = numRoads;
+    connections.add(0);
     randomMap();
   }
   
@@ -196,6 +198,15 @@ public class MapObject
       
       // Add the final part of the road
       map[(int)curRoad.y][(int)curRoad.x] = i;
+      
+      if (curRoad.y == cellsPerCol - 2)
+      {
+        connections.add(10);
+      }
+      else
+      {
+        connections.add(map[(int)curRoad.y + (int)direction.y][(int)curRoad.x + (int)direction.x]);
+      }
     }
   }
   public void importMap(String fileName)

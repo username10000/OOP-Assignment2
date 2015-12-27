@@ -40,6 +40,12 @@ void setup()
     maps[i] = new MapObject(i + 1);
   }
   
+  /*
+  for (int i:maps[curMap].connections)
+  {
+    println(i);
+  }*/
+  
   //maps[0] = new MapObject("map.txt");
   
   // Output current array
