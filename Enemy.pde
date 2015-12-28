@@ -148,6 +148,7 @@ public class Enemy extends GameObject
   {
     PVector cellLeft, cellRight, cellStraight;
     PVector dirLeft, dirRight, dirStraight;
+    int left = 0, right = 0, straight = 0;
     
     // Left
     if (dir.x == 0)
@@ -173,6 +174,55 @@ public class Enemy extends GameObject
     
     // Straight
     cellStraight = new PVector(cell.x + dir.x, cell.y + dir.y);
+    
+    do
+    {
+      left = right = straight = 0;
+      if (getValue(cellLeft.x, cellLeft.y) >= 1)
+        left = 1;
+      if (getValue(cellRight.x, cellRight.y) >= 1)
+        right = 1;
+      if (getValue(cellStraight.x, cellStraight.y) >= 1)
+        straight = 1;
+        
+      switch (left + right + straight)
+      {
+        case 1:
+          if (left == 1)
+          {
+            cell.x = cellLeft.x;
+            cell.y = cellLeft.y;
+            dir.x = dirLeft.x;
+            dir.y = dirRight.y;
+          }
+          if (right == 1)
+          {
+            cell.x = cellRight.x;
+            cell.y = cellRight.y;
+            dir.x = dirRight.x;
+            dir.y = dirRight.y;
+          }
+          if (straight == 1)
+          {
+            cell.x = cellStraight.x;
+            cell.y = cellStraight.y;
+            dir.x = dirStraight.x;
+            dir.y = dirStraighy.y;
+          }
+          break;
+        default:
+          if (straight == 1)
+          {
+            cell.x += dir.x;
+            cell.y += dir.y;
+          }
+          if (left == 1)
+            checkDirection(cellLeft, dirLeft);
+          if (right == 1)
+            checkDirection(cellRight, dirRight);
+          break;
+      }
+    } while(cell.y != maps[curMap].cellsPerCol - 1 || cell.y != 0 || cell.x != maps[curMap].cellsPerLine - 1 || cell.x != 0);
     
     return true;
     
