@@ -146,85 +146,56 @@ public class Enemy extends GameObject
   }
   private boolean checkDirection(PVector cell, PVector dir)
   {
+    // Still not working
     PVector cellLeft, cellRight, cellStraight;
     PVector dirLeft, dirRight, dirStraight;
-    int left = 0, right = 0, straight = 0;
+    boolean l = false, r = false, s = true;
     
-    // Left
-    if (dir.x == 0)
-    {
-      dirLeft = new PVector(cell.y, 0);
-    }
-    else
-    {
-      dirLeft = new PVector(0, (-1) * cell.x);
-    }
-    cellLeft = new PVector(cell.x + dirLeft.x, cell.y + dirLeft.y);
-    
-    // Right
-    if (dir.x == 0)
-    {
-      dirRight = new PVector((-1) * cell.y, 0);
-    }
-    else
-    {
-      dirRight = new PVector(0, cell.x);
-    }
-    cellRight = new PVector(cell.x + dirRight.x, cell.y + dirRight.y);
-    
+    if (cell.y == maps[curMap].cellsPerCol - 2)
+      return true;
+    if (cell.y == 0 || cell.x == 0 || cell.x == maps[curMap].cellsPerLine - 1)
+      return false;
+      
     // Straight
-    cellStraight = new PVector(cell.x + dir.x, cell.y + dir.y);
+    cellStraight = new PVector(cell.x, cell.y);
+    dirStraight = new PVector(dir.x, dir.y);
     
     do
     {
-      left = right = straight = 0;
-      if (getValue(cellLeft.x, cellLeft.y) >= 1)
-        left = 1;
-      if (getValue(cellRight.x, cellRight.y) >= 1)
-        right = 1;
-      if (getValue(cellStraight.x, cellStraight.y) >= 1)
-        straight = 1;
-        
-      switch (left + right + straight)
+      // Left & Right
+      if (dirStraight.x == 0)
       {
-        case 1:
-          if (left == 1)
-          {
-            cell.x = cellLeft.x;
-            cell.y = cellLeft.y;
-            dir.x = dirLeft.x;
-            dir.y = dirRight.y;
-          }
-          if (right == 1)
-          {
-            cell.x = cellRight.x;
-            cell.y = cellRight.y;
-            dir.x = dirRight.x;
-            dir.y = dirRight.y;
-          }
-          if (straight == 1)
-          {
-            cell.x = cellStraight.x;
-            cell.y = cellStraight.y;
-            dir.x = dirStraight.x;
-            dir.y = dirStraighy.y;
-          }
-          break;
-        default:
-          if (straight == 1)
-          {
-            cell.x += dir.x;
-            cell.y += dir.y;
-          }
-          if (left == 1)
-            checkDirection(cellLeft, dirLeft);
-          if (right == 1)
-            checkDirection(cellRight, dirRight);
-          break;
+        dirLeft = new PVector(dirStraight.y, 0);
+        dirRight = new PVector((-1) * dirStraight.y, 0);
       }
-    } while(cell.y != maps[curMap].cellsPerCol - 1 || cell.y != 0 || cell.x != maps[curMap].cellsPerLine - 1 || cell.x != 0);
+      else
+      {
+        dirLeft = new PVector(0, (-1) * dirStraight.x);
+        dirRight = new PVector(0, dirStraight.x);
+      }
+      cellLeft = new PVector(cellStraight.x + dirLeft.x, cellStraight.y + dirLeft.y);
+      cellRight = new PVector(cellStraight.x + dirRight.x, cellStraight.y + dirRight.y);
+      
+      if (getValue((int)cellLeft.x, (int)cellLeft.y) >= 1)
+        l = checkDirection(cellLeft, dirLeft);
+      if (getValue((int)cellRight.x, (int)cellRight.y) >= 1)
+        r = checkDirection(cellRight, dirRight);
+      if (getValue((int)cellStraight.x + (int)dirStraight.x, (int)cellStraight.y + (int)dirStraight.y) >= 1)
+      {
+        cellStraight.x += dirStraight.x;
+        cellStraight.y += dirStraight.y;
+      }
+      else
+      {
+        s = false;
+      }
+      
+    } while(cell.y != maps[curMap].cellsPerCol - 2 || cell.y != 0 || cell.x != maps[curMap].cellsPerLine - 1 || cell.x != 0 || !l || !r || s);
     
-    return true;
+    if (cell.y == maps[curMap].cellsPerCol - 2 || l || r)
+      return true;
+    else
+      return false;
     
     /*
     boolean left = false, right = false, straight = false;
@@ -314,13 +285,13 @@ public class Enemy extends GameObject
     {
       cellPosition.x += (int)shapeOffset.x;
       shapeOffset.x = 0;
-      //println(checkDirection(cellPosition, direction));
+      println(checkDirection(cellPosition, direction));
     }
     if (shapeOffset.y > 1 || shapeOffset.y < -1)
     {
       cellPosition.y += (int)shapeOffset.y;
       shapeOffset.y = 0;
-      //println(checkDirection(cellPosition, direction));
+      println(checkDirection(cellPosition, direction));
     }
     
     //cellPosition.add(PVector.mult(direction, speed));
