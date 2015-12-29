@@ -137,7 +137,8 @@ public class MapObject
       while (curRoad.y != cellsPerCol - 2 && !checkConnection(curRoad, i))
       {
         // Add the current road to the map
-        map[(int)curRoad.y][(int)curRoad.x] = i;
+        if (map[(int)curRoad.y][(int)curRoad.x] == 0)
+          map[(int)curRoad.y][(int)curRoad.x] = i;
         
         // Change the direction
         switch((int)random(0, 3))
@@ -197,7 +198,8 @@ public class MapObject
       }
       
       // Add the final part of the road
-      map[(int)curRoad.y][(int)curRoad.x] = i;
+      if (map[(int)curRoad.y][(int)curRoad.x] == 0)
+        map[(int)curRoad.y][(int)curRoad.x] = i;
       
       if (curRoad.y == cellsPerCol - 2)
       {

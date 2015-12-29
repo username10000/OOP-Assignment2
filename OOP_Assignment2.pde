@@ -49,7 +49,7 @@ void setup()
   //maps[0] = new MapObject("map.txt");
   
   // Output current array
-  /*
+  
   String[] output = new String[maps[curMap].map.length];
   for (int i = 0 ; i < maps[curMap].map.length ; i++)
   {
@@ -61,7 +61,7 @@ void setup()
         output[i] = output[i] + maps[curMap].map[i][j];
     }
   }
-  saveStrings("array.txt", output);*/
+  saveStrings("array.txt", output);
   
   // Initial Settings
   initialSettings();
