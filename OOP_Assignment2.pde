@@ -68,7 +68,11 @@ void setup()
 
   // New Enemy
   //createEnemy(1);
-  noEnemies[0] = 5;
+  for (int i = 0 ; i < noEnemies.length ; i++)
+  {
+    noEnemies[i] = (int)random(1, 5);
+  }
+  //noEnemies[0] = 5;
   //noEnemies[1] = 4;
   //noEnemies[2] = 3;
 }

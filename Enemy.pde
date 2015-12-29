@@ -161,9 +161,12 @@ public class Enemy extends GameObject
     cellLeft = new PVector(cell.x + dirLeft.x, cell.y + dirLeft.y);
     cellRight = new PVector(cell.x + dirRight.x, cell.y + dirRight.y);
     
-    if (getValue((int)cellLeft.x, (int)cellLeft.y) <= getValue((int)cell.x, (int)cell.y) && getValue((int)cellLeft.x, (int)cellLeft.y) > 0)
+    // *************************************************************************
+    // Another if to check if there are multiple paths where the enemy should go
+    
+    if (getValue((int)cellLeft.x, (int)cellLeft.y) <= getValue((int)cell.x, (int)cell.y) && getValue((int)cellLeft.x, (int)cellLeft.y) != 0)
       return dirLeft;
-    if (getValue((int)cellRight.y, (int)cellRight.y) <= getValue((int)cell.x, (int)cell.y) && getValue((int)cellRight.x, (int)cellRight.y) > 0)
+    if (getValue((int)cellRight.x, (int)cellRight.y) <= getValue((int)cell.x, (int)cell.y) && getValue((int)cellRight.x, (int)cellRight.y) != 0)
       return dirRight;
     return dir;
     /*
@@ -280,7 +283,7 @@ public class Enemy extends GameObject
       popMatrix();
     }
   }
-  public void update()
+  public void update() //<>//
   {
     // Find the next direction
     if (getValue((int)cellPosition.x + (int)direction.x, (int)cellPosition.y + (int)direction.y) == 10)
@@ -307,13 +310,19 @@ public class Enemy extends GameObject
     {
       cellPosition.x += (int)shapeOffset.x;
       shapeOffset.x = 0;
+      //println("Before: " + direction.x + " " + direction.y);
       direction = checkDirection(cellPosition, direction);
+      //println("After: " + direction.x + " " + direction.y);
+      //println();
     }
     if (shapeOffset.y >= 1 || shapeOffset.y <= -1)
     {
       cellPosition.y += (int)shapeOffset.y;
       shapeOffset.y = 0;
+      //println("Before: " + direction.x + " " + direction.y);
       direction = checkDirection(cellPosition, direction);
+      //println("After: " + direction.x + " " + direction.y);
+      //println();
     }
     
     //cellPosition.add(PVector.mult(direction, speed));
