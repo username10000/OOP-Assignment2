@@ -164,6 +164,10 @@ public class Enemy extends GameObject
     // *************************************************************************
     // Another if to check if there are multiple paths where the enemy should go
     
+    // Crash - maybe out of bounds?
+    //if (getValue((int)cellLeft.x, (int)cellLeft.y) == getValue((int)cellRight.x, (int)cellRight.y) && getValue((int)cellLeft.x, (int)cellLeft.y) != 0)
+      //return sameRoadDirection(cell, dirLeft, dirRight);
+
     if (getValue((int)cellLeft.x, (int)cellLeft.y) <= getValue((int)cell.x, (int)cell.y) && getValue((int)cellLeft.x, (int)cellLeft.y) != 0)
       return dirLeft;
     if (getValue((int)cellRight.x, (int)cellRight.y) <= getValue((int)cell.x, (int)cell.y) && getValue((int)cellRight.x, (int)cellRight.y) != 0)
@@ -268,6 +272,21 @@ public class Enemy extends GameObject
     else
       return false;
     */
+  }
+  private PVector sameRoadDirection(PVector cell, PVector dir1, PVector dir2)
+  {
+    PVector newDir;
+    
+    do
+    {
+      newDir = checkDirection(cell, dir1);
+    } while (newDir.y != 1 || newDir.y != -1);
+    // Maybe check if it's out of bounds
+    
+    if (newDir.y == 1)
+      return dir1;
+    else
+      return dir2;
   }
   public void render()
   {
