@@ -165,8 +165,12 @@ public class Enemy extends GameObject
     // Another if to check if there are multiple paths where the enemy should go
     
     // Crash - maybe out of bounds?
-    //if (getValue((int)cellLeft.x, (int)cellLeft.y) == getValue((int)cellRight.x, (int)cellRight.y) && getValue((int)cellLeft.x, (int)cellLeft.y) != 0)
-      //return sameRoadDirection(cell, dirLeft, dirRight);
+    if (getValue((int)cellLeft.x, (int)cellLeft.y) == getValue((int)cellRight.x, (int)cellRight.y) && getValue((int)cellLeft.x, (int)cellLeft.y) != 0)
+      return sameRoadDirection(cell, dirLeft, dirRight);
+    if (getValue((int)cellLeft.x, (int)cellLeft.y) == getValue((int)cell.x + (int)dir.x, (int)cell.y + (int)dir.y) && getValue((int)cellLeft.x, (int)cellLeft.y) != 0)
+      return sameRoadDirection(cell, dirLeft, dir);
+    if (getValue((int)cellRight.x, (int)cellRight.y) == getValue((int)cell.x + (int)dir.x, (int)cell.y + (int)dir.y) && getValue((int)cellRight.x, (int)cellRight.y) != 0)
+      return sameRoadDirection(cell, dirRight, dir);
 
     if (getValue((int)cellLeft.x, (int)cellLeft.y) <= getValue((int)cell.x, (int)cell.y) && getValue((int)cellLeft.x, (int)cellLeft.y) != 0)
       return dirLeft;
@@ -275,18 +279,43 @@ public class Enemy extends GameObject
   }
   private PVector sameRoadDirection(PVector cell, PVector dir1, PVector dir2)
   {
+    // It doesn't work
+    
+    // Road is vertical
+    if (dir1.y == 1 || dir2.y == -1)
+      return dir1;
+    if (dir2.y == 1 || dir1.y == -1)
+      return dir2;
+    
+    // Road is horizontal
+    int tempX = 0;
+    for (int i = 0 ; i < maps[curMap].cellsPerLine ; i++)
+    {
+      if (getValue(i, (int)cell.y - 1) == getValue((int)cell.x + (int)dir1.x, (int)cell.y + (int)dir1.y))
+      {
+        tempX = i;
+        break;
+      }
+    }
+    
+    if (tempX < cell.x)
+      return dir1;
+    else
+      return dir2;
+    
+    /*
     PVector newDir;
     
     do
     {
-      newDir = checkDirection(cell, dir1);
-    } while (newDir.y != 1 || newDir.y != -1);
-    // Maybe check if it's out of bounds
+      newDir = checkDirection(cell, dir1); 
+    } while (newDir.y != 1 || newDir.y != -1 || cell.x + newDir.x == 0 || cell.x + newDir.x == maps[curMap].cellsPerLine - 1 || cell.y + newDir.y == 0 || cell.y + newDir.y == maps[curMap].cellsPerCol - 1);
     
     if (newDir.y == 1)
       return dir1;
     else
       return dir2;
+    */
   }
   public void render()
   {
