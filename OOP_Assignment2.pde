@@ -46,7 +46,7 @@ void setup()
     println(i);
   }*/
   
-  //maps[0] = new MapObject("map.txt");
+  //maps[8] = new MapObject("map.txt");
   
   // Output current array
   
@@ -157,6 +157,8 @@ void draw()
   noFill();
   stroke(255);
   rect(border.get("left"), border.get("top"), screenWidth, screenHeight);
+
+  println(objects.size());
 }
 
 void initialSettings()

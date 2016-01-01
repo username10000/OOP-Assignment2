@@ -288,17 +288,17 @@ public class Enemy extends GameObject
       return dir2;
     
     // Road is horizontal
-    int tempX = 0;
-    for (int i = 0 ; i < maps[curMap].cellsPerLine ; i++)
+    int tempX = -1;
+    for (int i = 0 ; i < cell.x ; i++) // maps[curMap].cellsPerLine
     {
-      if (getValue(i, (int)cell.y - 1) == getValue((int)cell.x + (int)dir1.x, (int)cell.y + (int)dir1.y))
+      if (getValue(i, (int)cell.y + 1) == getValue((int)cell.x + (int)dir1.x, (int)cell.y + (int)dir1.y))
       {
         tempX = i;
         break;
       }
     }
     
-    if (tempX < cell.x)
+    if (tempX == -1) // tempX < cell.x && 
       return dir1;
     else
       return dir2;

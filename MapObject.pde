@@ -228,6 +228,8 @@ public class MapObject
     {
       for (int j = 0 ; j < cellsPerLine ; j++)
       {
+        map[i][j] = lines[i].charAt(j) - '0';
+        /*
         if (lines[i].charAt(j) == '1')
         {
           map[i][j] = 1;
@@ -236,6 +238,7 @@ public class MapObject
         {
           map[i][j] = 0;
         }
+        */
         //print(map[i][j] + " ");
       }
       //println();
