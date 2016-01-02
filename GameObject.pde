@@ -15,6 +15,6 @@ abstract public class GameObject
     this(width / 2, height / 2, color(0, 0, 0));
   }
   
-  abstract void render();
-  abstract void update();
+  public abstract void render();
+  public abstract void update();
 }

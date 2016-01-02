@@ -317,6 +317,42 @@ public class Enemy extends GameObject
       return dir2;
     */
   }
+  private boolean checkIntersection(PVector cell)
+  {
+    int count = 0;
+    
+    if (getValue((int)cell.x - 1, (int)cell.y) != 0)
+      count ++;
+    if (getValue((int)cell.x + 1, (int)cell.y) != 0)
+      count ++;
+    if (getValue((int)cell.x, (int)cell.y - 1) != 0)
+      count ++;
+    if (getValue((int)cell.x, (int)cell.y + 1) != 0)
+      count ++;
+      
+    if (count > 2)
+      return true;
+    else
+      return false;
+  }
+  private boolean checkCollision(PVector cell)
+  {
+    if (checkIntersection(cell))
+    {  
+      /*
+      for (int i = 0 ; i < objects.size() ; i++)
+      {
+        if (objects.get(i) instanceof Enemy)
+        {
+          Enemy tempEnemy = (Enemy)objects.get(i);
+          if (tempEnemy.cellPosition.x + tempEnemy.direction.x == cell.x && tempEnemy.cellPosition.y + tempEnemy.direction.y == cell.y)
+            return true;
+        }
+      }
+      */
+    }
+    return false;
+  }
   public void render()
   {
     // Render the enemy
@@ -333,47 +369,41 @@ public class Enemy extends GameObject
   }
   public void update() //<>//
   {
-    // Find the next direction
-    if (getValue((int)cellPosition.x + (int)direction.x, (int)cellPosition.y + (int)direction.y) == 10)
+    if (!checkCollision(PVector.add(cellPosition, direction)))
     {
-      for (int i = 0 ; i < objects.size() ; i++)
+      // Find the next direction
+      if (getValue((int)cellPosition.x + (int)direction.x, (int)cellPosition.y + (int)direction.y) == 10)
       {
-        Enemy enemy = (Enemy)objects.get(i);
-        if (enemy.cellPosition.x == cellPosition.x && enemy.cellPosition.y == cellPosition.y)
+        for (int i = 0 ; i < objects.size() ; i++)
         {
-          objects.remove(i);
-          break;
+          Enemy enemy = (Enemy)objects.get(i);
+          if (enemy.cellPosition.x == cellPosition.x && enemy.cellPosition.y == cellPosition.y)
+          {
+            objects.remove(i);
+            break;
+          }
         }
       }
-    }
-    /*
-    if (getValue((int)cellPosition.x + (int)direction.x, (int)cellPosition.y + (int)direction.y) == 0)
-    {
-      updateDirection();
-    }*/
-
-    // Update the location of the enemy
-    shapeOffset.add(PVector.mult(direction, speed));
-    if (shapeOffset.x >= 1 || shapeOffset.x <= -1)
-    {
-      cellPosition.x += (int)shapeOffset.x;
-      shapeOffset.x = 0;
-      //println("Before: " + direction.x + " " + direction.y);
-      direction = checkDirection(cellPosition, direction);
-      //println("After: " + direction.x + " " + direction.y);
-      //println();
-    }
-    if (shapeOffset.y >= 1 || shapeOffset.y <= -1)
-    {
-      cellPosition.y += (int)shapeOffset.y;
-      shapeOffset.y = 0;
-      //println("Before: " + direction.x + " " + direction.y);
-      direction = checkDirection(cellPosition, direction);
-      //println("After: " + direction.x + " " + direction.y);
-      //println();
+  
+      // Update the location of the enemy
+      shapeOffset.add(PVector.mult(direction, speed));
+      if (shapeOffset.x >= 1 || shapeOffset.x <= -1)
+      {
+        cellPosition.x += (int)shapeOffset.x;
+        shapeOffset.x = 0;
+        // Change direction if necessary
+        direction = checkDirection(cellPosition, direction);
+      }
+      if (shapeOffset.y >= 1 || shapeOffset.y <= -1)
+      {
+        cellPosition.y += (int)shapeOffset.y;
+        shapeOffset.y = 0;
+        // Change direction if necessary
+        direction = checkDirection(cellPosition, direction);
+      }
     }
     
-    //cellPosition.add(PVector.mult(direction, speed));
+    // Calculate the coordinates of the enemy
     position.x = border.get("left") + cellSize / 2 + (cellPosition.x + shapeOffset.x) * cellSize;
     position.y = border.get("top") + cellSize / 2 + (cellPosition.y - startCell + shapeOffset.y) * cellSize + offset;
   }

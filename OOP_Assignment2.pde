@@ -46,7 +46,7 @@ void setup()
     println(i);
   }*/
   
-  //maps[8] = new MapObject("map.txt");
+  maps[8] = new MapObject("map.txt");
   
   // Output current array
   
