@@ -5,6 +5,7 @@ public class Enemy extends GameObject
   int road;
   float radius;
   float speed;
+  boolean wait;
   PShape polygon;
   PVector cellPosition;
   PVector direction;
@@ -22,6 +23,7 @@ public class Enemy extends GameObject
     cellPosition = getStart(road);
     direction = getDirection();
     shapeOffset = new PVector(0, 0);
+    wait = false;
   }
   Enemy()
   {
@@ -90,11 +92,11 @@ public class Enemy extends GameObject
     }
     return dir;
   }
-  private int getValue(int x, int y)
+  private int getValue(float x, float y)
   {
     if (x >= 0 && x < maps[curMap].cellsPerLine && y >= 0 && y < maps[curMap].cellsPerCol)
     {
-      return maps[curMap].map[y][x];
+      return maps[curMap].map[(int)y][(int)x];
     }
     else
     {
@@ -337,19 +339,58 @@ public class Enemy extends GameObject
   }
   private boolean checkCollision(PVector cell)
   {
-    if (checkIntersection(cell))
-    {  
+    // Check if the enemies collide
+    
+    // If there is an intersection 
+    // *** This part has problems
+    if (shapeOffset.x == 0 && shapeOffset.y == 0 && checkIntersection(cell))
+    {
+      if (getValue(cell.x, cell.y) != getValue(cellPosition.x, cellPosition.y))
+      {
+        for (int i = 0 ; i < objects.size() ; i++)
+        {
+          if (objects.get(i) instanceof Enemy)
+          {
+            Enemy tempEnemy = (Enemy)objects.get(i);
+            if (tempEnemy.cellPosition.x + tempEnemy.direction.x == cell.x && tempEnemy.cellPosition.y + tempEnemy.direction.y == cell.y && getValue(tempEnemy.cellPosition.x, tempEnemy.cellPosition.y) != getValue(cellPosition.x, cellPosition.y))
+              return true;
+            //if (PVector.add(cellPosition, direction) == cell)
+            //if (tempEnemy.cellPosition.x == cell.x && tempEnemy.cellPosition.y == cell.y)// && tempEnemy.cellPosition.x != cellPosition.x && tempEnemy.cellPosition.y != cellPosition.y)
+              //return true;
+          }
+        }
+        //return true;
+      }
       /*
       for (int i = 0 ; i < objects.size() ; i++)
       {
         if (objects.get(i) instanceof Enemy)
         {
           Enemy tempEnemy = (Enemy)objects.get(i);
-          if (tempEnemy.cellPosition.x + tempEnemy.direction.x == cell.x && tempEnemy.cellPosition.y + tempEnemy.direction.y == cell.y)
+          //if (PVector.add(cellPosition, direction) == cell)
+          if (tempEnemy.cellPosition.x == cell.x && tempEnemy.cellPosition.y == cell.y)// && tempEnemy.cellPosition.x != cellPosition.x && tempEnemy.cellPosition.y != cellPosition.y)
             return true;
         }
       }
       */
+    }
+    else
+    {
+      // If there is a queue
+      if (shapeOffset.x == 0 && shapeOffset.y == 0)
+      {
+        for (int i = 0 ; i < objects.size() ; i++)
+        {
+           if (objects.get(i) instanceof Enemy)
+            {
+              Enemy tempEnemy = (Enemy)objects.get(i);
+              if (getValue(tempEnemy.cellPosition.x, tempEnemy.cellPosition.y) == getValue(cellPosition.x, cellPosition.y) && tempEnemy.cellPosition.x == cell.x && tempEnemy.cellPosition.y == cell.y && tempEnemy.wait)
+              {
+                return true;
+              }
+            }
+        }
+      }
     }
     return false;
   }
@@ -369,38 +410,43 @@ public class Enemy extends GameObject
   }
   public void update() //<>//
   {
-    if (!checkCollision(PVector.add(cellPosition, direction)))
+    // Find the next direction
+    if (getValue((int)cellPosition.x + (int)direction.x, (int)cellPosition.y + (int)direction.y) == 10 || cellPosition.x < 0 || cellPosition.x > maps[curMap].cellsPerLine - 1 || cellPosition.y < 0)
     {
-      // Find the next direction
-      if (getValue((int)cellPosition.x + (int)direction.x, (int)cellPosition.y + (int)direction.y) == 10)
+      for (int i = 0 ; i < objects.size() ; i++)
       {
-        for (int i = 0 ; i < objects.size() ; i++)
+        Enemy enemy = (Enemy)objects.get(i);
+        if (enemy.cellPosition.x == cellPosition.x && enemy.cellPosition.y == cellPosition.y)
         {
-          Enemy enemy = (Enemy)objects.get(i);
-          if (enemy.cellPosition.x == cellPosition.x && enemy.cellPosition.y == cellPosition.y)
-          {
-            objects.remove(i);
-            break;
-          }
+          objects.remove(i);
+          break;
         }
       }
-  
+    }
+
+    if (!checkCollision(PVector.add(cellPosition, direction)))
+    {
+      wait = false;
       // Update the location of the enemy
       shapeOffset.add(PVector.mult(direction, speed));
-      if (shapeOffset.x >= 1 || shapeOffset.x <= -1)
-      {
-        cellPosition.x += (int)shapeOffset.x;
-        shapeOffset.x = 0;
-        // Change direction if necessary
-        direction = checkDirection(cellPosition, direction);
-      }
-      if (shapeOffset.y >= 1 || shapeOffset.y <= -1)
-      {
-        cellPosition.y += (int)shapeOffset.y;
-        shapeOffset.y = 0;
-        // Change direction if necessary
-        direction = checkDirection(cellPosition, direction);
-      }
+    }
+    else
+    {
+      wait = true;
+    }
+    if (shapeOffset.x >= 1 || shapeOffset.x <= -1)
+    {
+      cellPosition.x += (int)direction.x;
+      shapeOffset.x = 0;
+      // Change direction if necessary
+      direction = checkDirection(cellPosition, direction);
+    }
+    if (shapeOffset.y >= 1 || shapeOffset.y <= -1)
+    {
+      cellPosition.y += (int)direction.y;
+      shapeOffset.y = 0;
+      // Change direction if necessary
+      direction = checkDirection(cellPosition, direction);
     }
     
     // Calculate the coordinates of the enemy

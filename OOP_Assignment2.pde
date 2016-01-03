@@ -48,8 +48,8 @@ void setup()
   
   maps[8] = new MapObject("map.txt");
   
-  // Output current array
   
+  // Output current array
   String[] output = new String[maps[curMap].map.length];
   for (int i = 0 ; i < maps[curMap].map.length ; i++)
   {
