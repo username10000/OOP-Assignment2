@@ -5,7 +5,6 @@ public class Enemy extends GameObject
   int road;
   float radius;
   float speed;
-  boolean wait;
   PShape polygon;
   PVector cellPosition;
   PVector direction;
@@ -23,7 +22,6 @@ public class Enemy extends GameObject
     cellPosition = getStart(road);
     direction = getDirection();
     shapeOffset = new PVector(0, 0);
-    wait = false;
   }
   Enemy()
   {
@@ -337,12 +335,13 @@ public class Enemy extends GameObject
     else
       return false;
   }
+  /*
   private boolean checkCollision(PVector cell)
   {
     // Check if the enemies collide
     
     // If there is an intersection 
-    // *** This part has problems
+    // This part has problems
     if (shapeOffset.x == 0 && shapeOffset.y == 0 && checkIntersection(cell))
     {
       if (getValue(cell.x, cell.y) != getValue(cellPosition.x, cellPosition.y))
@@ -361,7 +360,7 @@ public class Enemy extends GameObject
         }
         //return true;
       }
-      /*
+      --
       for (int i = 0 ; i < objects.size() ; i++)
       {
         if (objects.get(i) instanceof Enemy)
@@ -372,7 +371,7 @@ public class Enemy extends GameObject
             return true;
         }
       }
-      */
+      --
     }
     else
     {
@@ -394,6 +393,7 @@ public class Enemy extends GameObject
     }
     return false;
   }
+  */
   public void render()
   {
     // Render the enemy
@@ -423,21 +423,14 @@ public class Enemy extends GameObject
         }
       }
     }
-
-    if (!checkCollision(PVector.add(cellPosition, direction)))
-    {
-      wait = false;
-      // Update the location of the enemy
-      shapeOffset.add(PVector.mult(direction, speed));
-    }
-    else
-    {
-      wait = true;
-    }
+    
+    // Update the location of the enemy
+    shapeOffset.add(PVector.mult(direction, speed));
     if (shapeOffset.x >= 1 || shapeOffset.x <= -1)
     {
       cellPosition.x += (int)direction.x;
       shapeOffset.x = 0;
+      shapeOffset.y = 0;
       // Change direction if necessary
       direction = checkDirection(cellPosition, direction);
     }
@@ -445,6 +438,7 @@ public class Enemy extends GameObject
     {
       cellPosition.y += (int)direction.y;
       shapeOffset.y = 0;
+      shapeOffset.x = 0;
       // Change direction if necessary
       direction = checkDirection(cellPosition, direction);
     }

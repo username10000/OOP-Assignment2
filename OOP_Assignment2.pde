@@ -13,6 +13,7 @@ float cellSize;
 float offset;
 Map<String, Float> border = new HashMap<String, Float>();
 PVector mousePosition = new PVector(-1, -1, -1);
+PVector initialPos = new PVector(0, 0, 0);
 MapObject[] maps = new MapObject[9];
 MapObject importMap;
 ArrayList<GameObject> objects = new ArrayList<GameObject>();
@@ -46,8 +47,7 @@ void setup()
     println(i);
   }*/
   
-  maps[8] = new MapObject("map.txt");
-  
+  //maps[8] = new MapObject("map.txt");
   
   // Output current array
   String[] output = new String[maps[curMap].map.length];
@@ -158,7 +158,7 @@ void draw()
   stroke(255);
   rect(border.get("left"), border.get("top"), screenWidth, screenHeight);
 
-  println(objects.size());
+  combineEnemies();
 }
 
 void initialSettings()
@@ -292,6 +292,53 @@ void createEnemy(int road)
   }
 }
 
+void combineEnemies()
+{
+    for (int i = 0 ; i < objects.size() ; i++)
+    {
+      for (int j = 0 ; j < objects.size() ; j++)
+      {
+        if (i != j && objects.get(i) instanceof Enemy && objects.get(j) instanceof Enemy && objects.get(i).isAlive && objects.get(j).isAlive)
+        {
+          Enemy e1 = (Enemy)objects.get(i);
+          Enemy e2 = (Enemy)objects.get(j);
+          
+          if (e1.cellPosition.x == e2.cellPosition.x && e1.cellPosition.y == e2.cellPosition.y && e1.checkIntersection(e1.cellPosition))// && (e1.direction.x != e2.direction.x || e1.direction.y != e2.direction.y))
+          {
+            if (e1.edges > e2.edges)
+            {
+              e2.isAlive = false;
+              if (e1.edges < 10)
+              {
+                e1.edges ++;
+                e1.radius = map(e1.edges, 5, 10, cellSize / 4, cellSize / 2);
+                e1.drawShape();
+              }
+            }
+            else
+            {
+              e1.isAlive = false;
+              if (e2.edges < 10)
+              {
+                e2.edges ++;
+                e2.radius = map(e2.edges, 5, 10, cellSize / 4, cellSize / 2);
+                e2.drawShape();                
+              }
+              break;
+            }
+          }
+        }
+      }
+    }
+    for (int i = 0 ; i < objects.size() ; i++)
+    {
+      if (!objects.get(i).isAlive)
+      {
+        objects.remove(i);
+      }
+    }
+}
+
 void mouseHover()
 { 
   // Move the screen up
@@ -346,5 +393,60 @@ void keyPressed()
   {
     curMap = key - '0' - 1;
     initialSettings();
+  }
+}
+
+void mousePressed()
+{
+  if (mouseButton == RIGHT)
+  {
+    initialPos.x = mouseX;
+    initialPos.y = mouseY;
+    initialPos.z = 1;
+  }
+}
+
+void mouseReleased()
+{
+  initialPos.x = 0;
+  initialPos.y = 0;
+  initialPos.z = 0;
+  mousePosition.z = 0;
+  cursor(ARROW);
+}
+
+void mouseDragged()
+{
+  // Change how it works but reuse this code
+  
+  if (mouseButton == RIGHT && initialPos.z == 1)
+  {
+    mousePosition.z = -1;
+    cursor(MOVE);
+    
+    float curY = mouseY - initialPos.y;
+
+    if (startCell > 0 && curY < 0)
+    {
+      //offset += 10;
+      offset += map(abs(curY), 0, height, 1, 5);
+      if (offset > cellSize)
+      {
+        startCell --;
+        endCell --;
+        offset = 0;
+      }
+    }
+    
+    if (endCell < maps[curMap].cellsPerCol && curY > 0)
+    {
+      offset -= map(abs(curY), 0, height, 1, 5);
+      if (offset < -cellSize)
+      {
+        startCell ++;
+        endCell ++;
+        offset = 0;
+      }
+    }
   }
 }
