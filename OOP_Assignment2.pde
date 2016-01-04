@@ -13,7 +13,6 @@ float cellSize;
 float offset;
 Map<String, Float> border = new HashMap<String, Float>();
 PVector mousePosition = new PVector(-1, -1, -1);
-PVector initialPos = new PVector(0, 0, 0);
 MapObject[] maps = new MapObject[9];
 MapObject importMap;
 ArrayList<GameObject> objects = new ArrayList<GameObject>();
@@ -84,7 +83,7 @@ void draw()
   // Draw the borders of the screen
   //noFill();
   fill(0, 92, 9);
-  stroke(255);
+  //stroke(255);
   rect(border.get("left"), border.get("top"), screenWidth, screenHeight);
   
   // Only for debugging
@@ -155,19 +154,20 @@ void draw()
   
   // Draw the rect border on top of the enemies
   noFill();
-  stroke(255);
+  //stroke(255);
   rect(border.get("left"), border.get("top"), screenWidth, screenHeight);
 
+  // Combine enemies if they collide
   combineEnemies();
 }
 
 void initialSettings()
 {
   // Set the borders
-  border.put("top", map(3, 0, 100, 0, height));
-  border.put("bottom", map(3, 0, 100, 0, height));
-  border.put("left", map(0.1, 0, 100, 0, width));
-  border.put("right", map(0.1, 0, 100, 0, width));
+  border.put("top", map(0, 0, 100, 0, height));
+  border.put("bottom", map(0, 0, 100, 0, height));
+  border.put("left", map(0, 0, 100, 0, width));
+  border.put("right", map(0, 0, 100, 0, width));
   
   // Calculate the screen width and height
   screenWidth = width - border.get("left") - border.get("right");
@@ -177,7 +177,12 @@ void initialSettings()
   cellSize = screenWidth / maps[curMap].cellsPerLine;
   
   // Calculate how many rows of cols can fit on the screen and change the screen height and bottom border to match
-  cellsPerHeight = (int)(screenHeight / cellSize);
+  cellsPerHeight = (int)(screenHeight / cellSize) + 1;
+  // Special case if the cells fit perfectly
+  if ((screenHeight / cellSize) - (int)(screenHeight / cellSize) == 0)
+  {
+    cellsPerHeight --;
+  }
   screenHeight = cellSize * cellsPerHeight;
   border.put("bottom", height - screenHeight - border.get("top"));
   startCell = 0;
@@ -342,7 +347,7 @@ void combineEnemies()
 void mouseHover()
 { 
   // Move the screen up
-  if (mouseY < border.get("top"))
+  if (mouseY < border.get("top") || mouseY < cellSize)
   {
     if (startCell > 0) // && millis()> lastCheck + 100
     {
@@ -357,7 +362,7 @@ void mouseHover()
     }
   }
   // Move the screen down
-  if (mouseY > border.get("top") + screenHeight)
+  if (mouseY > border.get("top") + screenHeight || mouseY > height - cellSize)
   {
     if (endCell < maps[curMap].cellsPerCol) // && millis()> lastCheck + 100
     {
@@ -393,60 +398,5 @@ void keyPressed()
   {
     curMap = key - '0' - 1;
     initialSettings();
-  }
-}
-
-void mousePressed()
-{
-  if (mouseButton == RIGHT)
-  {
-    initialPos.x = mouseX;
-    initialPos.y = mouseY;
-    initialPos.z = 1;
-  }
-}
-
-void mouseReleased()
-{
-  initialPos.x = 0;
-  initialPos.y = 0;
-  initialPos.z = 0;
-  mousePosition.z = 0;
-  cursor(ARROW);
-}
-
-void mouseDragged()
-{
-  // Change how it works but reuse this code
-  
-  if (mouseButton == RIGHT && initialPos.z == 1)
-  {
-    mousePosition.z = -1;
-    cursor(MOVE);
-    
-    float curY = mouseY - initialPos.y;
-
-    if (startCell > 0 && curY < 0)
-    {
-      //offset += 10;
-      offset += map(abs(curY), 0, height, 1, 5);
-      if (offset > cellSize)
-      {
-        startCell --;
-        endCell --;
-        offset = 0;
-      }
-    }
-    
-    if (endCell < maps[curMap].cellsPerCol && curY > 0)
-    {
-      offset -= map(abs(curY), 0, height, 1, 5);
-      if (offset < -cellSize)
-      {
-        startCell ++;
-        endCell ++;
-        offset = 0;
-      }
-    }
   }
 }
