@@ -7,6 +7,7 @@ public class Enemy extends GameObject
   float speed;
   PShape polygon;
   PVector cellPosition;
+  PVector previousCell;
   PVector direction;
   PVector shapeOffset;
   
@@ -22,6 +23,7 @@ public class Enemy extends GameObject
     cellPosition = getStart(road);
     direction = getDirection();
     shapeOffset = new PVector(0, 0);
+    previousCell = new PVector(cellPosition.x, cellPosition.y);
   }
   Enemy()
   {
@@ -428,6 +430,7 @@ public class Enemy extends GameObject
     shapeOffset.add(PVector.mult(direction, speed));
     if (shapeOffset.x >= 1 || shapeOffset.x <= -1)
     {
+      previousCell.x = cellPosition.x;
       cellPosition.x += (int)direction.x;
       shapeOffset.x = 0;
       shapeOffset.y = 0;
@@ -436,6 +439,7 @@ public class Enemy extends GameObject
     }
     if (shapeOffset.y >= 1 || shapeOffset.y <= -1)
     {
+      previousCell.y = cellPosition.y;
       cellPosition.y += (int)direction.y;
       shapeOffset.y = 0;
       shapeOffset.x = 0;

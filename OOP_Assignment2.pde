@@ -16,6 +16,7 @@ PVector mousePosition = new PVector(-1, -1, -1);
 MapObject[] maps = new MapObject[9];
 MapObject importMap;
 ArrayList<GameObject> objects = new ArrayList<GameObject>();
+PImage background;
 //Enemy enemy;
 
 void setup()
@@ -71,9 +72,8 @@ void setup()
   {
     noEnemies[i] = (int)random(1, 5);
   }
-  //noEnemies[0] = 5;
-  //noEnemies[1] = 4;
-  //noEnemies[2] = 3;
+  
+  //createMapImage();
 }
 
 void draw()
@@ -83,6 +83,7 @@ void draw()
   // Draw the borders of the screen
   //noFill();
   fill(0, 92, 9);
+  noStroke();
   //stroke(255);
   rect(border.get("left"), border.get("top"), screenWidth, screenHeight);
   
@@ -147,15 +148,15 @@ void draw()
   }
   
   // Draw all the information needed on the screen
-  drawInfo();
+  //drawInfo();
   
   // Check if the mouse is hovering something
   mouseHover();
   
   // Draw the rect border on top of the enemies
-  noFill();
+  //noFill();
   //stroke(255);
-  rect(border.get("left"), border.get("top"), screenWidth, screenHeight);
+  //rect(border.get("left"), border.get("top"), screenWidth, screenHeight);
 
   // Combine enemies if they collide
   combineEnemies();
@@ -249,6 +250,70 @@ void drawRoad()
   }
 }
 
+void createMapImage()
+{
+  background = createImage((int)(maps[curMap].cellsPerLine * cellSize), (int)(maps[curMap].cellsPerCol * cellSize), RGB);
+  
+  for (int i = 0 ; i < (int)(maps[curMap].cellsPerCol * cellSize) ; i++)
+  {
+    for (int j = 0 ; j < (int)(maps[curMap].cellsPerLine * cellSize) ; j++)
+    {
+      background.pixels[i * width + j] = color(0, 255, 0);
+    }
+  }
+  
+  for (int i = 0 ; i < maps[curMap].cellsPerCol ; i++)
+  {
+    for (int j = 0 ; j < maps[curMap].cellsPerLine ; j++)
+    {
+      if (maps[curMap].map[i][j] >= 1 && maps[curMap].map[i][j] < 10)
+      {
+        for (int k = (int)(j * (int)cellSize); k <= j * cellSize + cellSize ; k++)
+        {
+          for (int l = (int)(i * (int)cellSize); l <= i * cellSize + cellSize ; l++)
+          {
+            background.pixels[l * width + k] = color(255, 255, 255);
+          }
+        }
+      }
+      if (maps[curMap].map[i][j] == 10)
+      {
+        for (int k = (int)(j * (int)cellSize); k <= j * cellSize + cellSize ; k++)
+        {
+          for (int l = (int)(i * (int)cellSize); l <= i * cellSize + cellSize ; l++)
+          {
+            background.pixels[l * width + k] = color(0, 255, 255);
+          }
+        }
+      }
+    }
+  }
+  
+  background.save("background.jpg");
+  
+  /*
+  // Draw the occupied cells
+  for (int i = 0 ; i < endCell - startCell ; i++)
+  {
+    for (int j = 0 ; j < maps[curMap].cellsPerLine ; j++)
+    {
+      if (maps[curMap].map[i + startCell][j] >= 1 && maps[curMap].map[i + startCell][j] < 10)
+      {
+        fill(255);
+        stroke(255);
+        rect(border.get("left") + j * cellSize, border.get("top") + i * cellSize + offset, cellSize, cellSize);
+      }
+      if (maps[curMap].map[i + startCell][j] == 10)
+      {
+        fill(0, 255, 255);
+        stroke(0, 255, 255);
+        rect(border.get("left") + j * cellSize, border.get("top") + i * cellSize + offset, cellSize, cellSize);
+      }
+    }
+  }
+  */
+}
+
 void drawInfo()
 {
   // Draw top and bottom border
@@ -297,86 +362,79 @@ void createEnemy(int road)
   }
 }
 
+boolean checkOrigin(Enemy e1, Enemy e2)
+{
+  if (e1.previousCell.x == e2.previousCell.x && e1.previousCell.y == e2.previousCell.y)
+    return true;
+  else
+    return false;
+}
+
 void combineEnemies()
 {
-    for (int i = 0 ; i < objects.size() ; i++)
+  // Check if two enemies collide
+  for (int i = 0 ; i < objects.size() ; i++)
+  {
+    for (int j = 0 ; j < objects.size() ; j++)
     {
-      for (int j = 0 ; j < objects.size() ; j++)
+      // Check if the object is an Enemy
+      if (i != j && objects.get(i) instanceof Enemy && objects.get(j) instanceof Enemy && objects.get(i).isAlive && objects.get(j).isAlive)
       {
-        if (i != j && objects.get(i) instanceof Enemy && objects.get(j) instanceof Enemy && objects.get(i).isAlive && objects.get(j).isAlive)
+        Enemy e1 = (Enemy)objects.get(i);
+        Enemy e2 = (Enemy)objects.get(j);
+        
+        // Check if they are in the same cell
+        if (e1.cellPosition.x == e2.cellPosition.x && e1.cellPosition.y == e2.cellPosition.y && !checkOrigin(e1, e2)) //  && e1.checkIntersection(e1.cellPosition)
         {
-          Enemy e1 = (Enemy)objects.get(i);
-          Enemy e2 = (Enemy)objects.get(j);
-          
-          if (e1.cellPosition.x == e2.cellPosition.x && e1.cellPosition.y == e2.cellPosition.y && e1.checkIntersection(e1.cellPosition))// && (e1.direction.x != e2.direction.x || e1.direction.y != e2.direction.y))
+          // Increase the bigger cell
+          if (e1.edges > e2.edges)
           {
-            if (e1.edges > e2.edges)
+            // Kill the smaller enemy
+            e2.isAlive = false;
+            
+            // Limit the edges of the polygon to 10
+            if (e1.edges < 10)
             {
-              e2.isAlive = false;
-              if (e1.edges < 10)
-              {
-                e1.edges ++;
-                e1.radius = map(e1.edges, 5, 10, cellSize / 4, cellSize / 2);
-                e1.drawShape();
-              }
+              // Increase the size of the bigger polygon
+              e1.edges ++;
+              e1.radius = map(e1.edges, 5, 10, cellSize / 4, cellSize / 2);
+              e1.drawShape();
             }
-            else
+          }
+          else
+          {
+            // Kill the smaller enemy
+            e1.isAlive = false;
+            
+            // Limit the edges of the polygon to 10
+            if (e2.edges < 10)
             {
-              e1.isAlive = false;
-              if (e2.edges < 10)
-              {
-                e2.edges ++;
-                e2.radius = map(e2.edges, 5, 10, cellSize / 4, cellSize / 2);
-                e2.drawShape();                
-              }
-              break;
+              // Increase the size of the bigger polygon
+              e2.edges ++;
+              e2.radius = map(e2.edges, 5, 10, cellSize / 4, cellSize / 2);
+              e2.drawShape();                
             }
+            
+            // Break the inner loop because the first enemy is dead so there is no need to check it
+            break;
           }
         }
       }
     }
-    for (int i = 0 ; i < objects.size() ; i++)
+  }
+  
+  // Remove all enemies that are dead
+  for (int i = 0 ; i < objects.size() ; i++)
+  {
+    if (!objects.get(i).isAlive)
     {
-      if (!objects.get(i).isAlive)
-      {
-        objects.remove(i);
-      }
+      objects.remove(i);
     }
+  }
 }
 
 void mouseHover()
 { 
-  // Move the screen up
-  if (mouseY < border.get("top") || mouseY < cellSize)
-  {
-    if (startCell > 0) // && millis()> lastCheck + 100
-    {
-      offset += 10;
-      if (offset > cellSize)
-      {
-        startCell --;
-        endCell --;
-        //lastCheck = millis();
-        offset = 0;
-      }
-    }
-  }
-  // Move the screen down
-  if (mouseY > border.get("top") + screenHeight || mouseY > height - cellSize)
-  {
-    if (endCell < maps[curMap].cellsPerCol) // && millis()> lastCheck + 100
-    {
-      offset -= 10;
-      if (offset < -cellSize)
-      {
-        startCell ++;
-        endCell ++;
-        //lastCheck = millis();
-        offset = 0;
-      }
-    }
-  }
-  
   // Mark the selected cell
   if (mouseX > border.get("left") && mouseX < width - border.get("right") && mouseY > border.get("top") && mouseY < height - border.get("bottom"))
   {
@@ -389,6 +447,37 @@ void mouseHover()
     mousePosition.x = -1;
     mousePosition.y = -1;
     mousePosition.z = -1;
+  }
+  
+  // Move the screen up
+  if (mouseY < border.get("top") || mouseY < cellSize)
+  {
+    if (startCell > 0)
+    {
+      offset += 10;
+      if (offset > cellSize)
+      {
+        startCell --;
+        endCell --;
+        offset = 0;
+      }
+      mousePosition.z = -1;
+    }
+  }
+  // Move the screen down
+  if (mouseY > border.get("top") + screenHeight || mouseY > height - cellSize)
+  {
+    if (endCell < maps[curMap].cellsPerCol)
+    {
+      offset -= 10;
+      if (offset < -cellSize)
+      {
+        startCell ++;
+        endCell ++;
+        offset = 0;
+      }
+      mousePosition.z = -1;
+    }
   }
 }
 
