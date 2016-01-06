@@ -41,13 +41,7 @@ void setup()
     maps[i] = new MapObject(i + 1);
   }
   
-  /*
-  for (int i:maps[curMap].connections)
-  {
-    println(i);
-  }*/
-  
-  //maps[8] = new MapObject("map.txt");
+  maps[8] = new MapObject("map.txt");
   
   // Output current array
   String[] output = new String[maps[curMap].map.length];
@@ -107,7 +101,7 @@ void draw()
   if (mousePosition.z == 0)
   {
     // Change the colour of the selected cell depending if it's a valid position
-    if (maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] >= 1)
+    if (maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] >= '1' && maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] <= '9' || maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] == '*')
     {
       stroke(255, 0, 0);
       fill(255, 0, 0, 100);
@@ -197,13 +191,13 @@ void drawRoad()
   {
     for (int j = 0 ; j < maps[curMap].cellsPerLine ; j++)
     {
-      if (maps[curMap].map[i + startCell][j] >= 1 && maps[curMap].map[i + startCell][j] < 10)
+      if (maps[curMap].map[i + startCell][j] >= '1' && maps[curMap].map[i + startCell][j] <= '9')
       {
         fill(255);
         stroke(255);
         rect(border.get("left") + j * cellSize, border.get("top") + i * cellSize + offset, cellSize, cellSize);
       }
-      if (maps[curMap].map[i + startCell][j] == 10)
+      if (maps[curMap].map[i + startCell][j] == '*')
       {
         fill(0, 255, 255);
         stroke(0, 255, 255);
@@ -216,13 +210,13 @@ void drawRoad()
   {
     for (int j = 0 ; j < maps[curMap].cellsPerLine ; j++)
     {
-      if (maps[curMap].map[endCell][j] >= 1 && maps[curMap].map[endCell][j] < 10)
+      if (maps[curMap].map[endCell][j] >= '1' && maps[curMap].map[endCell][j] <= '9')
       {
         fill(255);
         stroke(255);
         rect(border.get("left") + j * cellSize, border.get("top") + (endCell - startCell) * cellSize + offset, cellSize, cellSize);
       }
-      if (maps[curMap].map[endCell][j] == 10)
+      if (maps[curMap].map[endCell][j] == '*')
       {
         fill(0, 255, 255);
         stroke(0, 255, 255);
@@ -234,13 +228,13 @@ void drawRoad()
   {
     for (int j = 0 ; j < maps[curMap].cellsPerLine ; j++)
     {
-      if (maps[curMap].map[startCell - 1][j] >= 1 && maps[curMap].map[startCell - 1][j] < 10)
+      if (maps[curMap].map[startCell - 1][j] >= '1' && maps[curMap].map[startCell - 1][j] <= '9')
       {
         fill(255);
         stroke(255);
         rect(border.get("left") + j * cellSize, border.get("top") + -1 * cellSize + offset, cellSize, cellSize);
       }
-      if (maps[curMap].map[startCell - 1][j] == 10)
+      if (maps[curMap].map[startCell - 1][j] == '*')
       {
         fill(0, 255, 255);
         stroke(0, 255, 255);
@@ -266,7 +260,7 @@ void createMapImage()
   {
     for (int j = 0 ; j < maps[curMap].cellsPerLine ; j++)
     {
-      if (maps[curMap].map[i][j] >= 1 && maps[curMap].map[i][j] < 10)
+      if (maps[curMap].map[i][j] >= '1' && maps[curMap].map[i][j] < '9')
       {
         for (int k = (int)(j * (int)cellSize); k <= j * cellSize + cellSize ; k++)
         {
@@ -276,7 +270,7 @@ void createMapImage()
           }
         }
       }
-      if (maps[curMap].map[i][j] == 10)
+      if (maps[curMap].map[i][j] == '*')
       {
         for (int k = (int)(j * (int)cellSize); k <= j * cellSize + cellSize ; k++)
         {
@@ -325,11 +319,6 @@ void drawInfo()
   // Draw the top and bottom arrows
   fill(255);
   textAlign(CENTER, BOTTOM);
-  if (startCell != 0)
-    text("/\\", width / 2, border.get("top"));
-  textAlign(CENTER, TOP);
-  if (endCell != maps[curMap].cellsPerCol)
-    text("\\/", width / 2, height - border.get("bottom"));
 }
 
 
@@ -385,6 +374,7 @@ void combineEnemies()
         
         // Check if they are in the same cell
         if (e1.cellPosition.x == e2.cellPosition.x && e1.cellPosition.y == e2.cellPosition.y && !checkOrigin(e1, e2)) //  && e1.checkIntersection(e1.cellPosition)
+        //if (dist(e1.position.x, e1.position.y, e2.position.x, e2.position.y) <= e1.radius)
         {
           // Increase the bigger cell
           if (e1.edges > e2.edges)

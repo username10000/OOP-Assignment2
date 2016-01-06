@@ -1,10 +1,9 @@
 public class MapObject
 {
-  int[][] map;
+  char[][] map;
   int cellsPerLine;
   int cellsPerCol;
   int numRoads;
-  ArrayList<Integer> connections = new ArrayList<Integer>();
   
   MapObject(String name)
   {
@@ -13,7 +12,6 @@ public class MapObject
   MapObject(int numRoads)
   {
     this.numRoads = numRoads;
-    connections.add(0);
     randomMap();
   }
   
@@ -22,13 +20,13 @@ public class MapObject
     // Check the next position to verify if there are any roads around it
     int count = 0;
     
-    if (map[(int)pos.y - 1][(int)pos.x] == roadNo)
+    if (map[(int)pos.y - 1][(int)pos.x] == (char)(roadNo + '0'))
       count ++;
-    if (map[(int)pos.y + 1][(int)pos.x] == roadNo)
+    if (map[(int)pos.y + 1][(int)pos.x] == (char)(roadNo + '0'))
       count ++;
-    if (map[(int)pos.y][(int)pos.x - 1] == roadNo)
+    if (map[(int)pos.y][(int)pos.x - 1] == (char)(roadNo + '0'))
       count ++;
-    if (map[(int)pos.y][(int)pos.x + 1] == roadNo)
+    if (map[(int)pos.y][(int)pos.x + 1] == (char)(roadNo + '0'))
       count ++;
     
     if (count <= 1)
@@ -41,13 +39,13 @@ public class MapObject
     // Check if there is another road around that this road has intersected
     int count = 0;
     
-    if (map[(int)pos.y - 1][(int)pos.x] != roadNo && map[(int)pos.y - 1][(int)pos.x] != 0)
+    if (map[(int)pos.y - 1][(int)pos.x] != (char)(roadNo + '0') && map[(int)pos.y - 1][(int)pos.x] != '0')
       count ++;
-    if (map[(int)pos.y + 1][(int)pos.x] != roadNo && map[(int)pos.y + 1][(int)pos.x] != 0)
+    if (map[(int)pos.y + 1][(int)pos.x] != (char)(roadNo + '0') && map[(int)pos.y + 1][(int)pos.x] != '0')
       count ++;
-    if (map[(int)pos.y][(int)pos.x - 1] != roadNo && map[(int)pos.y][(int)pos.x - 1] != 0)
+    if (map[(int)pos.y][(int)pos.x - 1] != (char)(roadNo + '0') && map[(int)pos.y][(int)pos.x - 1] != '0')
       count ++;
-    if (map[(int)pos.y][(int)pos.x + 1] != roadNo && map[(int)pos.y][(int)pos.x + 1] != 0)
+    if (map[(int)pos.y][(int)pos.x + 1] != (char)(roadNo + '0') && map[(int)pos.y][(int)pos.x + 1] != '0')
       count ++;
       
     if (count > 0)
@@ -72,13 +70,25 @@ public class MapObject
     }
     
     // Allocate enough space for the 2D array
-    map = new int[cellsPerCol][cellsPerLine];
+    map = new char[cellsPerCol][cellsPerLine];
     
+    for (int i = 0 ; i < cellsPerCol ; i++)
+    {
+      for (int j = 0 ; j < cellsPerLine ; j++)
+      {
+        if (i == cellsPerCol - 1)
+          map[i][j] = '*';
+        else
+          map[i][j] = '0';
+      }
+    }
+    
+    /*
     // Add the the destination
     for (int i = 0 ; i < cellsPerLine ; i++)
     {
-      map[cellsPerCol - 1][i] = 10;
-    }
+      map[cellsPerCol - 1][i] = '*';
+    }*/
     
     for (int i = 1 ; i <= numRoads ; i++)
     {
@@ -94,7 +104,7 @@ public class MapObject
           curRoad = new PVector((int)random(1, cellsPerLine - 2), 0);
           direction = new PVector(0, 1);
           
-          while (map[(int)curRoad.y][(int)curRoad.x - 1] != 0 || map[(int)curRoad.y][(int)curRoad.x + 1] != 0 || map[(int)curRoad.y][(int)curRoad.x] != 0)
+          while (map[(int)curRoad.y][(int)curRoad.x - 1] != '0' || map[(int)curRoad.y][(int)curRoad.x + 1] != '0' || map[(int)curRoad.y][(int)curRoad.x] != '0')
           {
             curRoad.x = (int)random(1, cellsPerLine - 2);
           }
@@ -107,7 +117,7 @@ public class MapObject
           curRoad = new PVector(0, (int)random(1, cellsPerCol / 2));
           direction = new PVector(1, 0);
           
-          while (map[(int)curRoad.y - 1][(int)curRoad.x] != 0 || map[(int)curRoad.y + 1][(int)curRoad.x] != 0 || map[(int)curRoad.y][(int)curRoad.x] != 0)
+          while (map[(int)curRoad.y - 1][(int)curRoad.x] != '0' || map[(int)curRoad.y + 1][(int)curRoad.x] != '0' || map[(int)curRoad.y][(int)curRoad.x] != '0')
           {
             curRoad.y = (int)random(1, cellsPerCol / 2);
           }
@@ -120,7 +130,7 @@ public class MapObject
           curRoad = new PVector(cellsPerLine - 1, (int)random(1, cellsPerCol / 2));
           direction = new PVector(-1, 0);
           
-          while (map[(int)curRoad.y - 1][(int)curRoad.x] != 0 || map[(int)curRoad.y + 1][(int)curRoad.x] != 0 || map[(int)curRoad.y][(int)curRoad.x] != 0)
+          while (map[(int)curRoad.y - 1][(int)curRoad.x] != '0' || map[(int)curRoad.y + 1][(int)curRoad.x] != '0' || map[(int)curRoad.y][(int)curRoad.x] != '0')
           {
             curRoad.y = (int)random(1, cellsPerCol / 2);
           }
@@ -130,15 +140,15 @@ public class MapObject
       }
       
       // Add the first element
-      map[(int)curRoad.y][(int)curRoad.x] = i;
+      map[(int)curRoad.y][(int)curRoad.x] = (char)(i + '0');
       curRoad.add(direction);
       
       // Make a random road until it reached the destination
       while (curRoad.y != cellsPerCol - 2 && !checkConnection(curRoad, i))
       {
         // Add the current road to the map
-        if (map[(int)curRoad.y][(int)curRoad.x] == 0)
-          map[(int)curRoad.y][(int)curRoad.x] = i;
+        if (map[(int)curRoad.y][(int)curRoad.x] == '0')
+          map[(int)curRoad.y][(int)curRoad.x] = (char)(i + '0');
         
         // Change the direction
         switch((int)random(0, 3))
@@ -156,10 +166,6 @@ public class MapObject
               direction.y = (-1) * direction.x;
               direction.x = 0;
             }
-            /*
-            float temp = direction.x;
-            direction.x = (-1) * direction.y;
-            direction.y = (-1) * temp;*/
             break;
           }
           case 1:
@@ -198,17 +204,8 @@ public class MapObject
       }
       
       // Add the final part of the road
-      if (map[(int)curRoad.y][(int)curRoad.x] == 0)
-        map[(int)curRoad.y][(int)curRoad.x] = i;
-      
-      if (curRoad.y == cellsPerCol - 2)
-      {
-        connections.add(10);
-      }
-      else
-      {
-        connections.add(map[(int)curRoad.y + (int)direction.y][(int)curRoad.x + (int)direction.x]);
-      }
+      if (map[(int)curRoad.y][(int)curRoad.x] == '0')
+        map[(int)curRoad.y][(int)curRoad.x] = (char)(i + '0');
     }
   }
   public void importMap(String fileName)
@@ -221,14 +218,14 @@ public class MapObject
     cellsPerCol = lines.length;
     
     // Allocate enough space for the 2D array
-    map = new int[cellsPerCol][cellsPerLine];
+    map = new char[cellsPerCol][cellsPerLine];
     
     // Get the 2D array
     for (int i = 0 ; i < cellsPerCol ; i++)
     {
       for (int j = 0 ; j < cellsPerLine ; j++)
       {
-        map[i][j] = lines[i].charAt(j) - '0';
+        map[i][j] = lines[i].charAt(j);
         /*
         if (lines[i].charAt(j) == '1')
         {
