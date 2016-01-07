@@ -64,7 +64,7 @@ void setup()
   //createEnemy(1);
   for (int i = 0 ; i < noEnemies.length ; i++)
   {
-    noEnemies[i] = (int)random(1, 5);
+    noEnemies[i] = (int)random(10, 15);
   }
   
   //createMapImage();
@@ -333,7 +333,7 @@ void createEnemy(int road)
     if (objects.get(i) instanceof Enemy)
     {
       Enemy enemy = (Enemy)objects.get(i);
-      if ((enemy.cellPosition.y == 0 || enemy.cellPosition.x == 0 || enemy.cellPosition.x == maps[curMap].cellsPerLine - 1) && (enemy.road == road))
+      if ((enemy.cellPosition.y == -1 || enemy.cellPosition.x == -1 || enemy.cellPosition.x == maps[curMap].cellsPerLine) && (enemy.road == road))
       {
         empty = false;
       }
@@ -373,8 +373,8 @@ void combineEnemies()
         Enemy e2 = (Enemy)objects.get(j);
         
         // Check if they are in the same cell
-        if (e1.cellPosition.x == e2.cellPosition.x && e1.cellPosition.y == e2.cellPosition.y && !checkOrigin(e1, e2)) //  && e1.checkIntersection(e1.cellPosition)
-        //if (dist(e1.position.x, e1.position.y, e2.position.x, e2.position.y) <= e1.radius)
+        //if (e1.cellPosition.x == e2.cellPosition.x && e1.cellPosition.y == e2.cellPosition.y && !checkOrigin(e1, e2)) //  && e1.checkIntersection(e1.cellPosition)
+        if (dist(e1.position.x, e1.position.y, e2.position.x, e2.position.y) <= e1.radius && !(e1.cellPosition.x == -1 || e1.cellPosition.x == maps[curMap].cellsPerLine || e1.cellPosition.y == -1))
         {
           // Increase the bigger cell
           if (e1.edges > e2.edges)

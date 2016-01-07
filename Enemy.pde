@@ -22,6 +22,8 @@ public class Enemy extends GameObject
     this.road = road;
     cellPosition = getStart(road);
     direction = getDirection();
+    cellPosition.x -= direction.x;
+    cellPosition.y -= direction.y;
     shapeOffset = new PVector(0, 0);
     previousCell = new PVector(cellPosition.x, cellPosition.y);
   }
@@ -182,7 +184,7 @@ public class Enemy extends GameObject
   public void update() //<>//
   {
     // Find the next direction
-    if (getValue((int)cellPosition.x + (int)direction.x, (int)cellPosition.y + (int)direction.y) == '*' || cellPosition.x < 0 || cellPosition.x > maps[curMap].cellsPerLine - 1 || cellPosition.y < 0)
+    if (getValue((int)cellPosition.x + (int)direction.x, (int)cellPosition.y + (int)direction.y) == '*' || cellPosition.x < -1 || cellPosition.x > maps[curMap].cellsPerLine || cellPosition.y < -1)
     {
       for (int i = 0 ; i < objects.size() ; i++)
       {
