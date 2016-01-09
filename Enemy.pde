@@ -235,11 +235,14 @@ public class Enemy extends GameObject
     {
       for (int i = 0 ; i < objects.size() ; i++)
       {
-        Enemy enemy = (Enemy)objects.get(i);
-        if (enemy.cellPosition.x == cellPosition.x && enemy.cellPosition.y == cellPosition.y)
+        if (objects.get(i) instanceof Enemy)
         {
-          objects.remove(i);
-          break;
+          Enemy enemy = (Enemy)objects.get(i);
+          if (enemy.cellPosition.x == cellPosition.x && enemy.cellPosition.y == cellPosition.y)
+          {
+            objects.remove(i);
+            break;
+          }
         }
       }
     }

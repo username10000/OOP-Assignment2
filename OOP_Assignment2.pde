@@ -44,6 +44,7 @@ void setup()
   //maps[8] = new MapObject("map.txt");
   
   // Output current array
+  /*
   String[] output = new String[maps[curMap].map.length];
   for (int i = 0 ; i < maps[curMap].map.length ; i++)
   {
@@ -56,6 +57,7 @@ void setup()
     }
   }
   saveStrings("array.txt", output);
+  */
   
   // Initial Settings
   initialSettings();
@@ -477,5 +479,17 @@ void keyPressed()
   {
     curMap = key - '0' - 1;
     initialSettings();
+  }
+}
+
+void mouseClicked()
+{
+  if (mousePosition.z == 0)
+  {
+    if (maps[curMap].map[(int)mousePosition.y][(int)mousePosition.x] == '0')
+    {
+      Tower tower = new Tower(0, startCell + (int)mousePosition.x, (int)mousePosition.y);
+      objects.add(tower);
+    }
   }
 }
