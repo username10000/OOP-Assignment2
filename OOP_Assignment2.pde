@@ -41,7 +41,7 @@ void setup()
     maps[i] = new MapObject(i + 1);
   }
   
-  maps[8] = new MapObject("map.txt");
+  //maps[8] = new MapObject("map.txt");
   
   // Output current array
   String[] output = new String[maps[curMap].map.length];

@@ -152,6 +152,52 @@ public class Enemy extends GameObject
       return dir2;
     
     // Road is horizontal
+    int tempUp = -1;
+    int tempDown = -1;
+    for (int i = 0 ; i < maps[curMap].cellsPerLine && (tempUp == -1 || tempDown == -1); i++)
+    {
+      if (getValue(i, (int)cell.y - 1) == getValue((int)cell.x, (int)cell.y) && tempUp == -1)
+      {
+        tempUp = i;
+      }
+      if (getValue(i, (int)cell.y + 1) == getValue((int)cell.x, (int)cell.y) && tempDown == -1)
+      {
+        tempDown = i;
+      }
+    }
+    
+    // Check if the upper row or the lower row doesn't have the current road
+    if (tempDown == -1 || tempUp == -1)
+    {
+      // Check if the lower row doesn't have the current road
+      if (tempDown == -1)
+      {
+        // Check the upper row road position
+        if (tempUp < cell.x)
+          return dir1;
+        else
+          return dir2;
+      }
+      else
+      {
+        // Check the lower row road position
+        if (tempDown > cell.x)
+          return dir1;
+        else
+          return dir2;
+      }
+    }
+    else
+    {
+      // If neither the upper or lower road is -1 then check the position of one of them and return the corrent direction
+      if (tempDown > cell.x)
+        return dir1;
+      else
+        return dir2;
+    }
+    
+    // The old way of doing it. This works 95% of the time.
+    /*
     int tempX = -1;
     for (int i = 0 ; i < cell.x ; i++) // maps[curMap].cellsPerLine
     {
@@ -166,6 +212,7 @@ public class Enemy extends GameObject
       return dir1;
     else
       return dir2;
+    */
   }
   public void render()
   {
