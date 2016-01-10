@@ -33,13 +33,15 @@ public class Tower extends GameObject
   }
   private void drawShape()
   {
+    float halfSize = cellSize / 2 - (cellSize / 10);
+    
     towerShape = createShape();
     towerShape.beginShape();
     towerShape.stroke(colour);
     towerShape.fill(colour);
-    towerShape.vertex(cellSize / 2, 0);
-    towerShape.vertex(0, cellSize);
-    towerShape.vertex(cellSize, cellSize);
+    towerShape.vertex(0, - halfSize);
+    towerShape.vertex(- halfSize, halfSize);
+    towerShape.vertex(halfSize, halfSize);
     towerShape.endShape(CLOSE);
   }
   public void render()

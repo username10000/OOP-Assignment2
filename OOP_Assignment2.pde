@@ -486,9 +486,9 @@ void mouseClicked()
 {
   if (mousePosition.z == 0)
   {
-    if (maps[curMap].map[(int)mousePosition.y][(int)mousePosition.x] == '0')
+    if (maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] == '0')
     {
-      Tower tower = new Tower(0, startCell + (int)mousePosition.x, (int)mousePosition.y);
+      Tower tower = new Tower(0, (int)mousePosition.x, startCell + (int)mousePosition.y);
       objects.add(tower);
     }
   }
