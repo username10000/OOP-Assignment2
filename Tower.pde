@@ -15,6 +15,10 @@ public class Tower extends GameObject
     colour = color(random(0, 255), random(0, 255), random(0, 255));
     drawShape();
   }
+  Tower()
+  {
+    this(0, 0, 0);
+  }
   
   private void setAttributes()
   {

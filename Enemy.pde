@@ -1,7 +1,7 @@
 public class Enemy extends GameObject
 {
   int edges;
-  int life;
+  int health;
   int road;
   float radius;
   float speed;
@@ -11,11 +11,11 @@ public class Enemy extends GameObject
   PVector direction;
   PVector shapeOffset;
   
-  Enemy(int edges, int life, color colour, int road)
+  Enemy(int edges, int health, color colour, int road)
   {
     super(500, 500, colour);
     this.edges = edges;
-    this.life = life;
+    this.health = health;
     radius = map(edges, 5, 10, cellSize / 4, cellSize / 2);
     speed = 0.05;
     drawShape();
@@ -215,7 +215,11 @@ public class Enemy extends GameObject
     */
   }
   public void render()
-  {
+  { 
+    // Calculate the coordinates of the enemy
+    position.x = border.get("left") + cellSize / 2 + (cellPosition.x + shapeOffset.x) * cellSize;
+    position.y = border.get("top") + cellSize / 2 + (cellPosition.y - startCell + shapeOffset.y) * cellSize + offset;
+    
     // Render the enemy
     if (position.x > border.get("left") && position.x < width - border.get("right") && position.y + radius > border.get("top") && position.y - radius < height - border.get("bottom"))
     {
@@ -233,6 +237,13 @@ public class Enemy extends GameObject
     // Find the next direction
     if (getValue((int)cellPosition.x + (int)direction.x, (int)cellPosition.y + (int)direction.y) == '*' || cellPosition.x < -1 || cellPosition.x > maps[curMap].cellsPerLine || cellPosition.y < -1)
     {
+      // Decrement the player's lives
+      if (getValue((int)cellPosition.x + (int)direction.x, (int)cellPosition.y + (int)direction.y) == '*' && player.lives > 0)
+      {
+        player.lives --;
+      }
+      
+      // Delete the enemy from the objects arraylist
       for (int i = 0 ; i < objects.size() ; i++)
       {
         if (objects.get(i) instanceof Enemy)
@@ -271,9 +282,5 @@ public class Enemy extends GameObject
       // Change direction if necessary
       direction = checkDirection(cellPosition, direction);
     }
-    
-    // Calculate the coordinates of the enemy
-    position.x = border.get("left") + cellSize / 2 + (cellPosition.x + shapeOffset.x) * cellSize;
-    position.y = border.get("top") + cellSize / 2 + (cellPosition.y - startCell + shapeOffset.y) * cellSize + offset;
   }
 }

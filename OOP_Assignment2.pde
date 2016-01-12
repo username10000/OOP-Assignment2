@@ -16,8 +16,11 @@ PVector mousePosition = new PVector(-1, -1, -1);
 MapObject[] maps = new MapObject[9];
 MapObject importMap;
 ArrayList<GameObject> objects = new ArrayList<GameObject>();
+Player player;
 PImage background;
-//Enemy enemy;
+PShape heart;
+int[] towerPoints = {100, 200};
+boolean pause = false;
 
 void setup()
 {
@@ -40,6 +43,8 @@ void setup()
   {
     maps[i] = new MapObject(i + 1);
   }
+  
+  player = new Player();
   
   //maps[8] = new MapObject("map.txt");
   
@@ -122,10 +127,22 @@ void draw()
     // Check if the clicked cell is a tower and do things
   }
   
-  // Update enemies
-  for (int i = 0 ; i < objects.size() ; i++)
+  if (!pause)
   {
-    objects.get(i).update();
+    // Create enemies
+    for (int i = 0 ; i < noEnemies.length ; i++)
+    {
+      if (noEnemies[i] > 0 && i <= curMap)
+      {
+        createEnemy(i + 1);
+      }
+    }
+    
+    // Update objects
+    for (int i = 0 ; i < objects.size() ; i++)
+    {
+      objects.get(i).update();
+    }
   }
   
   // Render enemies
@@ -134,17 +151,8 @@ void draw()
     objects.get(i).render();
   }
   
-  // Create enemies
-  for (int i = 0 ; i < noEnemies.length ; i++)
-  {
-    if (noEnemies[i] > 0 && i <= curMap)
-    {
-      createEnemy(i + 1);
-    }
-  }
-  
   // Draw all the information needed on the screen
-  //drawInfo();
+  printInfo();
   
   // Check if the mouse is hovering something
   mouseHover();
@@ -184,6 +192,17 @@ void initialSettings()
   border.put("bottom", height - screenHeight - border.get("top"));
   startCell = 0;
   endCell = cellsPerHeight;
+  
+  int halfD = 15;
+  heart = createShape();
+  heart.beginShape();
+  heart.stroke(255, 255, 255, 200);
+  heart.fill(255, 0, 0, 200);
+  heart.vertex(-halfD, -halfD);
+  heart.vertex(halfD, -halfD);
+  heart.vertex(halfD, halfD);
+  heart.vertex(-halfD, halfD);
+  heart.endShape(CLOSE);
 }
 
 void drawRoad()
@@ -310,19 +329,32 @@ void createMapImage()
   */
 }
 
-void drawInfo()
+void printInfo()
 {
-  // Draw top and bottom border
-  stroke(0);
-  fill(0);
-  rect(0, 0, width, border.get("top"));
-  rect(0, height - border.get("bottom"), width, border.get("bottom"));
+  int padding = 2;
   
-  // Draw the top and bottom arrows
+  // Print points
+  noStroke();
+  fill(0, 0, 0, 100);
+  rect(width / 99 - padding, height / 99 - padding, 150, 30);
+  textAlign(LEFT, TOP);
   fill(255);
-  textAlign(CENTER, BOTTOM);
+  textSize(20);
+  text("Points: " + player.points, width / 99, height / 99);
+  
+  // Print lives
+  for (int i = 0 ; i < player.lives ; i++)
+  {
+    padding = ((int)heart.width + 20) * i;
+    
+    stroke(255);
+    fill(255, 0, 0);
+    pushMatrix();
+    translate(width - width / 99 - padding - 10, height / 99 + heart.width);
+    shape(heart);
+    popMatrix();
+  }
 }
-
 
 void createEnemy(int road)
 {
@@ -480,6 +512,10 @@ void keyPressed()
     curMap = key - '0' - 1;
     initialSettings();
   }
+  if (key == ' ')
+  {
+    pause = !pause;
+  }
 }
 
 void mouseClicked()
@@ -488,8 +524,28 @@ void mouseClicked()
   {
     if (maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] == '0')
     {
-      Tower tower = new Tower(0, (int)mousePosition.x, startCell + (int)mousePosition.y);
-      objects.add(tower);
+      int type = 0;
+      if (player.points >= towerPoints[type] && !checkTower((int)mousePosition.x, (int)mousePosition.y))
+      {
+        player.points -= towerPoints[type];
+        
+        Tower tower = new Tower(type, (int)mousePosition.x, startCell + (int)mousePosition.y);
+        objects.add(tower);
+      }
     }
   }
+}
+
+boolean checkTower(int x, int y)
+{
+  for (int i = 0 ; i < objects.size() ; i++)
+  {
+    if (objects.get(i) instanceof Tower)
+    {
+      Tower temp = (Tower)objects.get(i);
+      if (temp.cellPosition.x == x && temp.cellPosition.y == y)
+        return true;
+    }
+  }
+  return false;
 }
