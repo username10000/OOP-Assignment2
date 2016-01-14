@@ -16,6 +16,7 @@ PVector mousePosition = new PVector(-1, -1, -1);
 MapObject[] maps = new MapObject[9];
 MapObject importMap;
 ArrayList<GameObject> objects = new ArrayList<GameObject>();
+ArrayList<Weapon> weapons = new ArrayList<Weapon>();
 Player player;
 PImage background;
 PShape heart;
@@ -139,16 +140,22 @@ void draw()
     }
     
     // Update objects
-    for (int i = 0 ; i < objects.size() ; i++)
+    for (int i = 0 ; i < objects.size() || i < weapons.size(); i++)
     {
-      objects.get(i).update();
+      if (i < objects.size())
+        objects.get(i).update();
+      if (i < weapons.size())
+        weapons.get(i).update();
     }
   }
   
   // Render enemies
-  for (int i = 0 ; i < objects.size() ; i++)
+  for (int i = 0 ; i < objects.size() || i < weapons.size(); i++)
   {
-    objects.get(i).render();
+    if (i < objects.size())
+      objects.get(i).render();
+    if (i < weapons.size())
+      weapons.get(i).render();
   }
   
   // Draw all the information needed on the screen
@@ -378,7 +385,7 @@ void createEnemy(int road)
   if (empty)
   {
     // Create a new enemy
-    Enemy enemy = new Enemy(5, 50, color(random(0, 255), random(0, 255), random(0, 255)), road);
+    Enemy enemy = new Enemy(5, color(random(0, 255), random(0, 255), random(0, 255)), road);
     objects.add(enemy);
     // Decrease the amount of enemies in that road
     noEnemies[road - 1] --;
@@ -421,6 +428,7 @@ void combineEnemies()
             {
               // Increase the size of the bigger polygon
               e1.edges ++;
+              e1.health += 50;
               e1.radius = map(e1.edges, 5, 10, cellSize / 4, cellSize / 2);
               e1.drawShape();
             }
@@ -435,6 +443,7 @@ void combineEnemies()
             {
               // Increase the size of the bigger polygon
               e2.edges ++;
+              e2.health += 50;
               e2.radius = map(e2.edges, 5, 10, cellSize / 4, cellSize / 2);
               e2.drawShape();                
             }

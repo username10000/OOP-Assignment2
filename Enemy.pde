@@ -8,16 +8,15 @@ public class Enemy extends GameObject
   PShape polygon;
   PVector cellPosition;
   PVector previousCell;
-  PVector direction;
   PVector shapeOffset;
   
-  Enemy(int edges, int health, color colour, int road)
+  Enemy(int edges, color colour, int road)
   {
     super(500, 500, colour);
     this.edges = edges;
-    this.health = health;
+    health = 50 * edges;
     radius = map(edges, 5, 10, cellSize / 4, cellSize / 2);
-    speed = 0.05;
+    speed = 0.01;
     drawShape();
     this.road = road;
     cellPosition = getStart(road);
@@ -29,7 +28,7 @@ public class Enemy extends GameObject
   }
   Enemy()
   {
-    this(5, 50, color(0, 0, 0), 1);
+    this(5, color(0, 0, 0), 1);
   }
   
   private void drawShape()
@@ -230,6 +229,11 @@ public class Enemy extends GameObject
       shape(polygon);
       
       popMatrix();
+      
+      textAlign(CENTER, CENTER);
+      textSize(10);
+      fill(0);
+      text(health + "/" + 50 * edges, position.x, position.y);
     }
   }
   public void update() //<>//

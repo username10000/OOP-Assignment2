@@ -1,6 +1,7 @@
 abstract public class GameObject
 {
   PVector position;
+  PVector direction;
   boolean isAlive;
   color colour;
   
