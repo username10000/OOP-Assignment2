@@ -105,29 +105,6 @@ void draw()
   // Draw the occupied cells
   drawRoad();
   
-  // Mark the cell if it's hovered
-  if (mousePosition.z == 0)
-  {
-    // Change the colour of the selected cell depending if it's a valid position
-    if (maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] >= '1' && maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] <= '9' || maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] == '*')
-    {
-      stroke(255, 0, 0);
-      fill(255, 0, 0, 100);
-    }
-    else
-    {
-      stroke(0, 255, 0);
-      fill(0, 255, 0, 100);
-    }
-    rect(border.get("left") + mousePosition.x * cellSize, border.get("top") + mousePosition.y * cellSize + offset, cellSize, cellSize);
-  }
-  
-  // Do stuff if the cell is clicked on
-  if (mousePosition.z == 1)
-  {
-    // Check if the clicked cell is a tower and do things
-  }
-  
   if (!pause)
   {
     // Create enemies
@@ -153,9 +130,51 @@ void draw()
   for (int i = 0 ; i < objects.size() || i < weapons.size(); i++)
   {
     if (i < objects.size())
+    {
       objects.get(i).render();
+      if (objects.get(i) instanceof Tower)
+      {
+        Tower tempTower = (Tower)objects.get(i);
+        tempTower.hover = false;
+      }
+    }
     if (i < weapons.size())
       weapons.get(i).render();
+  }
+  
+   // Mark the cell if it's hovered
+  if (mousePosition.z == 0)
+  {
+    // Check if the mouse is over a tower
+    boolean hoverTower = false;
+    for (int i = 0 ; i < objects.size() ; i++)
+    {
+      if (objects.get(i) instanceof Tower)
+      {
+        Tower tempTower = (Tower)objects.get(i);
+        if (mousePosition.x == tempTower.cellPosition.x && mousePosition.y + startCell == tempTower.cellPosition.y)
+        {
+          tempTower.hover = true;
+          hoverTower = true;
+        }
+      }
+    }
+    
+    if (!hoverTower)
+    {
+      // Change the colour of the selected cell depending if it's a valid position
+      if (maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] >= '1' && maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] <= '9' || maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] == '*')
+      {
+        stroke(255, 0, 0);
+        fill(255, 0, 0, 100);
+      }
+      else
+      {
+        stroke(0, 255, 0);
+        fill(0, 255, 0, 100);
+      }
+      rect(border.get("left") + mousePosition.x * cellSize, border.get("top") + mousePosition.y * cellSize + offset, cellSize, cellSize);
+    }
   }
   
   // Draw all the information needed on the screen
@@ -171,6 +190,12 @@ void draw()
 
   // Combine enemies if they collide
   combineEnemies();
+  
+  // Delete bullet and damage enemies
+  bulletHit();
+  
+  // Delete dead objects
+  deleteDeadObjects();
 }
 
 void initialSettings()
@@ -466,6 +491,54 @@ void combineEnemies()
   }
 }
 
+void bulletHit()
+{
+  for (int i = 0 ; i < weapons.size() ; i++)
+  {
+    for (int j = 0 ; j < objects.size() ; j++)
+    {
+      if (objects.get(j) instanceof Enemy && weapons.get(i).isAlive)
+      {
+        Enemy tempEnemy = (Enemy)objects.get(j);
+        if (dist(weapons.get(i).position.x, weapons.get(i).position.y, tempEnemy.position.x, tempEnemy.position.y) < tempEnemy.radius + 5)
+        {
+          tempEnemy.health -= weapons.get(i).damage;
+          weapons.get(i).isAlive = false;
+        }
+      }
+    }
+  }
+  
+  for (int i = 0 ; i < weapons.size() ; i++)
+    if (!weapons.get(i).isAlive)
+      weapons.remove(i);
+}
+
+void deleteDeadObjects()
+{
+  for (int i = 0 ; i < objects.size() ; i++)
+  {
+    if (!objects.get(i).isAlive)
+    {
+      objects.remove(i);
+    }
+  }
+}
+
+boolean checkTower(int x, int y)
+{
+  for (int i = 0 ; i < objects.size() ; i++)
+  {
+    if (objects.get(i) instanceof Tower)
+    {
+      Tower temp = (Tower)objects.get(i);
+      if (temp.cellPosition.x == x && temp.cellPosition.y == y)
+        return true;
+    }
+  }
+  return false;
+}
+
 void mouseHover()
 { 
   // Mark the selected cell
@@ -543,18 +616,4 @@ void mouseClicked()
       }
     }
   }
-}
-
-boolean checkTower(int x, int y)
-{
-  for (int i = 0 ; i < objects.size() ; i++)
-  {
-    if (objects.get(i) instanceof Tower)
-    {
-      Tower temp = (Tower)objects.get(i);
-      if (temp.cellPosition.x == x && temp.cellPosition.y == y)
-        return true;
-    }
-  }
-  return false;
 }

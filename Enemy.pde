@@ -238,6 +238,8 @@ public class Enemy extends GameObject
   }
   public void update() //<>//
   {
+    if (health <= 0)
+      isAlive = false;
     // Find the next direction
     if (getValue((int)cellPosition.x + (int)direction.x, (int)cellPosition.y + (int)direction.y) == '*' || cellPosition.x < -1 || cellPosition.x > maps[curMap].cellsPerLine || cellPosition.y < -1)
     {

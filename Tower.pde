@@ -1,8 +1,10 @@
 public class Tower extends GameObject
 {
   int type;
+  int lastFired;
   float speed;
   float damage;
+  boolean hover;
   color colour;
   PShape towerShape;
   PVector cellPosition;
@@ -14,6 +16,8 @@ public class Tower extends GameObject
     cellPosition = new PVector(x, y);
     colour = color(random(0, 255), random(0, 255), random(0, 255));
     drawShape();
+    lastFired = millis();
+    hover = true;
   }
   Tower()
   {
@@ -26,7 +30,7 @@ public class Tower extends GameObject
     if (type == 0)
     {
       speed = 0.05;
-      damage = 10;
+      damage = 25;
     }
     // Second type of tower
     if (type == 1)
@@ -57,6 +61,15 @@ public class Tower extends GameObject
       position.x = border.get("left") + cellSize / 2 + cellPosition.x * cellSize;
       position.y = border.get("top") + cellSize / 2 + (cellPosition.y - startCell) * cellSize + offset;
       
+      if (hover)
+      {
+        strokeWeight(2);
+        stroke(0, 0, 255, 200);
+        fill(0, 255, 255, 100);
+        ellipse(position.x, position.y, cellSize * 3, cellSize * 3);
+        strokeWeight(1);
+      }
+      
       // Draw the tower
       pushMatrix();
       translate(position.x, position.y);
@@ -66,6 +79,22 @@ public class Tower extends GameObject
   }
   public void update()
   {
-
+    // Find if there is an enemy nearby and if there is fire at it
+    if (millis() > lastFired + 1000)
+    {
+      for (int i = 0 ; i < objects.size() ; i++)
+      {
+        if (objects.get(i) instanceof Enemy && dist(objects.get(i).position.x, objects.get(i).position.y, position.x, position.y) < cellSize + cellSize / 2)
+        {
+          float lengthY = position.y - objects.get(i).position.y;
+          float lengthX = position.x - objects.get(i).position.x;
+          Bullet bullet = new Bullet(cellPosition.x, cellPosition.y, colour, 0.2, damage);
+          bullet.direction = new PVector(lengthX / 15, lengthY / 15);
+          weapons.add(bullet);
+          break;
+        }
+      }
+      lastFired = millis();
+    }
   }
 }
