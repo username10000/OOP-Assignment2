@@ -16,7 +16,7 @@ public class Enemy extends GameObject
     this.edges = edges;
     health = 50 * edges;
     radius = map(edges, 5, 10, cellSize / 4, cellSize / 2);
-    speed = 0.01;
+    speed = 0.012;
     drawShape();
     this.road = road;
     cellPosition = getStart(road);

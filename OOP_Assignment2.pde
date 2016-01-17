@@ -22,6 +22,7 @@ PImage background;
 PShape heart;
 int[] towerPoints = {100, 200};
 boolean pause = false;
+int towerNo = 3;
 
 void setup()
 {
@@ -196,6 +197,10 @@ void draw()
   
   // Delete dead objects
   deleteDeadObjects();
+  
+  // Check if it's game over
+  if (player.lives == 0)
+    gameOver();
 }
 
 void initialSettings()
@@ -539,6 +544,16 @@ boolean checkTower(int x, int y)
   return false;
 }
 
+void gameOver()
+{
+  // Display Game Over Message
+  pause = true;
+  textSize(30);
+  fill(255, 0, 0);
+  textAlign(CENTER, CENTER);
+  text("GAME OVER", width / 2, height / 2);
+}
+
 void mouseHover()
 { 
   // Mark the selected cell
@@ -606,6 +621,16 @@ void mouseClicked()
   {
     if (maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] == '0')
     {
+      /*
+      PVector tempPos;
+      int tempCellPos = (int)mousePosition.x - (int)(towerNo / 2);
+      noStroke();
+      fill(100);
+      // Calculate the coordinates of the tower
+      tempPos = new PVector(border.get("left") + cellSize / 2 + tempCellPos * cellSize - cellSize / 2, border.get("top") + cellSize / 2 + (mousePosition.y - startCell) * cellSize + offset - cellSize / 2);
+      rect(tempPos.x, tempPos.y, cellSize * towerNo, cellSize);
+      */
+      
       int type = 0;
       if (player.points >= towerPoints[type] && !checkTower((int)mousePosition.x, (int)mousePosition.y))
       {
@@ -614,6 +639,7 @@ void mouseClicked()
         Tower tower = new Tower(type, (int)mousePosition.x, startCell + (int)mousePosition.y);
         objects.add(tower);
       }
+      
     }
   }
 }

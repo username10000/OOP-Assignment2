@@ -55,9 +55,9 @@ public class Tower extends GameObject
   public void render()
   {
     // Render the tower
-    if (cellPosition.y >= startCell && cellPosition.y <= endCell)
+    if (cellPosition.y >= startCell - 1 && cellPosition.y <= endCell)
     {
-      // Calculate the coordinates of the enemy
+      // Calculate the coordinates of the tower
       position.x = border.get("left") + cellSize / 2 + cellPosition.x * cellSize;
       position.y = border.get("top") + cellSize / 2 + (cellPosition.y - startCell) * cellSize + offset;
       
@@ -66,7 +66,7 @@ public class Tower extends GameObject
         strokeWeight(2);
         stroke(0, 0, 255, 200);
         fill(0, 255, 255, 100);
-        ellipse(position.x, position.y, cellSize * 3, cellSize * 3);
+        ellipse(position.x, position.y, cellSize * 5, cellSize * 5);
         strokeWeight(1);
       }
       
@@ -84,7 +84,7 @@ public class Tower extends GameObject
     {
       for (int i = 0 ; i < objects.size() ; i++)
       {
-        if (objects.get(i) instanceof Enemy && dist(objects.get(i).position.x, objects.get(i).position.y, position.x, position.y) < cellSize + cellSize / 2)
+        if (objects.get(i) instanceof Enemy && dist(objects.get(i).position.x, objects.get(i).position.y, position.x, position.y) < 2 * cellSize + cellSize / 2)
         {
           float lengthY = position.y - objects.get(i).position.y;
           float lengthX = position.x - objects.get(i).position.x;
