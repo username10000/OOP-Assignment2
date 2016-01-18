@@ -20,9 +20,10 @@ ArrayList<Weapon> weapons = new ArrayList<Weapon>();
 Player player;
 PImage background;
 PShape heart;
-int[] towerPoints = {100, 200};
+int[] towerPoints = {100, 200, 300};
 boolean pause = false;
 int towerNo = 3;
+PVector towerMenu = new PVector(-1, -1);
 
 void setup()
 {
@@ -144,7 +145,7 @@ void draw()
   }
   
    // Mark the cell if it's hovered
-  if (mousePosition.z == 0)
+  if (mousePosition.z == 0 && towerMenu.x == -1)
   {
     // Check if the mouse is over a tower
     boolean hoverTower = false;
@@ -197,6 +198,24 @@ void draw()
   
   // Delete dead objects
   deleteDeadObjects();
+  
+  // Draw tower select menu
+  if (towerMenu.x != -1)
+  {
+    // Position and number of tower variables
+    PVector tempPos;
+    int tempCellPos = (int)towerMenu.x - (int)(towerNo / 2);
+    
+    // Menu colour and stroke
+    stroke(0);
+    fill(100);
+    
+    // Calculate the coordinates of the tower menu
+    tempPos = new PVector(border.get("left") + tempCellPos * cellSize, border.get("top") + (towerMenu.y - startCell) * cellSize + offset);
+    
+    // Draw the menu
+    rect(tempPos.x, tempPos.y, cellSize * towerNo, cellSize);
+  }
   
   // Check if it's game over
   if (player.lives == 0)
@@ -498,6 +517,7 @@ void combineEnemies()
 
 void bulletHit()
 {
+  // Check if the bullet has hit an Enemy
   for (int i = 0 ; i < weapons.size() ; i++)
   {
     for (int j = 0 ; j < objects.size() ; j++)
@@ -514,6 +534,21 @@ void bulletHit()
     }
   }
   
+  // Check if the bullet is out of range
+  for (int i = 0 ; i < weapons.size() ; i++)
+  {
+    if (weapons.get(i) instanceof Bullet)
+    {
+      Bullet bullet = (Bullet)weapons.get(i);
+      PVector tempPos = new PVector(border.get("left") + cellSize / 2 + bullet.originCell.x * cellSize, border.get("top") + cellSize / 2 + (bullet.originCell.y - startCell) * cellSize + offset);
+      
+      if (dist(tempPos.x, tempPos.y, bullet.position.x, bullet.position.y) > 2 * cellSize + cellSize / 2)
+        bullet.isAlive = false;
+    }
+    
+  }
+  
+  // Delete the bullets that either hit or are out of range
   for (int i = 0 ; i < weapons.size() ; i++)
     if (!weapons.get(i).isAlive)
       weapons.remove(i);
@@ -619,27 +654,36 @@ void mouseClicked()
 {
   if (mousePosition.z == 0)
   {
-    if (maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] == '0')
+    if (maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] == '0' && towerMenu.x == -1 && !checkTower((int)mousePosition.x, (int)mousePosition.y))
     {
-      /*
-      PVector tempPos;
-      int tempCellPos = (int)mousePosition.x - (int)(towerNo / 2);
-      noStroke();
-      fill(100);
-      // Calculate the coordinates of the tower
-      tempPos = new PVector(border.get("left") + cellSize / 2 + tempCellPos * cellSize - cellSize / 2, border.get("top") + cellSize / 2 + (mousePosition.y - startCell) * cellSize + offset - cellSize / 2);
-      rect(tempPos.x, tempPos.y, cellSize * towerNo, cellSize);
-      */
-      
-      int type = 0;
-      if (player.points >= towerPoints[type] && !checkTower((int)mousePosition.x, (int)mousePosition.y))
+      // Set the tower menu location
+      towerMenu.x = (int)mousePosition.x;
+      towerMenu.y = (int)mousePosition.y + startCell;
+    }
+    else
+    {
+      // Check if the cell clicked is in the tower menu
+      if (towerMenu.x != -1)
       {
-        player.points -= towerPoints[type];
-        
-        Tower tower = new Tower(type, (int)mousePosition.x, startCell + (int)mousePosition.y);
-        objects.add(tower);
+        for (int i = 0 ; i <= 2 ; i++)
+        {
+          if ((int)mousePosition.x == (int)towerMenu.x + i - 1 && (int)mousePosition.y + startCell == (int)towerMenu.y)
+          {
+            int type = i;
+            if (player.points >= towerPoints[type])
+            {
+              // Decrease the player's points
+              player.points -= towerPoints[type];
+              
+              // Create the tower
+              Tower tower = new Tower(type, (int)towerMenu.x, (int)towerMenu.y);
+              objects.add(tower);
+            }
+          }
+        }
       }
-      
+      towerMenu.x = -1;
+      towerMenu.y = -1;
     }
   }
 }

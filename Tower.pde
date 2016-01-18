@@ -14,7 +14,7 @@ public class Tower extends GameObject
     this.type = type;
     setAttributes();
     cellPosition = new PVector(x, y);
-    colour = color(random(0, 255), random(0, 255), random(0, 255));
+    //colour = color(random(0, 255), random(0, 255), random(0, 255));
     drawShape();
     lastFired = millis();
     hover = true;
@@ -26,17 +26,28 @@ public class Tower extends GameObject
   
   private void setAttributes()
   {
-    // First type of tower
+    // Type 0 tower
     if (type == 0)
     {
       speed = 0.05;
       damage = 25;
+      colour = color(255, 0, 0);
     }
-    // Second type of tower
+    
+    // Type 1 tower
     if (type == 1)
     {
       speed = 0;
       damage = 1;
+      colour = color(0, 255, 0);
+    }
+    
+    // Type 2 tower
+    if (type == 2)
+    {
+      speed = 0.2;
+      damage = 1;
+      colour = color(0, 0, 255);
     }
   }
   private void drawShape()

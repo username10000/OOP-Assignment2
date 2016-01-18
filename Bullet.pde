@@ -1,5 +1,6 @@
 public class Bullet extends Weapon
 {
+  PVector originCell;
   PVector cellPosition;
   PVector positionOffset;
   PVector forward;
@@ -8,6 +9,7 @@ public class Bullet extends Weapon
   {
     super(x, y, colour, speed, damage);
     cellPosition = new PVector(x, y);
+    originCell = new PVector(x, y);
     positionOffset = new PVector(0, 0);
     forward = new PVector(0, 0);
   }
