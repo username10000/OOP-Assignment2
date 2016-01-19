@@ -34,92 +34,92 @@ void setup()
   textAlign(CENTER);
   //randomSeed((int)random(5000));
   //randomSeed(5000);
-  
+
   // Change the size of the screen
   //surface.setSize(displayWidth / 2, displayHeight / 2);
-  
+
   // Import a map from a file
   //importMap = new MapObject("map.txt");
-  
+
   // Random maps
-  for (int i = 0 ; i < maps.length ; i++)
+  for (int i = 0; i < maps.length; i++)
   {
     maps[i] = new MapObject(i + 1);
   }
-  
+
   player = new Player();
-  
+
   //maps[8] = new MapObject("map.txt");
-  
+
   // Output current array
   /*
   String[] output = new String[maps[curMap].map.length];
-  for (int i = 0 ; i < maps[curMap].map.length ; i++)
-  {
-    for (int j = 0 ; j <maps[curMap].map[i].length ; j++)
-    {
-      if (j == 0)
-        output[i] = "" + maps[curMap].map[i][j];
-      else
-        output[i] = output[i] + maps[curMap].map[i][j];
-    }
-  }
-  saveStrings("array.txt", output);
-  */
-  
+   for (int i = 0 ; i < maps[curMap].map.length ; i++)
+   {
+   for (int j = 0 ; j <maps[curMap].map[i].length ; j++)
+   {
+   if (j == 0)
+   output[i] = "" + maps[curMap].map[i][j];
+   else
+   output[i] = output[i] + maps[curMap].map[i][j];
+   }
+   }
+   saveStrings("array.txt", output);
+   */
+
   // Initial Settings
   initialSettings();
 
   // New Enemy
   //createEnemy(1);
-  for (int i = 0 ; i < noEnemies.length ; i++)
+  for (int i = 0; i < noEnemies.length; i++)
   {
     noEnemies[i] = (int)random(10, 15);
   }
-  
+
   //createMapImage();
 }
 
 void draw()
 {
   background(0);
-  
+
   // Draw the borders of the screen
   //noFill();
   fill(0, 92, 9);
   noStroke();
   //stroke(255);
   rect(border.get("left"), border.get("top"), screenWidth, screenHeight);
-  
+
   // Only for debugging
   /*
   for (int i = 0 ; i <= cellsPerLine ; i++)
-  {
-    // Vertical Lines
-    line(border.get("left") + cellSize * i, border.get("top"), border.get("left") + cellSize * i, border.get("top") + screenHeight);
-  }
-  for (int i = 0 ; i <= cellsPerHeight ; i++)
-  {
-    // Horizontal Lines
-    line(border.get("left"), border.get("top") + cellSize * i, border.get("left") + screenWidth, border.get("top") + cellSize * i);
-  }*/
-  
+   {
+   // Vertical Lines
+   line(border.get("left") + cellSize * i, border.get("top"), border.get("left") + cellSize * i, border.get("top") + screenHeight);
+   }
+   for (int i = 0 ; i <= cellsPerHeight ; i++)
+   {
+   // Horizontal Lines
+   line(border.get("left"), border.get("top") + cellSize * i, border.get("left") + screenWidth, border.get("top") + cellSize * i);
+   }*/
+
   // Draw the occupied cells
   drawRoad();
-  
+
   if (!pause)
   {
     // Create enemies
-    for (int i = 0 ; i < noEnemies.length ; i++)
+    for (int i = 0; i < noEnemies.length; i++)
     {
       if (noEnemies[i] > 0 && i <= curMap)
       {
         createEnemy(i + 1);
       }
     }
-    
+
     // Update objects
-    for (int i = 0 ; i < objects.size() || i < weapons.size(); i++)
+    for (int i = 0; i < objects.size() || i < weapons.size(); i++)
     {
       if (i < objects.size())
         objects.get(i).update();
@@ -127,9 +127,9 @@ void draw()
         weapons.get(i).update();
     }
   }
-  
+
   // Render enemies
-  for (int i = 0 ; i < objects.size() || i < weapons.size(); i++)
+  for (int i = 0; i < objects.size() || i < weapons.size(); i++)
   {
     if (i < objects.size())
     {
@@ -143,13 +143,13 @@ void draw()
     if (i < weapons.size())
       weapons.get(i).render();
   }
-  
-   // Mark the cell if it's hovered
+
+  // Mark the cell if it's hovered
   if (mousePosition.z == 0 && towerMenu.x == -1)
   {
     // Check if the mouse is over a tower
     boolean hoverTower = false;
-    for (int i = 0 ; i < objects.size() ; i++)
+    for (int i = 0; i < objects.size(); i++)
     {
       if (objects.get(i) instanceof Tower)
       {
@@ -161,7 +161,7 @@ void draw()
         }
       }
     }
-    
+
     if (!hoverTower)
     {
       // Change the colour of the selected cell depending if it's a valid position
@@ -169,8 +169,7 @@ void draw()
       {
         stroke(255, 0, 0);
         fill(255, 0, 0, 100);
-      }
-      else
+      } else
       {
         stroke(0, 255, 0);
         fill(0, 255, 0, 100);
@@ -178,13 +177,13 @@ void draw()
       rect(border.get("left") + mousePosition.x * cellSize, border.get("top") + mousePosition.y * cellSize + offset, cellSize, cellSize);
     }
   }
-  
+
   // Draw all the information needed on the screen
   printInfo();
-  
+
   // Check if the mouse is hovering something
   mouseHover();
-  
+
   // Draw the rect border on top of the enemies
   //noFill();
   //stroke(255);
@@ -192,31 +191,66 @@ void draw()
 
   // Combine enemies if they collide
   combineEnemies();
-  
+
   // Delete bullet and damage enemies
   bulletHit();
-  
+
   // Delete dead objects
   deleteDeadObjects();
-  
+
   // Draw tower select menu
   if (towerMenu.x != -1)
   {
     // Position and number of tower variables
     PVector tempPos;
     int tempCellPos = (int)towerMenu.x - (int)(towerNo / 2);
-    
+
     // Menu colour and stroke
     stroke(0);
     fill(100);
-    
+
     // Calculate the coordinates of the tower menu
     tempPos = new PVector(border.get("left") + tempCellPos * cellSize, border.get("top") + (towerMenu.y - startCell) * cellSize + offset);
-    
+
     // Draw the menu
     rect(tempPos.x, tempPos.y, cellSize * towerNo, cellSize);
+    
+    // Draw the towers from which to select
+    float halfSize = cellSize / 2 - (cellSize / 10);
+    color tempColour;
+    
+    if (player.points >= towerPoints[0])
+      tempColour = color(255, 0, 0);
+    else
+      tempColour = color(100, 0, 0);
+    tempPos.x += cellSize / 2;
+    tempPos.y += cellSize / 2;
+    
+    stroke(tempColour);
+    fill(tempColour);
+    triangle(tempPos.x, tempPos.y - halfSize, tempPos.x - halfSize, tempPos.y + halfSize, tempPos.x + halfSize, tempPos.y + halfSize);
+    
+    if (player.points >= towerPoints[1])
+      tempColour = color(0, 255, 0);
+    else
+      tempColour = color(0, 100, 0);
+    tempPos.x += cellSize;
+    
+    stroke(tempColour);
+    fill(tempColour);
+    triangle(tempPos.x, tempPos.y - halfSize, tempPos.x - halfSize, tempPos.y + halfSize, tempPos.x + halfSize, tempPos.y + halfSize);
+    
+    if (player.points >= towerPoints[1])
+      tempColour = color(0, 0, 255);
+    else
+      tempColour = color(0, 0, 100);
+    tempPos.x += cellSize;
+    
+    stroke(tempColour);
+    fill(tempColour);
+    triangle(tempPos.x, tempPos.y - halfSize, tempPos.x - halfSize, tempPos.y + halfSize, tempPos.x + halfSize, tempPos.y + halfSize);
   }
-  
+
   // Check if it's game over
   if (player.lives == 0)
     gameOver();
@@ -229,14 +263,14 @@ void initialSettings()
   border.put("bottom", map(0, 0, 100, 0, height));
   border.put("left", map(0, 0, 100, 0, width));
   border.put("right", map(0, 0, 100, 0, width));
-  
+
   // Calculate the screen width and height
   screenWidth = width - border.get("left") - border.get("right");
   screenHeight = height - border.get("top") - border.get("bottom");
-  
+
   // Calculate the cell size
   cellSize = screenWidth / maps[curMap].cellsPerLine;
-  
+
   // Calculate how many rows of cols can fit on the screen and change the screen height and bottom border to match
   cellsPerHeight = (int)(screenHeight / cellSize) + 1;
   // Special case if the cells fit perfectly
@@ -248,7 +282,7 @@ void initialSettings()
   border.put("bottom", height - screenHeight - border.get("top"));
   startCell = 0;
   endCell = cellsPerHeight;
-  
+
   int halfD = 15;
   heart = createShape();
   heart.beginShape();
@@ -264,9 +298,9 @@ void initialSettings()
 void drawRoad()
 {
   // Draw the occupied cells
-  for (int i = 0 ; i < endCell - startCell ; i++)
+  for (int i = 0; i < endCell - startCell; i++)
   {
-    for (int j = 0 ; j < maps[curMap].cellsPerLine ; j++)
+    for (int j = 0; j < maps[curMap].cellsPerLine; j++)
     {
       if (maps[curMap].map[i + startCell][j] >= '1' && maps[curMap].map[i + startCell][j] <= '9')
       {
@@ -282,10 +316,10 @@ void drawRoad()
       }
     }
   }
-  
+
   if (offset < 0)
   {
-    for (int j = 0 ; j < maps[curMap].cellsPerLine ; j++)
+    for (int j = 0; j < maps[curMap].cellsPerLine; j++)
     {
       if (maps[curMap].map[endCell][j] >= '1' && maps[curMap].map[endCell][j] <= '9')
       {
@@ -303,7 +337,7 @@ void drawRoad()
   }
   if (offset > 0)
   {
-    for (int j = 0 ; j < maps[curMap].cellsPerLine ; j++)
+    for (int j = 0; j < maps[curMap].cellsPerLine; j++)
     {
       if (maps[curMap].map[startCell - 1][j] >= '1' && maps[curMap].map[startCell - 1][j] <= '9')
       {
@@ -324,24 +358,24 @@ void drawRoad()
 void createMapImage()
 {
   background = createImage((int)(maps[curMap].cellsPerLine * cellSize), (int)(maps[curMap].cellsPerCol * cellSize), RGB);
-  
-  for (int i = 0 ; i < (int)(maps[curMap].cellsPerCol * cellSize) ; i++)
+
+  for (int i = 0; i < (int)(maps[curMap].cellsPerCol * cellSize); i++)
   {
-    for (int j = 0 ; j < (int)(maps[curMap].cellsPerLine * cellSize) ; j++)
+    for (int j = 0; j < (int)(maps[curMap].cellsPerLine * cellSize); j++)
     {
       background.pixels[i * width + j] = color(0, 255, 0);
     }
   }
-  
-  for (int i = 0 ; i < maps[curMap].cellsPerCol ; i++)
+
+  for (int i = 0; i < maps[curMap].cellsPerCol; i++)
   {
-    for (int j = 0 ; j < maps[curMap].cellsPerLine ; j++)
+    for (int j = 0; j < maps[curMap].cellsPerLine; j++)
     {
       if (maps[curMap].map[i][j] >= '1' && maps[curMap].map[i][j] < '9')
       {
-        for (int k = (int)(j * (int)cellSize); k <= j * cellSize + cellSize ; k++)
+        for (int k = (int)(j * (int)cellSize); k <= j * cellSize + cellSize; k++)
         {
-          for (int l = (int)(i * (int)cellSize); l <= i * cellSize + cellSize ; l++)
+          for (int l = (int)(i * (int)cellSize); l <= i * cellSize + cellSize; l++)
           {
             background.pixels[l * width + k] = color(255, 255, 255);
           }
@@ -349,9 +383,9 @@ void createMapImage()
       }
       if (maps[curMap].map[i][j] == '*')
       {
-        for (int k = (int)(j * (int)cellSize); k <= j * cellSize + cellSize ; k++)
+        for (int k = (int)(j * (int)cellSize); k <= j * cellSize + cellSize; k++)
         {
-          for (int l = (int)(i * (int)cellSize); l <= i * cellSize + cellSize ; l++)
+          for (int l = (int)(i * (int)cellSize); l <= i * cellSize + cellSize; l++)
           {
             background.pixels[l * width + k] = color(0, 255, 255);
           }
@@ -359,36 +393,36 @@ void createMapImage()
       }
     }
   }
-  
+
   background.save("background.jpg");
-  
+
   /*
   // Draw the occupied cells
-  for (int i = 0 ; i < endCell - startCell ; i++)
-  {
-    for (int j = 0 ; j < maps[curMap].cellsPerLine ; j++)
-    {
-      if (maps[curMap].map[i + startCell][j] >= 1 && maps[curMap].map[i + startCell][j] < 10)
-      {
-        fill(255);
-        stroke(255);
-        rect(border.get("left") + j * cellSize, border.get("top") + i * cellSize + offset, cellSize, cellSize);
-      }
-      if (maps[curMap].map[i + startCell][j] == 10)
-      {
-        fill(0, 255, 255);
-        stroke(0, 255, 255);
-        rect(border.get("left") + j * cellSize, border.get("top") + i * cellSize + offset, cellSize, cellSize);
-      }
-    }
-  }
-  */
+   for (int i = 0 ; i < endCell - startCell ; i++)
+   {
+   for (int j = 0 ; j < maps[curMap].cellsPerLine ; j++)
+   {
+   if (maps[curMap].map[i + startCell][j] >= 1 && maps[curMap].map[i + startCell][j] < 10)
+   {
+   fill(255);
+   stroke(255);
+   rect(border.get("left") + j * cellSize, border.get("top") + i * cellSize + offset, cellSize, cellSize);
+   }
+   if (maps[curMap].map[i + startCell][j] == 10)
+   {
+   fill(0, 255, 255);
+   stroke(0, 255, 255);
+   rect(border.get("left") + j * cellSize, border.get("top") + i * cellSize + offset, cellSize, cellSize);
+   }
+   }
+   }
+   */
 }
 
 void printInfo()
 {
   int padding = 2;
-  
+
   // Print points
   noStroke();
   fill(0, 0, 0, 100);
@@ -397,12 +431,12 @@ void printInfo()
   fill(255);
   textSize(20);
   text("Points: " + player.points, width / 99, height / 99);
-  
+
   // Print lives
-  for (int i = 0 ; i < player.lives ; i++)
+  for (int i = 0; i < player.lives; i++)
   {
     padding = ((int)heart.width + 20) * i;
-    
+
     stroke(255);
     fill(255, 0, 0);
     pushMatrix();
@@ -416,9 +450,9 @@ void createEnemy(int road)
 {
   // Assume the spawn point is empty
   boolean empty = true;
-  
+
   // Check if the spawn point of the road is empty
-  for (int i = 0 ; i < objects.size() ; i++)
+  for (int i = 0; i < objects.size(); i++)
   {
     if (objects.get(i) instanceof Enemy)
     {
@@ -429,7 +463,7 @@ void createEnemy(int road)
       }
     }
   }
-  
+
   // If the spawn point is empty add a new enemy
   if (empty)
   {
@@ -452,16 +486,16 @@ boolean checkOrigin(Enemy e1, Enemy e2)
 void combineEnemies()
 {
   // Check if two enemies collide
-  for (int i = 0 ; i < objects.size() ; i++)
+  for (int i = 0; i < objects.size(); i++)
   {
-    for (int j = 0 ; j < objects.size() ; j++)
+    for (int j = 0; j < objects.size(); j++)
     {
       // Check if the object is an Enemy
       if (i != j && objects.get(i) instanceof Enemy && objects.get(j) instanceof Enemy && objects.get(i).isAlive && objects.get(j).isAlive)
       {
         Enemy e1 = (Enemy)objects.get(i);
         Enemy e2 = (Enemy)objects.get(j);
-        
+
         // Check if they are in the same cell
         //if (e1.cellPosition.x == e2.cellPosition.x && e1.cellPosition.y == e2.cellPosition.y && !checkOrigin(e1, e2)) //  && e1.checkIntersection(e1.cellPosition)
         if (dist(e1.position.x, e1.position.y, e2.position.x, e2.position.y) <= e1.radius && !(e1.cellPosition.x == -1 || e1.cellPosition.x == maps[curMap].cellsPerLine || e1.cellPosition.y == -1))
@@ -471,7 +505,7 @@ void combineEnemies()
           {
             // Kill the smaller enemy
             e2.isAlive = false;
-            
+
             // Limit the edges of the polygon to 10
             if (e1.edges < 10)
             {
@@ -481,12 +515,11 @@ void combineEnemies()
               e1.radius = map(e1.edges, 5, 10, cellSize / 4, cellSize / 2);
               e1.drawShape();
             }
-          }
-          else
+          } else
           {
             // Kill the smaller enemy
             e1.isAlive = false;
-            
+
             // Limit the edges of the polygon to 10
             if (e2.edges < 10)
             {
@@ -494,9 +527,9 @@ void combineEnemies()
               e2.edges ++;
               e2.health += 50;
               e2.radius = map(e2.edges, 5, 10, cellSize / 4, cellSize / 2);
-              e2.drawShape();                
+              e2.drawShape();
             }
-            
+
             // Break the inner loop because the first enemy is dead so there is no need to check it
             break;
           }
@@ -504,9 +537,9 @@ void combineEnemies()
       }
     }
   }
-  
+
   // Remove all enemies that are dead
-  for (int i = 0 ; i < objects.size() ; i++)
+  for (int i = 0; i < objects.size(); i++)
   {
     if (!objects.get(i).isAlive)
     {
@@ -518,9 +551,9 @@ void combineEnemies()
 void bulletHit()
 {
   // Check if the bullet has hit an Enemy
-  for (int i = 0 ; i < weapons.size() ; i++)
+  for (int i = 0; i < weapons.size(); i++)
   {
-    for (int j = 0 ; j < objects.size() ; j++)
+    for (int j = 0; j < objects.size(); j++)
     {
       if (objects.get(j) instanceof Enemy && weapons.get(i).isAlive)
       {
@@ -533,30 +566,29 @@ void bulletHit()
       }
     }
   }
-  
+
   // Check if the bullet is out of range
-  for (int i = 0 ; i < weapons.size() ; i++)
+  for (int i = 0; i < weapons.size(); i++)
   {
     if (weapons.get(i) instanceof Bullet)
     {
       Bullet bullet = (Bullet)weapons.get(i);
       PVector tempPos = new PVector(border.get("left") + cellSize / 2 + bullet.originCell.x * cellSize, border.get("top") + cellSize / 2 + (bullet.originCell.y - startCell) * cellSize + offset);
-      
+
       if (dist(tempPos.x, tempPos.y, bullet.position.x, bullet.position.y) > 2 * cellSize + cellSize / 2)
         bullet.isAlive = false;
     }
-    
   }
-  
+
   // Delete the bullets that either hit or are out of range
-  for (int i = 0 ; i < weapons.size() ; i++)
+  for (int i = 0; i < weapons.size(); i++)
     if (!weapons.get(i).isAlive)
       weapons.remove(i);
 }
 
 void deleteDeadObjects()
 {
-  for (int i = 0 ; i < objects.size() ; i++)
+  for (int i = 0; i < objects.size(); i++)
   {
     if (!objects.get(i).isAlive)
     {
@@ -567,7 +599,7 @@ void deleteDeadObjects()
 
 boolean checkTower(int x, int y)
 {
-  for (int i = 0 ; i < objects.size() ; i++)
+  for (int i = 0; i < objects.size(); i++)
   {
     if (objects.get(i) instanceof Tower)
     {
@@ -597,14 +629,13 @@ void mouseHover()
     mousePosition.x = (int)map(mouseX, border.get("left"), width - border.get("right"), 0, maps[curMap].cellsPerLine);
     mousePosition.y = (int)map(mouseY, border.get("top") + offset, height - border.get("bottom") + offset, 0, cellsPerHeight);
     mousePosition.z = 0;
-  }
-  else
+  } else
   {
     mousePosition.x = -1;
     mousePosition.y = -1;
     mousePosition.z = -1;
   }
-  
+
   // Move the screen up
   if (mouseY < border.get("top") || mouseY < cellSize)
   {
@@ -659,13 +690,14 @@ void mouseClicked()
       // Set the tower menu location
       towerMenu.x = (int)mousePosition.x;
       towerMenu.y = (int)mousePosition.y + startCell;
-    }
-    else
+    } else
     {
+      boolean selected = true;
+      
       // Check if the cell clicked is in the tower menu
       if (towerMenu.x != -1)
       {
-        for (int i = 0 ; i <= 2 ; i++)
+        for (int i = 0; i <= 2; i++)
         {
           if ((int)mousePosition.x == (int)towerMenu.x + i - 1 && (int)mousePosition.y + startCell == (int)towerMenu.y)
           {
@@ -674,16 +706,24 @@ void mouseClicked()
             {
               // Decrease the player's points
               player.points -= towerPoints[type];
-              
+
               // Create the tower
               Tower tower = new Tower(type, (int)towerMenu.x, (int)towerMenu.y);
               objects.add(tower);
             }
+            else
+            {
+              selected = false;
+            }
           }
         }
       }
-      towerMenu.x = -1;
-      towerMenu.y = -1;
+      // Deselect the tower menu if a tower was selected
+      if (selected)
+      {
+        towerMenu.x = -1;
+        towerMenu.y = -1;
+      }
     }
   }
 }
