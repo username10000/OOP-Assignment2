@@ -20,6 +20,7 @@ public class Bullet extends Weapon
   
   public void render()
   {
+    // Calculate the coordinates
     position.x = border.get("left") + cellSize / 2 + (cellPosition.x + positionOffset.x) * cellSize + forward.x;
     position.y = border.get("top") + cellSize / 2 + (cellPosition.y - startCell + positionOffset.y) * cellSize + offset + forward.y;
     //stroke(0);

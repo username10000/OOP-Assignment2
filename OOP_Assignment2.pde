@@ -555,7 +555,7 @@ void bulletHit()
   {
     for (int j = 0; j < objects.size(); j++)
     {
-      if (objects.get(j) instanceof Enemy && weapons.get(i).isAlive)
+      if (objects.get(j) instanceof Enemy && weapons.get(i) instanceof Bullet && weapons.get(i).isAlive)
       {
         Enemy tempEnemy = (Enemy)objects.get(j);
         if (dist(weapons.get(i).position.x, weapons.get(i).position.y, tempEnemy.position.x, tempEnemy.position.y) < tempEnemy.radius + 5)
@@ -582,7 +582,7 @@ void bulletHit()
 
   // Delete the bullets that either hit or are out of range
   for (int i = 0; i < weapons.size(); i++)
-    if (!weapons.get(i).isAlive)
+    if (!weapons.get(i).isAlive && weapons.get(i) instanceof Bullet)
       weapons.remove(i);
 }
 

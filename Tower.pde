@@ -90,22 +90,41 @@ public class Tower extends GameObject
   }
   public void update()
   {
-    // Find if there is an enemy nearby and if there is fire at it
-    if (millis() > lastFired + 1000)
+    switch(type)
     {
-      for (int i = 0 ; i < objects.size() ; i++)
+      case 0:
       {
-        if (objects.get(i) instanceof Enemy && dist(objects.get(i).position.x, objects.get(i).position.y, position.x, position.y) < 2 * cellSize + cellSize / 2)
+        // Find if there is an enemy nearby and if there is fire at it
+        if (millis() > lastFired + 1000)
         {
-          float lengthY = position.y - objects.get(i).position.y;
-          float lengthX = position.x - objects.get(i).position.x;
-          Bullet bullet = new Bullet(cellPosition.x, cellPosition.y, colour, 0.2, damage);
-          bullet.direction = new PVector(lengthX / 15, lengthY / 15);
-          weapons.add(bullet);
-          break;
+          for (int i = 0 ; i < objects.size() ; i++)
+          {
+            if (objects.get(i) instanceof Enemy && dist(objects.get(i).position.x, objects.get(i).position.y, position.x, position.y) < 2 * cellSize + cellSize / 2)
+            {
+              float lengthY = position.y - objects.get(i).position.y;
+              float lengthX = position.x - objects.get(i).position.x;
+              Bullet bullet = new Bullet(cellPosition.x, cellPosition.y, colour, 0.2, damage);
+              bullet.direction = new PVector(lengthX / 15, lengthY / 15);
+              weapons.add(bullet);
+              break;
+            }
+          }
+          lastFired = millis();
         }
+        break;
       }
-      lastFired = millis();
+      case 1:
+      {
+        // Create the ray
+        if ((int)speed == 0)
+        {
+          Ray ray = new Ray(cellPosition.x, cellPosition.y, color(255), 1);
+          ray.isAlive = false;
+          weapons.add(ray);
+          speed = 1;
+        }
+        break;
+      }
     }
   }
 }
