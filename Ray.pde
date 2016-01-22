@@ -5,9 +5,9 @@ public class Ray extends Weapon
   PVector ePos;
   float lastFired;
   
-  Ray(float sX, float sY, color colour, float damage)
+  Ray(float sX, float sY, color colour, float speed, float damage)
   {
-    super(0, 0, colour, 0, damage);
+    super(0, 0, colour, speed, damage);
     sCell = new PVector(sX, sY);
     sPos = new PVector(0, 0);
     ePos = new PVector(0, 0);
@@ -15,12 +15,12 @@ public class Ray extends Weapon
   }
   Ray()
   {
-    this(0, 0, color(random(0, 255), random(0, 255), random(0, 255)), 1);
+    this(0, 0, color(random(0, 255), random(0, 255), random(0, 255)), 0.5, 1);
   }
   
   public void render()
   {
-    if (isAlive)
+    if (isAlive && !pause)
     {
       // Calculate the coordinates
       sPos.x = border.get("left") + cellSize / 2 + sCell.x * cellSize;
@@ -62,7 +62,7 @@ public class Ray extends Weapon
       ePos.x = objects.get(enemyNo).position.x;
       ePos.y = objects.get(enemyNo).position.y;
       isAlive = true;
-      if (lastFired + 500 < millis())
+      if (lastFired + (1000 * speed) < millis())
       {
         Enemy e = (Enemy)objects.get(enemyNo);
         e.health -= damage;

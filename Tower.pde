@@ -5,6 +5,7 @@ public class Tower extends GameObject
   float speed;
   float damage;
   boolean hover;
+  boolean created;
   color colour;
   PShape towerShape;
   PVector cellPosition;
@@ -18,6 +19,7 @@ public class Tower extends GameObject
     drawShape();
     lastFired = millis();
     hover = true;
+    created = false;
   }
   Tower()
   {
@@ -37,7 +39,7 @@ public class Tower extends GameObject
     // Type 1 tower
     if (type == 1)
     {
-      speed = 0;
+      speed = 0.5;
       damage = 1;
       colour = color(0, 255, 0);
     }
@@ -45,7 +47,7 @@ public class Tower extends GameObject
     // Type 2 tower
     if (type == 2)
     {
-      speed = 0.2;
+      speed = 0.8;
       damage = 1;
       colour = color(0, 0, 255);
     }
@@ -116,12 +118,23 @@ public class Tower extends GameObject
       case 1:
       {
         // Create the ray
-        if ((int)speed == 0)
+        if (!created)
         {
-          Ray ray = new Ray(cellPosition.x, cellPosition.y, color(255), 1);
+          Ray ray = new Ray(cellPosition.x, cellPosition.y, color(255), speed, damage);
           ray.isAlive = false;
           weapons.add(ray);
-          speed = 1;
+          created = true;
+        }
+        break;
+      }
+      case 2:
+      {
+        // Create the field
+        if (!created)
+        {
+          Field field = new Field(cellPosition.x, cellPosition.y, colour, speed, damage);
+          weapons.add(field);
+          created = true;
         }
         break;
       }

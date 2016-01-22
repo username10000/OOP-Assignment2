@@ -688,7 +688,15 @@ void mouseClicked()
     if (maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] == '0' && towerMenu.x == -1 && !checkTower((int)mousePosition.x, (int)mousePosition.y))
     {
       // Set the tower menu location
-      towerMenu.x = (int)mousePosition.x;
+      if (mousePosition.x == 0)
+        towerMenu.x = 1;
+      else
+        if (mousePosition.x == maps[curMap].cellsPerLine - 1)
+          towerMenu.x = maps[curMap].cellsPerLine - 2;
+        else
+          towerMenu.x = (int)mousePosition.x;
+      
+      //towerMenu.x = (int)mousePosition.x;
       towerMenu.y = (int)mousePosition.y + startCell;
     } else
     {
