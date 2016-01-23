@@ -1,58 +1,32 @@
-public class Tower extends GameObject
+public class Tower extends GameObject implements DamageUp, SpeedUp, RangeUp
 {
-  int type;
+  //int type;
   int lastFired;
   float speed;
   float damage;
+  float fieldRadius;
   boolean hover;
   boolean created;
   color colour;
   PShape towerShape;
   PVector cellPosition;
   
-  Tower(int type, int x, int y)
+  Tower(int x, int y)
   {
-    this.type = type;
-    setAttributes();
+    //this.type = type;
+    //setAttributes();
     cellPosition = new PVector(x, y);
-    //colour = color(random(0, 255), random(0, 255), random(0, 255));
-    drawShape();
+    //drawShape();
     lastFired = millis();
     hover = true;
     created = false;
   }
   Tower()
   {
-    this(0, 0, 0);
+    this(0, 0);
   }
   
-  private void setAttributes()
-  {
-    // Type 0 tower
-    if (type == 0)
-    {
-      speed = 0.05;
-      damage = 25;
-      colour = color(255, 0, 0);
-    }
-    
-    // Type 1 tower
-    if (type == 1)
-    {
-      speed = 0.5;
-      damage = 1;
-      colour = color(0, 255, 0);
-    }
-    
-    // Type 2 tower
-    if (type == 2)
-    {
-      speed = 0.8;
-      damage = 1;
-      colour = color(0, 0, 255);
-    }
-  }
-  private void drawShape()
+  protected void drawShape()
   {
     float halfSize = cellSize / 2 - (cellSize / 10);
     
@@ -92,6 +66,7 @@ public class Tower extends GameObject
   }
   public void update()
   {
+    /*
     switch(type)
     {
       case 0:
@@ -139,5 +114,18 @@ public class Tower extends GameObject
         break;
       }
     }
+    */
+  }
+  
+  public void DamageIncrease()
+  {
+  }
+  
+  public void SpeedIncrease()
+  {
+  }
+  
+  public void RangeIncrease()
+  {
   }
 }

@@ -8,8 +8,7 @@ public class Field extends Weapon
   {
     super(x, y, colour, speed, damage);
     cellPosition = new PVector(x, y);
-    fieldRadius = 2 * cellSize + cellSize / 2;
-    lastFired = millis();
+    fieldRadius = 2 * cellSize + cellSize / 2;lastFired = millis();
   }
   Field()
   {

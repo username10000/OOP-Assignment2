@@ -597,7 +597,7 @@ void deleteDeadObjects()
   }
 }
 
-boolean checkTower(int x, int y)
+int checkTower(int x, int y)
 {
   for (int i = 0; i < objects.size(); i++)
   {
@@ -605,10 +605,10 @@ boolean checkTower(int x, int y)
     {
       Tower temp = (Tower)objects.get(i);
       if (temp.cellPosition.x == x && temp.cellPosition.y == y)
-        return true;
+        return i;
     }
   }
-  return false;
+  return -1;
 }
 
 void gameOver()
@@ -685,7 +685,7 @@ void mouseClicked()
 {
   if (mousePosition.z == 0)
   {
-    if (maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] == '0' && towerMenu.x == -1 && !checkTower((int)mousePosition.x, (int)mousePosition.y))
+    if (maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] == '0' && towerMenu.x == -1 && checkTower((int)mousePosition.x, (int)mousePosition.y + startCell) == -1)
     {
       // Set the tower menu location
       if (mousePosition.x == 0)
@@ -716,8 +716,33 @@ void mouseClicked()
               player.points -= towerPoints[type];
 
               // Create the tower
-              Tower tower = new Tower(type, (int)towerMenu.x, (int)towerMenu.y);
-              objects.add(tower);
+              switch(i)
+              {
+                case 0:
+                {
+                  TowerBullet tower = new TowerBullet((int)towerMenu.x, (int)towerMenu.y);
+                  objects.add(tower);
+                  break;
+                }
+                case 1:
+                {
+                  TowerRay tower = new TowerRay((int)towerMenu.x, (int)towerMenu.y);
+                  objects.add(tower);
+                  break;
+                }
+                case 2:
+                {
+                  TowerField tower = new TowerField((int)towerMenu.x, (int)towerMenu.y);
+                  objects.add(tower);
+                  break;
+                }
+                default:
+                {
+                  break;
+                }
+              }
+              //Tower tower = new Tower(type, (int)towerMenu.x, (int)towerMenu.y);
+              //objects.add(tower);
             }
             else
             {
@@ -726,6 +751,17 @@ void mouseClicked()
           }
         }
       }
+      else
+      {
+        int towerClicked = checkTower((int)mousePosition.x, (int)mousePosition.y + startCell);
+        
+        if (towerClicked > -1)
+        {
+          Tower tower = (Tower)objects.get(towerClicked);
+          tower.DamageIncrease();
+        }
+      }
+      
       // Deselect the tower menu if a tower was selected
       if (selected)
       {
