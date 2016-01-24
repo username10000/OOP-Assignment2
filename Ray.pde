@@ -4,6 +4,7 @@ public class Ray extends Weapon
   PVector sPos;
   PVector ePos;
   float lastFired;
+  float fieldRadius;
   
   Ray(float sX, float sY, color colour, float speed, float damage)
   {
@@ -12,6 +13,7 @@ public class Ray extends Weapon
     sPos = new PVector(0, 0);
     ePos = new PVector(0, 0);
     lastFired = millis();
+    fieldRadius = 2 * cellSize + cellSize / 2;
   }
   Ray()
   {
@@ -41,7 +43,7 @@ public class Ray extends Weapon
     {
       sPos.x = border.get("left") + cellSize / 2 + sCell.x * cellSize;
       sPos.y = border.get("top") + cellSize / 2 + (sCell.y - startCell) * cellSize + offset;
-      if (objects.get(i) instanceof Enemy && dist(objects.get(i).position.x, objects.get(i).position.y, sPos.x, sPos.y) < 2 * cellSize + cellSize / 2)
+      if (objects.get(i) instanceof Enemy && dist(objects.get(i).position.x, objects.get(i).position.y, sPos.x, sPos.y) < fieldRadius)
       {
         /*
         isAlive = true;

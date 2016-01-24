@@ -38,13 +38,41 @@ public class TowerField extends Tower implements DamageUp, SpeedUp, RangeUp
         }
       }
     }
+    upgradeLevel[0] ++;
   }
     
   public void SpeedIncrease()
   {
+    for (int i = 0 ; i < weapons.size() ; i++)
+    {
+      if (weapons.get(i) instanceof Field)
+      {
+        Field field = (Field)weapons.get(i);
+        if (field.cellPosition.x == cellPosition.x && field.cellPosition.y == cellPosition.y)
+        {
+          field.speed -= 0.2;
+          break;
+        }
+      }
+    }
+    upgradeLevel[1] ++;
   }
   
   public void RangeIncrease()
   {
+    for (int i = 0 ; i < weapons.size() ; i++)
+    {
+      if (weapons.get(i) instanceof Field)
+      {
+        Field field = (Field)weapons.get(i);
+        if (field.cellPosition.x == cellPosition.x && field.cellPosition.y == cellPosition.y)
+        {
+          field.fieldRadius += cellSize;
+          break;
+        }
+      }
+    }
+    fieldRadius += cellSize;
+    upgradeLevel[2] ++;
   }
 }

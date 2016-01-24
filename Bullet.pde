@@ -4,6 +4,7 @@ public class Bullet extends Weapon
   PVector cellPosition;
   PVector positionOffset;
   PVector forward;
+  float fieldRadius;
   
   Bullet(float x, float y, color colour, float speed, float damage)
   {

@@ -39,13 +39,41 @@ public class TowerRay extends Tower implements DamageUp, SpeedUp, RangeUp
         }
       }
     }
+    upgradeLevel[0] ++;
   }
     
   public void SpeedIncrease()
   {
+    for (int i = 0 ; i < weapons.size() ; i++)
+    {
+      if (weapons.get(i) instanceof Ray)
+      {
+        Ray ray = (Ray)weapons.get(i);
+        if (ray.sCell.x == cellPosition.x && ray.sCell.y == cellPosition.y)
+        {
+          ray.speed -= 0.1;
+          break;
+        }
+      }
+    }
+    upgradeLevel[1] ++;
   }
   
   public void RangeIncrease()
   {
+    for (int i = 0 ; i < weapons.size() ; i++)
+    {
+      if (weapons.get(i) instanceof Ray)
+      {
+        Ray ray = (Ray)weapons.get(i);
+        if (ray.sCell.x == cellPosition.x && ray.sCell.y == cellPosition.y)
+        {
+          ray.fieldRadius += cellSize;
+          break;
+        }
+      }
+    }
+    fieldRadius += cellSize;
+    upgradeLevel[2] ++;
   }
 }

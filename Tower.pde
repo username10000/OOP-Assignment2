@@ -2,6 +2,7 @@ public class Tower extends GameObject implements DamageUp, SpeedUp, RangeUp
 {
   //int type;
   int lastFired;
+  int[] upgradeLevel;
   float speed;
   float damage;
   float fieldRadius;
@@ -20,6 +21,11 @@ public class Tower extends GameObject implements DamageUp, SpeedUp, RangeUp
     lastFired = millis();
     hover = true;
     created = false;
+    fieldRadius = 2 * cellSize + cellSize / 2;
+    upgradeLevel = new int[3];
+    upgradeLevel[0] = 0;
+    upgradeLevel[1] = 0;
+    upgradeLevel[2] = 0;
   }
   Tower()
   {
@@ -53,8 +59,14 @@ public class Tower extends GameObject implements DamageUp, SpeedUp, RangeUp
         strokeWeight(2);
         stroke(0, 0, 255, 200);
         fill(0, 255, 255, 100);
-        ellipse(position.x, position.y, cellSize * 5, cellSize * 5);
+        ellipse(position.x, position.y, fieldRadius * 2, fieldRadius * 2);
         strokeWeight(1);
+        
+        fill(0);
+        textSize(10);
+        text("DMG: Level " + upgradeLevel[0], position.x, position.y + cellSize / 2);
+        text("SPD: Level " + upgradeLevel[1], position.x, position.y + cellSize / 2 + 10);
+        text("RNG: Level " + upgradeLevel[2], position.x, position.y + cellSize / 2 + 20);
       }
       
       // Draw the tower
