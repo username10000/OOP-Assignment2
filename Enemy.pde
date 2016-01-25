@@ -2,6 +2,8 @@ public class Enemy extends GameObject
 {
   int edges;
   int health;
+  int prevHealth;
+  int checkHealth;
   int road;
   float radius;
   float speed;
@@ -16,6 +18,8 @@ public class Enemy extends GameObject
     super(500, 500, colour);
     this.edges = edges;
     health = 50 * edges;
+    prevHealth = health;
+    checkHealth = 0;
     radius = map(edges, 5, 10, cellSize / 4, cellSize / 2);
     speed = 0.012;
     drawShape();
@@ -223,6 +227,7 @@ public class Enemy extends GameObject
     text(health, position.x, position.y);
     
     // Create the shape and assign its colour
+    /*
     createShape();
     beginShape();
     strokeWeight(3);
@@ -240,7 +245,24 @@ public class Enemy extends GameObject
         noStroke();
       vertex(x, y);
     }
-    endShape(CLOSE);
+    */
+    stroke(0);
+    strokeWeight(3);
+    for (int i = 0 ; i <= edges ; i++)
+    {
+      float theta1 = i * (TWO_PI / edges) + angle;
+      float theta2 = (i + 1) * (TWO_PI / edges) + angle;
+      
+      PVector p1 = new PVector(position.x + sin(theta1) * radius, position.y - cos(theta1) * radius);
+      PVector p2 = new PVector(position.x + sin(theta2) * radius, position.y - cos(theta2) * radius);
+      
+      if (i <= ceil(health / 50))
+      {
+        line(p1.x, p1.y, p2.x, p2.y);
+      }
+      
+    }
+    //endShape(CLOSE);
     strokeWeight(1);
   }
   public void render()
@@ -260,12 +282,20 @@ public class Enemy extends GameObject
       shape(polygon);
       
       popMatrix();
+      
+      if (millis() - checkHealth < 1000 && millis() - checkHealth > 0)
+      {
+        displayHealth();
+      }
     }
   }
   public void update() //<>//
   {
     if (health <= 0)
+    {
       isAlive = false;
+      player.points += 50;
+    }
     // Find the next direction
     if (getValue((int)cellPosition.x + (int)direction.x, (int)cellPosition.y + (int)direction.y) == '*' || cellPosition.x < -1 || cellPosition.x > maps[curMap].cellsPerLine || cellPosition.y < -1)
     {
@@ -313,6 +343,18 @@ public class Enemy extends GameObject
       
       // Change direction if necessary
       direction = checkDirection(cellPosition, direction);
+    }
+    
+    // Show the Enemy's health if it's hit
+    if (prevHealth > health)
+    {
+      checkHealth = millis();
+      prevHealth = health;
+    }
+    
+    if (prevHealth < health)
+    {
+      prevHealth = health;
     }
   }
 }

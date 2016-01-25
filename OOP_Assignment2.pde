@@ -277,16 +277,31 @@ void draw()
     textAlign(CENTER, CENTER);
     textSize(12);
     
+    // Get the Tower location
+    int towerClicked = checkTower((int)upgradeMenu.x, (int)upgradeMenu.y);
+    
     // First Upgrade
+    if (((Tower)objects.get(towerClicked)).upgradeLevel[0] < 3 && player.points >= pow((towerPoints[((Tower)objects.get(towerClicked)).type] / 10), (((Tower)objects.get(towerClicked)).upgradeLevel[0] + 1)))
+      fill(0);
+    else
+      fill(255, 0, 0);
     tempPos.x += cellSize / 2;
     tempPos.y += cellSize / 2;
     text("+DMG", tempPos.x, tempPos.y);
     
     // Second Upgrade
+      if (((Tower)objects.get(towerClicked)).upgradeLevel[1] < 3 && player.points >= pow((towerPoints[((Tower)objects.get(towerClicked)).type] / 10), (((Tower)objects.get(towerClicked)).upgradeLevel[1] + 1)))
+      fill(0);
+    else
+      fill(255, 0, 0);
     tempPos.x += cellSize;
     text("+SPD", tempPos.x, tempPos.y);
     
     // Third Upgrade
+    if (((Tower)objects.get(towerClicked)).upgradeLevel[2] < 3 && player.points >= pow((towerPoints[((Tower)objects.get(towerClicked)).type] / 10), (((Tower)objects.get(towerClicked)).upgradeLevel[2] + 1)))
+      fill(0);
+    else
+      fill(255, 0, 0);
     tempPos.x += cellSize;
     text("+RNG", tempPos.x, tempPos.y);
   }
@@ -875,12 +890,14 @@ void mouseClicked()
                     break;
                   }
                 }
+                
+                // Exit the Upgrade Menu if a tower was selected
+                upgradeMenu.x = -1;
+                upgradeMenu.y = -1;
+                break;
               }
               
-              // Exit the Tower Menu if a tower was selected
-              upgradeMenu.x = -1;
-              upgradeMenu.y = -1;
-              break;
+
             }
           }
         }
