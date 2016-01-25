@@ -1,7 +1,8 @@
-public class Tower extends GameObject implements DamageUp, SpeedUp, RangeUp
+public class Tower extends GameObject
 {
   //int type;
   int lastFired;
+  int type;
   int[] upgradeLevel;
   float speed;
   float damage;
@@ -62,6 +63,7 @@ public class Tower extends GameObject implements DamageUp, SpeedUp, RangeUp
         ellipse(position.x, position.y, fieldRadius * 2, fieldRadius * 2);
         strokeWeight(1);
         
+        textAlign(CENTER, CENTER);
         fill(0);
         textSize(10);
         text("DMG: Level " + upgradeLevel[0], position.x, position.y + cellSize / 2);
@@ -127,17 +129,5 @@ public class Tower extends GameObject implements DamageUp, SpeedUp, RangeUp
       }
     }
     */
-  }
-  
-  public void DamageIncrease()
-  {
-  }
-  
-  public void SpeedIncrease()
-  {
-  }
-  
-  public void RangeIncrease()
-  {
   }
 }

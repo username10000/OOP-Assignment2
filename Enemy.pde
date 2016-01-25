@@ -5,6 +5,7 @@ public class Enemy extends GameObject
   int road;
   float radius;
   float speed;
+  float angle;
   PShape polygon;
   PVector cellPosition;
   PVector previousCell;
@@ -25,6 +26,7 @@ public class Enemy extends GameObject
     cellPosition.y -= direction.y;
     shapeOffset = new PVector(0, 0);
     previousCell = new PVector(cellPosition.x, cellPosition.y);
+    angle = 0;
   }
   Enemy()
   {
@@ -213,6 +215,34 @@ public class Enemy extends GameObject
       return dir2;
     */
   }
+  public void displayHealth()
+  {
+    textAlign(CENTER, CENTER);
+    textSize(10);
+    fill(255);
+    text(health, position.x, position.y);
+    
+    // Create the shape and assign its colour
+    createShape();
+    beginShape();
+    strokeWeight(3);
+    noFill();
+    for (int i = 0 ; i < edges ; i++)
+    {
+      float theta = i * (TWO_PI / edges) + angle;
+      
+      float x = position.x + sin(theta) * radius;
+      float y = position.y - cos(theta) * radius;
+      
+      if (i % 2 == 0)
+        stroke(0);
+      else
+        noStroke();
+      vertex(x, y);
+    }
+    endShape(CLOSE);
+    strokeWeight(1);
+  }
   public void render()
   { 
     // Calculate the coordinates of the enemy
@@ -226,14 +256,10 @@ public class Enemy extends GameObject
       
       translate(position.x, position.y);
       polygon.rotate(0.01);
+      angle += 0.01;
       shape(polygon);
       
       popMatrix();
-      
-      textAlign(CENTER, CENTER);
-      textSize(10);
-      fill(0);
-      text(health + "/" + 50 * edges, position.x, position.y);
     }
   }
   public void update() //<>//

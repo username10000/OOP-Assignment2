@@ -22,6 +22,7 @@ PImage background;
 PShape heart;
 int[] towerPoints = {100, 200, 300};
 boolean pause = false;
+boolean hoverEnemy = false;
 int towerNo = 3;
 PVector towerMenu = new PVector(-1, -1, 0);
 PVector upgradeMenu = new PVector(-1, -1);
@@ -163,7 +164,7 @@ void draw()
       }
     }
 
-    if (!hoverTower)
+    if (!hoverTower && !hoverEnemy)
     {
       // Change the colour of the selected cell depending if it's a valid position
       if (maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] >= '1' && maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] <= '9' || maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] == '*')
@@ -705,6 +706,20 @@ void mouseHover()
       mousePosition.z = -1;
     }
   }
+  
+  // Hover over an Enemy
+  hoverEnemy = false;
+  for (int i = 0 ; i < objects.size() ; i++)
+  {
+    if (objects.get(i) instanceof Enemy)
+    {
+      if (dist(mouseX, mouseY, objects.get(i).position.x, objects.get(i).position.y) <= ((Enemy)objects.get(i)).radius)
+      {
+        ((Enemy)objects.get(i)).displayHealth();
+        hoverEnemy = true;
+      }
+    }
+  }
 }
 
 void keyPressed()
@@ -835,29 +850,30 @@ void mouseClicked()
               int towerClicked = checkTower((int)upgradeMenu.x, (int)upgradeMenu.y);
               
               // Create the tower
-              switch(i)
+              if (((Tower)objects.get(towerClicked)).upgradeLevel[i] < 3 && player.points >= pow((towerPoints[((Tower)objects.get(towerClicked)).type] / 10), (((Tower)objects.get(towerClicked)).upgradeLevel[i] + 1)))
               {
-                case 0:
+                player.points -= pow((towerPoints[((Tower)objects.get(towerClicked)).type] / 10), (((Tower)objects.get(towerClicked)).upgradeLevel[i] + 1));
+                switch(i)
                 {
-                  Tower tower = (Tower)objects.get(towerClicked);
-                  tower.DamageIncrease();
-                  break;
-                }
-                case 1:
-                {
-                  Tower tower = (Tower)objects.get(towerClicked);
-                  tower.SpeedIncrease();
-                  break;
-                }
-                case 2:
-                {
-                  Tower tower = (Tower)objects.get(towerClicked);
-                  tower.RangeIncrease();
-                  break;
-                }
-                default:
-                {
-                  break;
+                  case 0:
+                  {
+                    ((DamageUp) objects.get(towerClicked)).DamageIncrease();
+                    break;
+                  }
+                  case 1:
+                  {
+                    ((SpeedUp)objects.get(towerClicked)).SpeedIncrease();
+                    break;
+                  }
+                  case 2:
+                  {
+                    ((RangeUp)objects.get(towerClicked)).RangeIncrease();
+                    break;
+                  }
+                  default:
+                  {
+                    break;
+                  }
                 }
               }
               
@@ -870,272 +886,5 @@ void mouseClicked()
         }
       }
     }
-    
-    /*
-    if (checkTower((int)mousePosition.x, (int)mousePosition.y + startCell) == -1 || (towerMenu.x != -1 && upgradeMenu.x == -1))
-    {
-      // Tower Menu
-      
-      // Check if there isn't already a Tower Menu opened
-      if (towerMenu.x == -1)
-      {
-        // Set the Tower Menu location
-        if (maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] == '0')
-        {
-          // Set the Tower Menu location
-          if (mousePosition.x == 0)
-            towerMenu.x = 1;
-          else
-            if (mousePosition.x == maps[curMap].cellsPerLine - 1)
-              towerMenu.x = maps[curMap].cellsPerLine - 2;
-            else
-              towerMenu.x = (int)mousePosition.x;
-          towerMenu.y = (int)mousePosition.y + startCell;
-        }
-      }
-      else
-      {
-        // Create the Tower or exit Tower Menu
-        for (int i = 0; i <= 2; i++)
-        {
-          // Check if a Tower was selected
-          if ((int)mousePosition.x == (int)towerMenu.x + i - 1 && (int)mousePosition.y + startCell == (int)towerMenu.y)
-          {
-            int type = i;
-            if (player.points >= towerPoints[type])
-            {
-              // Decrease the player's points
-              player.points -= towerPoints[type];
-
-              // Create the tower
-              switch(i)
-              {
-                case 0:
-                {
-                  TowerBullet tower = new TowerBullet((int)towerMenu.x, (int)towerMenu.y);
-                  objects.add(tower);
-                  break;
-                }
-                case 1:
-                {
-                  TowerRay tower = new TowerRay((int)towerMenu.x, (int)towerMenu.y);
-                  objects.add(tower);
-                  break;
-                }
-                case 2:
-                {
-                  TowerField tower = new TowerField((int)towerMenu.x, (int)towerMenu.y);
-                  objects.add(tower);
-                  break;
-                }
-                default:
-                {
-                  break;
-                }
-              }
-              
-              // Exit the Tower Menu if a tower was selected
-              towerMenu.x = -1;
-              towerMenu.y = -1;
-              break;
-            }
-            else
-            {
-              // Exit the loop if the player doesn't have enough points
-              break;
-            }
-          }
-          if (i == 2)
-          {
-            // Exit the Tower Menu if the mouse was clicked outside of it
-            towerMenu.x = -1;
-            towerMenu.y = -1;
-          }
-        }
-      }
-    }
-    else
-    {
-      // Upgrade Menu
-      
-      // Check if there isn't already a Upgrade Menu opened
-      if (upgradeMenu.x == -1)
-      {
-          // Set the Tower Menu location
-          if (mousePosition.x == 0)
-            upgradeMenu.x = 1;
-          else
-            if (mousePosition.x == maps[curMap].cellsPerLine - 1)
-              upgradeMenu.x = maps[curMap].cellsPerLine - 2;
-            else
-              upgradeMenu.x = (int)mousePosition.x;
-          upgradeMenu.y = (int)mousePosition.y + startCell;
-      }
-      else
-      {
-        // Apply the upgrade or exit Upgrade Menu
-        for (int i = 0; i <= 2; i++)
-        {
-          // Check if a Tower was selected
-          if ((int)mousePosition.x == (int)upgradeMenu.x + i - 1 && (int)mousePosition.y + startCell == (int)upgradeMenu.y)
-          {
-            int towerClicked = checkTower((int)mousePosition.x, (int)mousePosition.y + startCell);
-            
-            // Create the tower
-            switch(i)
-            {
-              case 0:
-              {
-                Tower tower = (Tower)objects.get(towerClicked);
-                tower.DamageIncrease();
-                break;
-              }
-              case 1:
-              {
-                Tower tower = (Tower)objects.get(towerClicked);
-                tower.SpeedIncrease();
-                break;
-              }
-              case 2:
-              {
-                Tower tower = (Tower)objects.get(towerClicked);
-                tower.RangeIncrease();
-                break;
-              }
-              default:
-              {
-                break;
-              }
-            }
-            
-            // Exit the Tower Menu if a tower was selected
-            upgradeMenu.x = -1;
-            upgradeMenu.y = -1;
-            break;
-          }
-          if (i == 2)
-          {
-            // Exit the Tower Menu if the mouse was clicked outside of it
-            upgradeMenu.x = -1;
-            upgradeMenu.y = -1;
-          }
-        }
-      }
-    }
-    */
-    
-    
-    
-    /*
-    if (towerMenu.x == -1 && upgradeMenu.x == -1 && checkTower((int)mousePosition.x, (int)mousePosition.y + startCell) != -1)
-    {
-      upgradeMenu.x = (int)mousePosition.x;
-      upgradeMenu.y = (int)mousePosition.y + startCell;
-    }
-    else
-    {
-      if (upgradeMenu.x != -1)
-      {
-        
-      }
-    }
-    if (maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] == '0' && towerMenu.x == -1 && checkTower((int)mousePosition.x, (int)mousePosition.y + startCell) == -1)
-    {
-      // Set the tower menu location
-      if (mousePosition.x == 0)
-        towerMenu.x = 1;
-      else
-        if (mousePosition.x == maps[curMap].cellsPerLine - 1)
-          towerMenu.x = maps[curMap].cellsPerLine - 2;
-        else
-          towerMenu.x = (int)mousePosition.x;
-      
-      //towerMenu.x = (int)mousePosition.x;
-      towerMenu.y = (int)mousePosition.y + startCell;
-    } else
-    {
-      boolean selected = true;
-      
-      // Check if the cell clicked is in the tower menu
-      if (towerMenu.x != -1)
-      {
-        for (int i = 0; i <= 2; i++)
-        {
-          if ((int)mousePosition.x == (int)towerMenu.x + i - 1 && (int)mousePosition.y + startCell == (int)towerMenu.y)
-          {
-            int type = i;
-            if (player.points >= towerPoints[type])
-            {
-              // Decrease the player's points
-              player.points -= towerPoints[type];
-
-              // Create the tower
-              switch(i)
-              {
-                case 0:
-                {
-                  TowerBullet tower = new TowerBullet((int)towerMenu.x, (int)towerMenu.y);
-                  objects.add(tower);
-                  break;
-                }
-                case 1:
-                {
-                  TowerRay tower = new TowerRay((int)towerMenu.x, (int)towerMenu.y);
-                  objects.add(tower);
-                  break;
-                }
-                case 2:
-                {
-                  TowerField tower = new TowerField((int)towerMenu.x, (int)towerMenu.y);
-                  objects.add(tower);
-                  break;
-                }
-                default:
-                {
-                  break;
-                }
-              }
-              //Tower tower = new Tower(type, (int)towerMenu.x, (int)towerMenu.y);
-              //objects.add(tower);
-            }
-            else
-            {
-              selected = false;
-            }
-          }
-        }
-      }
-      else
-      {
-        */
-        /*
-        int towerClicked = checkTower((int)mousePosition.x, (int)mousePosition.y + startCell);
-        
-        if (towerClicked > -1)
-        {
-          upgradeMenu.x = (int)mousePosition.x;
-          upgradeMenu.y = (int)mousePosition.y + startCell;
-          
-          
-          Tower tower = (Tower)objects.get(towerClicked);
-          tower.DamageIncrease();
-          
-        }
-        else
-        {
-          
-        }
-        
-      }*/
-      /*
-      // Deselect the tower menu if a tower was selected
-      if (selected)
-      {
-        towerMenu.x = -1;
-        towerMenu.y = -1;
-      }
-      
-    }*/
-    
   }
 }

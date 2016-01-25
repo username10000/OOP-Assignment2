@@ -7,6 +7,7 @@ public class TowerRay extends Tower implements DamageUp, SpeedUp, RangeUp
     damage = 1;
     colour = color(0, 255, 0);
     drawShape();
+    type = 1;
   }
   TowerRay()
   {

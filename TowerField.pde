@@ -7,6 +7,7 @@ public class TowerField extends Tower implements DamageUp, SpeedUp, RangeUp
     damage = 1;
     colour = color(0, 0, 255);
     drawShape();
+    type = 2;
   }
   TowerField()
   {
