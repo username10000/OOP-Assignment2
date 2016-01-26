@@ -3,7 +3,7 @@ public class TowerField extends Tower implements DamageUp, SpeedUp, RangeUp
   TowerField(int x, int y)
   {
     super(x, y);
-    speed = 0.8;
+    speed = 0.7;
     damage = 1;
     colour = color(0, 0, 255);
     drawShape();

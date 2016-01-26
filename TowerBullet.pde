@@ -4,7 +4,7 @@ public class TowerBullet extends Tower implements DamageUp, SpeedUp, RangeUp
   {
     super(x, y);
     speed = 1;
-    damage = 25;
+    damage = 15;
     colour = color(255, 0, 0);
     drawShape();
     type = 0;
@@ -38,7 +38,7 @@ public class TowerBullet extends Tower implements DamageUp, SpeedUp, RangeUp
     
   public void DamageIncrease()
   {
-    damage += 25;
+    damage += 15;
     upgradeLevel[0] ++;
   }
   

@@ -256,18 +256,15 @@ public class Enemy extends GameObject
       PVector p1 = new PVector(position.x + sin(theta1) * radius, position.y - cos(theta1) * radius);
       PVector p2 = new PVector(position.x + sin(theta2) * radius, position.y - cos(theta2) * radius);
       
-      if (i <= ceil(health / 50))
+      if (i < ceil(health / 50))
       {
         line(p1.x, p1.y, p2.x, p2.y);
       }
       if (i == ceil(health / 50))
       {
-        /*
-        float m = (p1.y - p2.y) / (p1.x - p2.x);  // Slope
-        float x = map(health - (floor(health / 50) * 50), 0, 50, 0, p1.x + (p1.x - p2.x));
-        float y = m * (p1.x - x) + p1.y;
+        float x = lerp(p1.x, p2.x, map(health - (int)(health / 50) * 50, 0, 50, 0, 1));
+        float y = lerp(p1.y, p2.y, map(health - (int)(health / 50) * 50, 0, 50, 0, 1));
         line(p1.x, p1.y, x, y);
-        */
       }
       
     }
