@@ -260,6 +260,15 @@ public class Enemy extends GameObject
       {
         line(p1.x, p1.y, p2.x, p2.y);
       }
+      if (i == ceil(health / 50))
+      {
+        /*
+        float m = (p1.y - p2.y) / (p1.x - p2.x);  // Slope
+        float x = map(health - (floor(health / 50) * 50), 0, 50, 0, p1.x + (p1.x - p2.x));
+        float y = m * (p1.x - x) + p1.y;
+        line(p1.x, p1.y, x, y);
+        */
+      }
       
     }
     //endShape(CLOSE);
