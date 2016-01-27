@@ -11,6 +11,7 @@ public class Button
   color colour;
   color hoverColour;
   color activeColour;
+  color textColour;
   boolean normal;
   boolean hover;
   boolean active;
@@ -25,6 +26,7 @@ public class Button
     colour = color(0, 0, 150);
     hoverColour = color(0, 0, 255);
     activeColour = color(0, 0, 100);
+    textColour = color(255, 255, 255);
     normal = true;
     hover = false;
     active = false;
@@ -34,12 +36,13 @@ public class Button
     group = "Main";
     drawShape();
   }
-  Button(String t, float x, float y, float w, float h, color c1, color c2, color c3)
+  Button(String t, float x, float y, float w, float h, color c1, color c2, color c3, color c4)
   {
     this(t, x, y, w, h);
     colour = c1;
     hoverColour = c2;
     activeColour = c3;
+    textColour = c4;
     drawShape();
   }
   Button()
@@ -112,6 +115,7 @@ public class Button
       popMatrix();
       textAlign(CENTER, CENTER);
       textSize(20);
+      fill(textColour);
       text(text, position.x, position.y);
     }
   }

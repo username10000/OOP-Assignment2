@@ -26,7 +26,11 @@ boolean pause = false;
 boolean hoverEnemy = false;
 boolean mainMenu = true;
 boolean menu = false;
+boolean levelSelect = false;
 int towerNo = 3;
+int totalScore;
+int seed;
+int maxLevel;
 PVector towerMenu = new PVector(-1, -1, 0);
 PVector upgradeMenu = new PVector(-1, -1);
 
@@ -93,7 +97,35 @@ void setup()
   buttons.add(new Button("Exit", width / 2, map(3, 1, noButtons, top, bottom), 250, 50));
   ((Button)buttons.get(2)).setGroup("Main Menu");
   
+  // Level Select Buttons
+  noButtons = 9;
+  top = height / 5;
+  bottom = height - top;
+  float left = top;
+  float right = width - left;
+  float buttonWidth = (width - 2 * left - 4 * 20) / 5;
+  float buttonHeight = (height - 2 * top - 4 * 40) / 2;
+  for (int i = 0 ; i < noButtons ; i++)
+  {
+    buttons.add(new Button("Level " + (i + 1), map(i % 5, 0, 4, left, right), map(i / 5, 0, 1, top, bottom), buttonWidth, buttonHeight));
+    buttons.get(i + 3).setGroup("Level Select");
+  }
+  
   // Menu Buttons
+  noButtons = 3;
+  top = height / 4;
+  bottom = height - top;
+  buttons.add(new Button("Resume", width / 2, map(1, 1, noButtons, top, bottom), 250, 50));
+  buttons.get(12).setGroup("Menu");
+  buttons.add(new Button("Level Select", width / 2, map(2, 1, noButtons, top, bottom), 250, 50));
+  buttons.get(13).setGroup("Menu");
+  buttons.add(new Button("Main Menu", width / 2, map(3, 1, noButtons, top, bottom), 250, 50));
+  buttons.get(14).setGroup("Menu");
+  
+  for (int i = 0 ; i < buttons.size() ; i++)
+  {
+    buttons.get(i).hide();
+  }
   
   //createMapImage();
 }
@@ -102,8 +134,53 @@ void draw()
 {
   background(0);
 
-  if (!mainMenu)
+  if (mainMenu)
   {
+    showGroup("Main Menu");
+    // Draw the Main Menu
+    for (int i = 0 ; i < buttons.size() ; i++)
+    {
+      if (buttons.get(i).group.equals("Main Menu"))
+      {
+        buttons.get(i).update();
+        buttons.get(i).render();
+      }
+    }
+  }
+  else
+  if (levelSelect)
+  {
+    showGroup("Level Select");
+    // Draw the Level Select Screen
+    for (int i = 0 ; i < buttons.size() ; i++)
+    {
+      if (buttons.get(i).group.equals("Level Select"))
+      {
+        buttons.get(i).update();
+        buttons.get(i).render();
+      }
+    }
+  }
+  else
+  {
+    if (menu)
+    {
+      showGroup("Menu");
+      pause = true;
+      for (int i = 0 ; i < buttons.size() ; i++)
+      {
+        if (buttons.get(i).group.equals("Menu"))
+        {
+          buttons.get(i).update();
+          buttons.get(i).render();
+        }
+      }
+    }
+    else
+    {
+      hideGroup("Menu");
+      pause = false;
+    }
     // Draw the borders of the screen
     //noFill();
     fill(0, 92, 9);
@@ -331,18 +408,6 @@ void draw()
     // Check if it's game over
     if (player.lives == 0)
       gameOver();
-  }
-  else
-  {
-    // Draw the Main Menu
-    for (int i = 0 ; i < buttons.size() ; i++)
-    {
-      if (buttons.get(i).group.equals("Main Menu"))
-      {
-        buttons.get(i).update();
-        buttons.get(i).render();
-      }
-    }
   }
 }
 
@@ -711,10 +776,24 @@ void gameOver()
   text("GAME OVER", width / 2, height / 2);
 }
 
+void hideGroup(String g)
+{
+  for (int i = 0 ; i < buttons.size() ; i++)
+    if (buttons.get(i).group.equals(g))
+      buttons.get(i).hide();
+}
+
+void showGroup(String g)
+{
+  for (int i = 0 ; i < buttons.size() ; i++)
+    if (buttons.get(i).group.equals(g))
+      buttons.get(i).show();
+}
+
 void mouseHover()
 { 
   // Mark the selected cell
-  if (mouseX > border.get("left") && mouseX < width - border.get("right") && mouseY > border.get("top") && mouseY < height - border.get("bottom"))
+  if (mouseX > border.get("left") && mouseX < width - border.get("right") && mouseY > border.get("top") && mouseY < height - border.get("bottom") && !menu)
   {
     mousePosition.x = (int)map(mouseX, border.get("left"), width - border.get("right"), 0, maps[curMap].cellsPerLine);
     mousePosition.y = (int)map(mouseY, border.get("top") + offset, height - border.get("bottom") + offset, 0, cellsPerHeight);
@@ -727,7 +806,7 @@ void mouseHover()
   }
 
   // Move the screen up
-  if (mouseY < border.get("top") || mouseY < cellSize)
+  if ((mouseY < border.get("top") || mouseY < cellSize) && !menu)
   {
     if (startCell > 0)
     {
@@ -742,7 +821,7 @@ void mouseHover()
     }
   }
   // Move the screen down
-  if (mouseY > border.get("top") + screenHeight || mouseY > height - cellSize)
+  if ((mouseY > border.get("top") + screenHeight || mouseY > height - cellSize) && !menu)
   {
     if (endCell < maps[curMap].cellsPerCol)
     {
@@ -757,16 +836,19 @@ void mouseHover()
     }
   }
   
-  // Hover over an Enemy
-  hoverEnemy = false;
-  for (int i = 0 ; i < objects.size() ; i++)
+  if (!menu)
   {
-    if (objects.get(i) instanceof Enemy)
+    // Hover over an Enemy
+    hoverEnemy = false;
+    for (int i = 0 ; i < objects.size() ; i++)
     {
-      if (dist(mouseX, mouseY, objects.get(i).position.x, objects.get(i).position.y) <= ((Enemy)objects.get(i)).radius)
+      if (objects.get(i) instanceof Enemy)
       {
-        ((Enemy)objects.get(i)).displayHealth();
-        hoverEnemy = true;
+        if (dist(mouseX, mouseY, objects.get(i).position.x, objects.get(i).position.y) <= ((Enemy)objects.get(i)).radius)
+        {
+          ((Enemy)objects.get(i)).displayHealth();
+          hoverEnemy = true;
+        }
       }
     }
   }
@@ -774,14 +856,40 @@ void mouseHover()
 
 void keyPressed()
 {
+  /*
   if (key >= '1' && key <= '9')
   {
     curMap = key - '0' - 1;
     initialSettings();
   }
+  */
   if (key == ' ')
   {
     pause = !pause;
+  }
+  if (key == ESC || keyCode == ESC)
+  {
+    menu = !menu;
+    key = 0;
+    keyCode = 0;
+  }
+}
+
+void keyReleased()
+{
+  if (key == ESC || keyCode == ESC)
+  {
+    key = 0;
+    keyCode = 0;
+  }
+}
+
+void keyTyped()
+{
+  if (key == ESC || keyCode == ESC)
+  {
+    key = 0;
+    keyCode = 0;
   }
 }
 
@@ -952,6 +1060,10 @@ void mouseClicked()
             case "New Game":
             {
               mainMenu = false;
+              levelSelect = true;
+              seed = (int)random(99999);
+              totalScore = 0;
+              maxLevel = 0;
               break;
             }
             case "Load Game":
@@ -968,11 +1080,50 @@ void mouseClicked()
               break;
             }
           }
-          for (int j = 0 ; j < buttons.size() ; j++)
-          {
-            buttons.get(j).hide();
-          }
+          hideGroup("Main Menu");
           break;
+        }
+      }
+    }
+    else
+    if (levelSelect)
+    {
+      for (int  i = 0 ; i < buttons.size() ; i++)
+      {
+        if (buttons.get(i).group.equals("Level Select") && buttons.get(i).active)
+        {
+          curMap = ((buttons.get(i).text.charAt(buttons.get(i).text.length() - 1)) - '0') - 1;
+          levelSelect = false;
+          hideGroup("Level Select");
+          break;
+        }
+      }
+    }
+    else
+    if (menu)
+    {
+      for (int i = 0 ; i < buttons.size() ; i++)
+      {
+        if (buttons.get(i).group.equals("Menu") && buttons.get(i).active)
+        {
+          switch(buttons.get(i).text)
+          {
+            case "Level Select":
+            {
+              levelSelect = true;
+              break;
+            }
+            case "Main Menu":
+            {
+              mainMenu = true;
+              break;
+            }
+            default:
+            {
+              break;
+            }
+          }
+          menu = false;
         }
       }
     }
