@@ -82,6 +82,7 @@ void setup()
     noEnemies[i] = (int)random(10, 15);
   }
 
+  // Main Menu Buttons
   int noButtons = 3;  
   float top = height / 5;
   float bottom = height - top;
@@ -91,6 +92,9 @@ void setup()
   ((Button)buttons.get(1)).setGroup("Main Menu");
   buttons.add(new Button("Exit", width / 2, map(3, 1, noButtons, top, bottom), 250, 50));
   ((Button)buttons.get(2)).setGroup("Main Menu");
+  
+  // Menu Buttons
+  
   //createMapImage();
 }
 
@@ -330,6 +334,7 @@ void draw()
   }
   else
   {
+    // Draw the Main Menu
     for (int i = 0 ; i < buttons.size() ; i++)
     {
       if (buttons.get(i).group.equals("Main Menu"))
@@ -930,6 +935,44 @@ void mouseClicked()
 
             }
           }
+        }
+      }
+    }
+  }
+  else
+  {
+    if (mainMenu)
+    {
+      for (int i = 0 ; i < buttons.size() ; i++)
+      {
+        if (buttons.get(i).group.equals("Main Menu") && buttons.get(i).active)
+        {
+          switch(buttons.get(i).text)
+          {
+            case "New Game":
+            {
+              mainMenu = false;
+              break;
+            }
+            case "Load Game":
+            {
+              mainMenu = false;
+              break;
+            }
+            case "Exit":
+            {
+              exit();
+            }
+            default:
+            {
+              break;
+            }
+          }
+          for (int j = 0 ; j < buttons.size() ; j++)
+          {
+            buttons.get(j).hide();
+          }
+          break;
         }
       }
     }

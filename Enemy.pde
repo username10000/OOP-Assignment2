@@ -221,10 +221,12 @@ public class Enemy extends GameObject
   }
   public void displayHealth()
   {
+    /*
     textAlign(CENTER, CENTER);
     textSize(10);
     fill(255);
     text(health, position.x, position.y);
+    */
     
     // Create the shape and assign its colour
     /*

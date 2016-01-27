@@ -11,7 +11,9 @@ public class Button
   color colour;
   color hoverColour;
   color activeColour;
-  boolean[] state;
+  boolean normal;
+  boolean hover;
+  boolean active;
   String text;
   String group;
   
@@ -22,11 +24,10 @@ public class Button
     bHeight = h;
     colour = color(0, 0, 150);
     hoverColour = color(0, 0, 255);
-    activeColour = color(0, 0, 200);
-    state = new boolean[3];
-    state[0] = true;
-    state[1] = false;
-    state[2] = false;
+    activeColour = color(0, 0, 100);
+    normal = true;
+    hover = false;
+    active = false;
     halfWidth = bWidth / 2;
     halfHeight = bHeight / 2;
     text = t;
@@ -69,16 +70,16 @@ public class Button
   
   public void hide()
   {
-    state[0] = false;
-    state[1] = false;
-    state[2] = false;
+    normal = false;
+    hover = false;
+    active = false;
   }
   
   public void show()
   {
-    state[0] = true;
-    state[1] = false;
-    state[2] = false;
+    normal = true;
+    hover = false;
+    active = false;
   }
   
   public void setGroup(String name)
@@ -89,21 +90,21 @@ public class Button
   public void render()
   {
     // Check if the button is visible
-    if (state[0] || state[1] || state[2])
+    if (normal || hover || active)
     {
       pushMatrix();
       translate(position.x, position.y);
       
       // Check Normal State
-      if (state[0])
+      if (normal)
       {
         shape(shape);
       }
-      if (state[1])
+      if (hover)
       {
         shape(hoverShape);
       }
-      if (state[2])
+      if (active)
       {
         shape(activeShape);
       }
@@ -117,28 +118,28 @@ public class Button
 
   public void update()
   {
-    if (state[0] || state[1] || state[2])
+    if (normal || hover || active)
     {
       if (mouseX > position.x - halfWidth && mouseX < position.x + halfWidth && mouseY > position.y - halfHeight && mouseY < position.y + halfHeight)
       {
         if (mousePressed)
         {
-          state[0] = false;
-          state[1] = false;
-          state[2] = true;
+          normal = false;
+          hover = false;
+          active = true;
         }
         else
         {
-          state[0] = false;
-          state[1] = true;
-          state[2] = false;
+          normal = false;
+          hover = true;
+          active = false;
         }
       }
       else
       {
-        state[0] = true;
-        state[1] = false;
-        state[2] = false;
+        normal = true;
+        hover = false;
+        active = false;
       }
     }
   }
