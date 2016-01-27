@@ -17,12 +17,15 @@ MapObject[] maps = new MapObject[9];
 MapObject importMap;
 ArrayList<GameObject> objects = new ArrayList<GameObject>();
 ArrayList<Weapon> weapons = new ArrayList<Weapon>();
+ArrayList<Button> buttons = new ArrayList<Button>();
 Player player;
 PImage background;
 PShape heart;
 int[] towerPoints = {100, 200, 300};
 boolean pause = false;
 boolean hoverEnemy = false;
+boolean mainMenu = true;
+boolean menu = false;
 int towerNo = 3;
 PVector towerMenu = new PVector(-1, -1, 0);
 PVector upgradeMenu = new PVector(-1, -1);
@@ -79,6 +82,15 @@ void setup()
     noEnemies[i] = (int)random(10, 15);
   }
 
+  int noButtons = 3;  
+  float top = height / 5;
+  float bottom = height - top;
+  buttons.add(new Button("New Game", width / 2, map(1, 1, noButtons, top, bottom), 250, 50));
+  ((Button)buttons.get(0)).setGroup("Main Menu");
+  buttons.add(new Button("Load Game", width / 2, map(2, 1, noButtons, top, bottom), 250, 50));
+  ((Button)buttons.get(1)).setGroup("Main Menu");
+  buttons.add(new Button("Exit", width / 2, map(3, 1, noButtons, top, bottom), 250, 50));
+  ((Button)buttons.get(2)).setGroup("Main Menu");
   //createMapImage();
 }
 
@@ -86,229 +98,247 @@ void draw()
 {
   background(0);
 
-  // Draw the borders of the screen
-  //noFill();
-  fill(0, 92, 9);
-  noStroke();
-  //stroke(255);
-  rect(border.get("left"), border.get("top"), screenWidth, screenHeight);
-
-  // Only for debugging
-  /*
-  for (int i = 0 ; i <= cellsPerLine ; i++)
-   {
-   // Vertical Lines
-   line(border.get("left") + cellSize * i, border.get("top"), border.get("left") + cellSize * i, border.get("top") + screenHeight);
-   }
-   for (int i = 0 ; i <= cellsPerHeight ; i++)
-   {
-   // Horizontal Lines
-   line(border.get("left"), border.get("top") + cellSize * i, border.get("left") + screenWidth, border.get("top") + cellSize * i);
-   }*/
-
-  // Draw the occupied cells
-  drawRoad();
-
-  if (!pause)
+  if (!mainMenu)
   {
-    // Create enemies
-    for (int i = 0; i < noEnemies.length; i++)
+    // Draw the borders of the screen
+    //noFill();
+    fill(0, 92, 9);
+    noStroke();
+    //stroke(255);
+    rect(border.get("left"), border.get("top"), screenWidth, screenHeight);
+  
+    // Only for debugging
+    /*
+    for (int i = 0 ; i <= cellsPerLine ; i++)
+     {
+     // Vertical Lines
+     line(border.get("left") + cellSize * i, border.get("top"), border.get("left") + cellSize * i, border.get("top") + screenHeight);
+     }
+     for (int i = 0 ; i <= cellsPerHeight ; i++)
+     {
+     // Horizontal Lines
+     line(border.get("left"), border.get("top") + cellSize * i, border.get("left") + screenWidth, border.get("top") + cellSize * i);
+     }*/
+  
+    // Draw the occupied cells
+    drawRoad();
+  
+    if (!pause)
     {
-      if (noEnemies[i] > 0 && i <= curMap)
+      // Create enemies
+      for (int i = 0; i < noEnemies.length; i++)
       {
-        createEnemy(i + 1);
-      }
-    }
-
-    // Update objects
-    for (int i = 0; i < objects.size() || i < weapons.size(); i++)
-    {
-      if (i < objects.size())
-        objects.get(i).update();
-      if (i < weapons.size())
-        weapons.get(i).update();
-    }
-  }
-
-  // Render enemies
-  for (int i = 0; i < objects.size() || i < weapons.size(); i++)
-  {
-    if (i < objects.size())
-    {
-      objects.get(i).render();
-      if (objects.get(i) instanceof Tower)
-      {
-        Tower tempTower = (Tower)objects.get(i);
-        tempTower.hover = false;
-      }
-    }
-    if (i < weapons.size())
-      weapons.get(i).render();
-  }
-
-  // Mark the cell if it's hovered
-  if (mousePosition.z == 0 && towerMenu.x == -1 && upgradeMenu.x == -1)
-  {
-    // Check if the mouse is over a tower
-    boolean hoverTower = false;
-    for (int i = 0; i < objects.size(); i++)
-    {
-      if (objects.get(i) instanceof Tower)
-      {
-        Tower tempTower = (Tower)objects.get(i);
-        if (mousePosition.x == tempTower.cellPosition.x && mousePosition.y + startCell == tempTower.cellPosition.y)
+        if (noEnemies[i] > 0 && i <= curMap)
         {
-          tempTower.hover = true;
-          hoverTower = true;
+          createEnemy(i + 1);
         }
       }
-    }
-
-    if (!hoverTower && !hoverEnemy)
-    {
-      // Change the colour of the selected cell depending if it's a valid position
-      if (maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] >= '1' && maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] <= '9' || maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] == '*')
-      {
-        stroke(255, 0, 0);
-        fill(255, 0, 0, 100);
-      } else
-      {
-        stroke(0, 255, 0);
-        fill(0, 255, 0, 100);
-      }
-      rect(border.get("left") + mousePosition.x * cellSize, border.get("top") + mousePosition.y * cellSize + offset, cellSize, cellSize);
-    }
-  }
-
-  // Draw all the information needed on the screen
-  printInfo();
-
-  // Check if the mouse is hovering something
-  mouseHover();
-
-  // Draw the rect border on top of the enemies
-  //noFill();
-  //stroke(255);
-  //rect(border.get("left"), border.get("top"), screenWidth, screenHeight);
-
-  // Combine enemies if they collide
-  combineEnemies();
-
-  // Delete bullet and damage enemies
-  bulletHit();
-
-  // Delete dead objects
-  deleteDeadObjects();
-
-  // Draw tower select menu
-  if (towerMenu.x != -1)
-  {
-    // Position and number of tower variables
-    PVector tempPos;
-    int tempCellPos = (int)towerMenu.x - (int)(towerNo / 2);
-
-    // Menu colour and stroke
-    stroke(0);
-    fill(100);
-
-    // Calculate the coordinates of the tower menu
-    tempPos = new PVector(border.get("left") + tempCellPos * cellSize, border.get("top") + (towerMenu.y - startCell) * cellSize + offset);
-
-    // Draw the menu
-    rect(tempPos.x, tempPos.y, cellSize * towerNo, cellSize);
-    
-    // Draw the towers from which to select
-    float halfSize = cellSize / 2 - (cellSize / 10);
-    color tempColour;
-    
-    // Type 0 Tower
-    if (player.points >= towerPoints[0])
-      tempColour = color(255, 0, 0);
-    else
-      tempColour = color(100, 0, 0);
-    tempPos.x += cellSize / 2;
-    tempPos.y += cellSize / 2;
-    
-    stroke(tempColour);
-    fill(tempColour);
-    triangle(tempPos.x, tempPos.y - halfSize, tempPos.x - halfSize, tempPos.y + halfSize, tempPos.x + halfSize, tempPos.y + halfSize);
-    
-    // Type 1 Tower
-    if (player.points >= towerPoints[1])
-      tempColour = color(0, 255, 0);
-    else
-      tempColour = color(0, 100, 0);
-    tempPos.x += cellSize;
-    
-    stroke(tempColour);
-    fill(tempColour);
-    triangle(tempPos.x, tempPos.y - halfSize, tempPos.x - halfSize, tempPos.y + halfSize, tempPos.x + halfSize, tempPos.y + halfSize);
-    
-    // Type 2 Tower
-    if (player.points >= towerPoints[1])
-      tempColour = color(0, 0, 255);
-    else
-      tempColour = color(0, 0, 100);
-    tempPos.x += cellSize;
-    
-    stroke(tempColour);
-    fill(tempColour);
-    triangle(tempPos.x, tempPos.y - halfSize, tempPos.x - halfSize, tempPos.y + halfSize, tempPos.x + halfSize, tempPos.y + halfSize);
-  }
   
-  // Draw the upgrade menu
-  if (upgradeMenu.x != -1)
-  {
-    // Position and number of tower variables
-    PVector tempPos;
-    int tempCellPos = (int)upgradeMenu.x - (int)(towerNo / 2);
-
-    // Menu colour and stroke
-    stroke(0);
-    fill(100);
-
-    // Calculate the coordinates of the tower menu
-    tempPos = new PVector(border.get("left") + tempCellPos * cellSize, border.get("top") + (upgradeMenu.y - startCell) * cellSize + offset);
-
-    // Draw the menu
-    rect(tempPos.x, tempPos.y, cellSize * towerNo, cellSize);
+      // Update objects
+      for (int i = 0; i < objects.size() || i < weapons.size() || i < buttons.size(); i++)
+      {
+        if (i < objects.size())
+          objects.get(i).update();
+        if (i < weapons.size())
+          weapons.get(i).update();
+        if (i < buttons.size())
+          buttons.get(i).update();
+      }
+    }
+  
+    // Render enemies
+    for (int i = 0; i < objects.size() || i < weapons.size() || i < buttons.size(); i++)
+    {
+      if (i < objects.size())
+      {
+        objects.get(i).render();
+        if (objects.get(i) instanceof Tower)
+        {
+          Tower tempTower = (Tower)objects.get(i);
+          tempTower.hover = false;
+        }
+      }
+      if (i < weapons.size())
+        weapons.get(i).render();
+      if (i < buttons.size())
+        buttons.get(i).render();
+    }
+  
+    // Mark the cell if it's hovered
+    if (mousePosition.z == 0 && towerMenu.x == -1 && upgradeMenu.x == -1)
+    {
+      // Check if the mouse is over a tower
+      boolean hoverTower = false;
+      for (int i = 0; i < objects.size(); i++)
+      {
+        if (objects.get(i) instanceof Tower)
+        {
+          Tower tempTower = (Tower)objects.get(i);
+          if (mousePosition.x == tempTower.cellPosition.x && mousePosition.y + startCell == tempTower.cellPosition.y)
+          {
+            tempTower.hover = true;
+            hoverTower = true;
+          }
+        }
+      }
+  
+      if (!hoverTower && !hoverEnemy)
+      {
+        // Change the colour of the selected cell depending if it's a valid position
+        if (maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] >= '1' && maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] <= '9' || maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] == '*')
+        {
+          stroke(255, 0, 0);
+          fill(255, 0, 0, 100);
+        } else
+        {
+          stroke(0, 255, 0);
+          fill(0, 255, 0, 100);
+        }
+        rect(border.get("left") + mousePosition.x * cellSize, border.get("top") + mousePosition.y * cellSize + offset, cellSize, cellSize);
+      }
+    }
+  
+    // Draw all the information needed on the screen
+    printInfo();
+  
+    // Check if the mouse is hovering something
+    mouseHover();
+  
+    // Draw the rect border on top of the enemies
+    //noFill();
+    //stroke(255);
+    //rect(border.get("left"), border.get("top"), screenWidth, screenHeight);
+  
+    // Combine enemies if they collide
+    combineEnemies();
+  
+    // Delete bullet and damage enemies
+    bulletHit();
+  
+    // Delete dead objects
+    deleteDeadObjects();
+  
+    // Draw tower select menu
+    if (towerMenu.x != -1)
+    {
+      // Position and number of tower variables
+      PVector tempPos;
+      int tempCellPos = (int)towerMenu.x - (int)(towerNo / 2);
+  
+      // Menu colour and stroke
+      stroke(0);
+      fill(100);
+  
+      // Calculate the coordinates of the tower menu
+      tempPos = new PVector(border.get("left") + tempCellPos * cellSize, border.get("top") + (towerMenu.y - startCell) * cellSize + offset);
+  
+      // Draw the menu
+      rect(tempPos.x, tempPos.y, cellSize * towerNo, cellSize);
+      
+      // Draw the towers from which to select
+      float halfSize = cellSize / 2 - (cellSize / 10);
+      color tempColour;
+      
+      // Type 0 Tower
+      if (player.points >= towerPoints[0])
+        tempColour = color(255, 0, 0);
+      else
+        tempColour = color(100, 0, 0);
+      tempPos.x += cellSize / 2;
+      tempPos.y += cellSize / 2;
+      
+      stroke(tempColour);
+      fill(tempColour);
+      triangle(tempPos.x, tempPos.y - halfSize, tempPos.x - halfSize, tempPos.y + halfSize, tempPos.x + halfSize, tempPos.y + halfSize);
+      
+      // Type 1 Tower
+      if (player.points >= towerPoints[1])
+        tempColour = color(0, 255, 0);
+      else
+        tempColour = color(0, 100, 0);
+      tempPos.x += cellSize;
+      
+      stroke(tempColour);
+      fill(tempColour);
+      triangle(tempPos.x, tempPos.y - halfSize, tempPos.x - halfSize, tempPos.y + halfSize, tempPos.x + halfSize, tempPos.y + halfSize);
+      
+      // Type 2 Tower
+      if (player.points >= towerPoints[1])
+        tempColour = color(0, 0, 255);
+      else
+        tempColour = color(0, 0, 100);
+      tempPos.x += cellSize;
+      
+      stroke(tempColour);
+      fill(tempColour);
+      triangle(tempPos.x, tempPos.y - halfSize, tempPos.x - halfSize, tempPos.y + halfSize, tempPos.x + halfSize, tempPos.y + halfSize);
+    }
     
-    fill(0);
-    textAlign(CENTER, CENTER);
-    textSize(12);
-    
-    // Get the Tower location
-    int towerClicked = checkTower((int)upgradeMenu.x, (int)upgradeMenu.y);
-    
-    // First Upgrade
-    if (((Tower)objects.get(towerClicked)).upgradeLevel[0] < 3 && player.points >= pow((towerPoints[((Tower)objects.get(towerClicked)).type] / 10), (((Tower)objects.get(towerClicked)).upgradeLevel[0] + 1)))
+    // Draw the upgrade menu
+    if (upgradeMenu.x != -1)
+    {
+      // Position and number of tower variables
+      PVector tempPos;
+      int tempCellPos = (int)upgradeMenu.x - (int)(towerNo / 2);
+  
+      // Menu colour and stroke
+      stroke(0);
+      fill(100);
+  
+      // Calculate the coordinates of the tower menu
+      tempPos = new PVector(border.get("left") + tempCellPos * cellSize, border.get("top") + (upgradeMenu.y - startCell) * cellSize + offset);
+  
+      // Draw the menu
+      rect(tempPos.x, tempPos.y, cellSize * towerNo, cellSize);
+      
       fill(0);
-    else
-      fill(255, 0, 0);
-    tempPos.x += cellSize / 2;
-    tempPos.y += cellSize / 2;
-    text("+DMG", tempPos.x, tempPos.y);
-    
-    // Second Upgrade
-      if (((Tower)objects.get(towerClicked)).upgradeLevel[1] < 3 && player.points >= pow((towerPoints[((Tower)objects.get(towerClicked)).type] / 10), (((Tower)objects.get(towerClicked)).upgradeLevel[1] + 1)))
-      fill(0);
-    else
-      fill(255, 0, 0);
-    tempPos.x += cellSize;
-    text("+SPD", tempPos.x, tempPos.y);
-    
-    // Third Upgrade
-    if (((Tower)objects.get(towerClicked)).upgradeLevel[2] < 3 && player.points >= pow((towerPoints[((Tower)objects.get(towerClicked)).type] / 10), (((Tower)objects.get(towerClicked)).upgradeLevel[2] + 1)))
-      fill(0);
-    else
-      fill(255, 0, 0);
-    tempPos.x += cellSize;
-    text("+RNG", tempPos.x, tempPos.y);
+      textAlign(CENTER, CENTER);
+      textSize(12);
+      
+      // Get the Tower location
+      int towerClicked = checkTower((int)upgradeMenu.x, (int)upgradeMenu.y);
+      
+      // First Upgrade
+      if (((Tower)objects.get(towerClicked)).upgradeLevel[0] < 3 && player.points >= pow((towerPoints[((Tower)objects.get(towerClicked)).type] / 10), (((Tower)objects.get(towerClicked)).upgradeLevel[0] + 1)))
+        fill(0);
+      else
+        fill(255, 0, 0);
+      tempPos.x += cellSize / 2;
+      tempPos.y += cellSize / 2;
+      text("+DMG", tempPos.x, tempPos.y);
+      
+      // Second Upgrade
+        if (((Tower)objects.get(towerClicked)).upgradeLevel[1] < 3 && player.points >= pow((towerPoints[((Tower)objects.get(towerClicked)).type] / 10), (((Tower)objects.get(towerClicked)).upgradeLevel[1] + 1)))
+        fill(0);
+      else
+        fill(255, 0, 0);
+      tempPos.x += cellSize;
+      text("+SPD", tempPos.x, tempPos.y);
+      
+      // Third Upgrade
+      if (((Tower)objects.get(towerClicked)).upgradeLevel[2] < 3 && player.points >= pow((towerPoints[((Tower)objects.get(towerClicked)).type] / 10), (((Tower)objects.get(towerClicked)).upgradeLevel[2] + 1)))
+        fill(0);
+      else
+        fill(255, 0, 0);
+      tempPos.x += cellSize;
+      text("+RNG", tempPos.x, tempPos.y);
+    }
+  
+    // Check if it's game over
+    if (player.lives == 0)
+      gameOver();
   }
-
-  // Check if it's game over
-  if (player.lives == 0)
-    gameOver();
+  else
+  {
+    for (int i = 0 ; i < buttons.size() ; i++)
+    {
+      if (buttons.get(i).group.equals("Main Menu"))
+      {
+        buttons.get(i).update();
+        buttons.get(i).render();
+      }
+    }
+  }
 }
 
 void initialSettings()
