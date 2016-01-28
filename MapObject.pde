@@ -56,7 +56,7 @@ public class MapObject
   public void randomMap()
   {
     // Get a random odd value for the number of columns
-    cellsPerLine = (int)random(30, 40);
+    cellsPerLine = 39;//(int)random(30, 40);
     if (cellsPerLine % 2 == 0)
     {
       cellsPerLine --;

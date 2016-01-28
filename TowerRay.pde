@@ -4,7 +4,7 @@ public class TowerRay extends Tower implements DamageUp, SpeedUp, RangeUp
   {
     super(x, y);
     speed = 0.5;
-    damage = 1;
+    damage = 7;
     colour = color(0, 255, 0);
     drawShape();
     type = 1;
@@ -35,7 +35,7 @@ public class TowerRay extends Tower implements DamageUp, SpeedUp, RangeUp
         Ray ray = (Ray)weapons.get(i);
         if (ray.sCell.x == cellPosition.x && ray.sCell.y == cellPosition.y)
         {
-          ray.damage += 1;
+          ray.damage += 3;
           break;
         }
       }

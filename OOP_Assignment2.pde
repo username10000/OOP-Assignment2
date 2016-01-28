@@ -4,8 +4,9 @@ import java.util.Map;
 int cellsPerHeight;
 int startCell, endCell;
 //int lastCheck = millis();
-int curMap = 8;
+int curMap;
 int[] noEnemies = new int[9];
+//ArrayList<Integer>[] noEnemies = (ArrayList<Integer>[]) new ArrayList[9];
 float screenSize;
 float gap;
 float screenWidth, screenHeight;
@@ -83,7 +84,7 @@ void setup()
   //createEnemy(1);
   for (int i = 0; i < noEnemies.length; i++)
   {
-    noEnemies[i] = (int)random(10, 15);
+    noEnemies[i] = (int)random(1, 5);
   }
 
   // Main Menu Buttons
@@ -178,8 +179,10 @@ void draw()
     }
     else
     {
+      /*
       hideGroup("Menu");
       pause = false;
+      */
     }
     // Draw the borders of the screen
     //noFill();
@@ -414,29 +417,14 @@ void draw()
 void initialSettings()
 {
   // Set the borders
-  border.put("top", map(0, 0, 100, 0, height));
-  border.put("bottom", map(0, 0, 100, 0, height));
-  border.put("left", map(0, 0, 100, 0, width));
-  border.put("right", map(0, 0, 100, 0, width));
+  border.put("top", (float)0);
+  border.put("bottom", (float)0);
+  border.put("left", (float)0);
+  border.put("right", (float)0);
 
   // Calculate the screen width and height
-  screenWidth = width - border.get("left") - border.get("right");
-  screenHeight = height - border.get("top") - border.get("bottom");
-
-  // Calculate the cell size
-  cellSize = screenWidth / maps[curMap].cellsPerLine;
-
-  // Calculate how many rows of cols can fit on the screen and change the screen height and bottom border to match
-  cellsPerHeight = (int)(screenHeight / cellSize) + 1;
-  // Special case if the cells fit perfectly
-  if ((screenHeight / cellSize) - (int)(screenHeight / cellSize) == 0)
-  {
-    cellsPerHeight --;
-  }
-  screenHeight = cellSize * cellsPerHeight;
-  border.put("bottom", height - screenHeight - border.get("top"));
-  startCell = 0;
-  endCell = cellsPerHeight;
+  screenWidth = width;// - border.get("left") - border.get("right");
+  screenHeight = height;// - border.get("top") - border.get("bottom");
 
   int halfD = 15;
   heart = createShape();
@@ -448,6 +436,25 @@ void initialSettings()
   heart.vertex(halfD, halfD);
   heart.vertex(-halfD, halfD);
   heart.endShape(CLOSE);
+}
+
+void refreshSettings()
+{
+  // Calculate the cell size
+  cellSize = screenWidth / maps[curMap].cellsPerLine;
+
+  // Calculate how many rows of cols can fit on the screen and change the screen height and bottom border to match
+  cellsPerHeight = (int)(screenHeight / cellSize) + 1;
+  // Special case if the cells fit perfectly
+  if ((screenHeight / cellSize) - (int)(screenHeight / cellSize) == 0)
+  {
+    cellsPerHeight --;
+  }
+  screenHeight = cellSize * cellsPerHeight;
+  //border.put("bottom", height - screenHeight - border.get("top"));
+  startCell = 0;
+  endCell = cellsPerHeight;
+  offset = 0;
 }
 
 void drawRoad()
@@ -863,15 +870,22 @@ void keyPressed()
     initialSettings();
   }
   */
-  if (key == ' ')
-  {
-    pause = !pause;
-  }
+
   if (key == ESC || keyCode == ESC)
   {
     menu = !menu;
     key = 0;
     keyCode = 0;
+    if (!menu)
+    {
+      hideGroup("Menu");
+      pause = false;
+    }
+  }
+
+  if (key == ' ')
+  {
+    pause = !pause;
   }
 }
 
@@ -1092,9 +1106,12 @@ void mouseClicked()
       {
         if (buttons.get(i).group.equals("Level Select") && buttons.get(i).active)
         {
-          curMap = ((buttons.get(i).text.charAt(buttons.get(i).text.length() - 1)) - '0') - 1;
+          curMap = (int)((buttons.get(i).text.charAt(buttons.get(i).text.length() - 1)) - '0') - 1;
           levelSelect = false;
           hideGroup("Level Select");
+          refreshSettings();
+          player.lives = 10;
+          player.points = (curMap + 1) * 1000;
           break;
         }
       }
@@ -1111,11 +1128,19 @@ void mouseClicked()
             case "Level Select":
             {
               levelSelect = true;
+              pause = false;
+              hideGroup("Menu");
+              objects.clear();
+              weapons.clear();
               break;
             }
             case "Main Menu":
             {
               mainMenu = true;
+              pause = false;
+              hideGroup("Menu");
+              objects.clear();
+              weapons.clear();
               break;
             }
             default:
