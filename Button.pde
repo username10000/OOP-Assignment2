@@ -23,8 +23,8 @@ public class Button
     position = new PVector(x, y);
     bWidth = w;
     bHeight = h;
-    colour = color(0, 0, 150);
-    hoverColour = color(0, 0, 255);
+    colour = color(12, 31, 232);
+    hoverColour = color(40, 60, 255);
     activeColour = color(0, 0, 100);
     textColour = color(255, 255, 255);
     normal = true;

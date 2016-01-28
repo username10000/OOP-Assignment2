@@ -6,6 +6,7 @@ int startCell, endCell;
 //int lastCheck = millis();
 int curMap;
 int[] noEnemies = new int[9];
+//int[][] noEnemies = new int[9][9];
 //ArrayList<Integer>[] noEnemies = (ArrayList<Integer>[]) new ArrayList[9];
 float screenSize;
 float gap;
@@ -133,7 +134,8 @@ void setup()
 
 void draw()
 {
-  background(0);
+  // Draw the background
+  background(232, 185, 12);
 
   if (mainMenu)
   {
@@ -168,41 +170,11 @@ void draw()
     {
       showGroup("Menu");
       pause = true;
-      for (int i = 0 ; i < buttons.size() ; i++)
-      {
-        if (buttons.get(i).group.equals("Menu"))
-        {
-          buttons.get(i).update();
-          buttons.get(i).render();
-        }
-      }
-    }
-    else
-    {
-      /*
-      hideGroup("Menu");
-      pause = false;
-      */
     }
     // Draw the borders of the screen
-    //noFill();
     fill(0, 92, 9);
     noStroke();
-    //stroke(255);
     rect(border.get("left"), border.get("top"), screenWidth, screenHeight);
-  
-    // Only for debugging
-    /*
-    for (int i = 0 ; i <= cellsPerLine ; i++)
-     {
-     // Vertical Lines
-     line(border.get("left") + cellSize * i, border.get("top"), border.get("left") + cellSize * i, border.get("top") + screenHeight);
-     }
-     for (int i = 0 ; i <= cellsPerHeight ; i++)
-     {
-     // Horizontal Lines
-     line(border.get("left"), border.get("top") + cellSize * i, border.get("left") + screenWidth, border.get("top") + cellSize * i);
-     }*/
   
     // Draw the occupied cells
     drawRoad();
@@ -287,11 +259,6 @@ void draw()
   
     // Check if the mouse is hovering something
     mouseHover();
-  
-    // Draw the rect border on top of the enemies
-    //noFill();
-    //stroke(255);
-    //rect(border.get("left"), border.get("top"), screenWidth, screenHeight);
   
     // Combine enemies if they collide
     combineEnemies();
@@ -411,6 +378,29 @@ void draw()
     // Check if it's game over
     if (player.lives == 0)
       gameOver();
+      
+    if (menu)
+    {
+      // Make the background darker
+      stroke(0, 0, 0, 150);
+      fill(0, 0, 0, 150);
+      rect(0, 0, width, height);
+      
+      // Make a menu background
+      stroke(255, 255, 255);
+      fill(0, 255, 72);
+      rect(width / 3, height / 4 - 50, width - 2 * width / 3, height - 2 * height / 4 + 100);
+      
+      // Draw the menu buttons
+      for (int i = 0 ; i < buttons.size() ; i++)
+      {
+        if (buttons.get(i).group.equals("Menu"))
+        {
+          buttons.get(i).update();
+          buttons.get(i).render();
+        }
+      }
+    }
   }
 }
 
@@ -515,70 +505,6 @@ void drawRoad()
       }
     }
   }
-}
-
-void createMapImage()
-{
-  background = createImage((int)(maps[curMap].cellsPerLine * cellSize), (int)(maps[curMap].cellsPerCol * cellSize), RGB);
-
-  for (int i = 0; i < (int)(maps[curMap].cellsPerCol * cellSize); i++)
-  {
-    for (int j = 0; j < (int)(maps[curMap].cellsPerLine * cellSize); j++)
-    {
-      background.pixels[i * width + j] = color(0, 255, 0);
-    }
-  }
-
-  for (int i = 0; i < maps[curMap].cellsPerCol; i++)
-  {
-    for (int j = 0; j < maps[curMap].cellsPerLine; j++)
-    {
-      if (maps[curMap].map[i][j] >= '1' && maps[curMap].map[i][j] < '9')
-      {
-        for (int k = (int)(j * (int)cellSize); k <= j * cellSize + cellSize; k++)
-        {
-          for (int l = (int)(i * (int)cellSize); l <= i * cellSize + cellSize; l++)
-          {
-            background.pixels[l * width + k] = color(255, 255, 255);
-          }
-        }
-      }
-      if (maps[curMap].map[i][j] == '*')
-      {
-        for (int k = (int)(j * (int)cellSize); k <= j * cellSize + cellSize; k++)
-        {
-          for (int l = (int)(i * (int)cellSize); l <= i * cellSize + cellSize; l++)
-          {
-            background.pixels[l * width + k] = color(0, 255, 255);
-          }
-        }
-      }
-    }
-  }
-
-  background.save("background.jpg");
-
-  /*
-  // Draw the occupied cells
-   for (int i = 0 ; i < endCell - startCell ; i++)
-   {
-   for (int j = 0 ; j < maps[curMap].cellsPerLine ; j++)
-   {
-   if (maps[curMap].map[i + startCell][j] >= 1 && maps[curMap].map[i + startCell][j] < 10)
-   {
-   fill(255);
-   stroke(255);
-   rect(border.get("left") + j * cellSize, border.get("top") + i * cellSize + offset, cellSize, cellSize);
-   }
-   if (maps[curMap].map[i + startCell][j] == 10)
-   {
-   fill(0, 255, 255);
-   stroke(0, 255, 255);
-   rect(border.get("left") + j * cellSize, border.get("top") + i * cellSize + offset, cellSize, cellSize);
-   }
-   }
-   }
-   */
 }
 
 void printInfo()
@@ -863,14 +789,6 @@ void mouseHover()
 
 void keyPressed()
 {
-  /*
-  if (key >= '1' && key <= '9')
-  {
-    curMap = key - '0' - 1;
-    initialSettings();
-  }
-  */
-
   if (key == ESC || keyCode == ESC)
   {
     menu = !menu;
@@ -1149,6 +1067,8 @@ void mouseClicked()
             }
           }
           menu = false;
+          hideGroup("Menu");
+          pause = false;
         }
       }
     }
