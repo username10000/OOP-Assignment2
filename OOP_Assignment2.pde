@@ -5,9 +5,13 @@ int cellsPerHeight;
 int startCell, endCell;
 //int lastCheck = millis();
 int curMap;
-int[] noEnemies = new int[9];
+int timePaused = 0;
+//int[] noEnemies = new int[9];
 //int[][] noEnemies = new int[9][9];
-//ArrayList<Integer>[] noEnemies = (ArrayList<Integer>[]) new ArrayList[9];
+ArrayList<Integer>[] noEnemiesTotal = (ArrayList<Integer>[]) new ArrayList[9];
+ArrayList<Integer> noEnemies = new ArrayList<Integer>();
+ArrayList<Integer> time = new ArrayList<Integer>();
+ArrayList<Boolean> spawn = new ArrayList<Boolean>();
 float screenSize;
 float gap;
 float screenWidth, screenHeight;
@@ -83,9 +87,21 @@ void setup()
 
   // New Enemy
   //createEnemy(1);
+  /*
   for (int i = 0; i < noEnemies.length; i++)
   {
     noEnemies[i] = (int)random(1, 5);
+  }*/
+  
+  for (int i = 0 ; i < noEnemiesTotal.length ; i++)
+  {
+    noEnemiesTotal[i] = new ArrayList<Integer>();
+    for (int j = 0 ; j <= i ; j++)
+    {
+      noEnemiesTotal[i].add((int)random(40, 50));
+      print(noEnemiesTotal[i].get(j) + " ");
+    }
+    println();
   }
 
   // Main Menu Buttons
@@ -181,10 +197,25 @@ void draw()
   
     if (!pause)
     {
-      // Create enemies
-      for (int i = 0; i < noEnemies.length; i++)
+      // Add the time that was paused
+      if (timePaused != 0)
       {
-        if (noEnemies[i] > 0 && i <= curMap)
+        for (int i = 0 ; i < noEnemies.size() ; i++)
+        {
+          time.set(i, time.get(i) + (millis() - timePaused));
+        }
+        timePaused = 0;
+      }
+      
+      // Create enemies
+      for (int i = 0; i < noEnemies.size(); i++)
+      {
+        if (time.get(i) < millis())
+        {
+          spawn.set(i, !spawn.get(i));
+          time.set(i, millis() + (int)random(5000, 10000));
+        }
+        if (noEnemies.get(i) > 0 && i <= curMap && spawn.get(i))
         {
           createEnemy(i + 1);
         }
@@ -200,6 +231,11 @@ void draw()
         if (i < buttons.size())
           buttons.get(i).update();
       }
+    }
+    else
+    {
+      if (timePaused == 0)
+        timePaused = millis();
     }
   
     // Render enemies
@@ -445,6 +481,19 @@ void refreshSettings()
   startCell = 0;
   endCell = cellsPerHeight;
   offset = 0;
+  noEnemies.clear();
+  time.clear();
+  spawn.clear();
+  //spawnDelay.clear();
+  //spawnTime.clear();
+  for (int i = 0 ; i < noEnemiesTotal[curMap].size() ; i++)
+  {
+    noEnemies.add(noEnemiesTotal[curMap].get(i));
+    time.add(millis() + (int)random(5000, 10000));
+    spawn.add(false);
+    //spawnDelay.add(millis() + (int)random(5000, 10000));
+    //spawnTime.add(0);
+  }
 }
 
 void drawRoad()
@@ -559,7 +608,7 @@ void createEnemy(int road)
     Enemy enemy = new Enemy(5, color(random(0, 255), random(0, 255), random(0, 255)), road);
     objects.add(enemy);
     // Decrease the amount of enemies in that road
-    noEnemies[road - 1] --;
+    noEnemies.set(road - 1, noEnemies.get(road - 1) - 1);
   }
 }
 
