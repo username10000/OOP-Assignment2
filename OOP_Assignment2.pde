@@ -206,6 +206,14 @@ void draw()
         }
         timePaused = 0;
       }
+     
+      // Check if there are no enemies on the screen
+      if (noEnemiesVisible() == 0)
+      {
+        int roadNo = (int)random(0, spawn.size() - 1);
+        spawn.set(roadNo, true);
+        time.set(roadNo, millis() + (int)random(5000, 10000));
+      }
       
       // Create enemies
       for (int i = 0; i < noEnemies.size(); i++)
@@ -213,7 +221,14 @@ void draw()
         if (time.get(i) < millis())
         {
           spawn.set(i, !spawn.get(i));
-          time.set(i, millis() + (int)random(5000, 10000));
+          if (spawn.get(i))
+          {
+            time.set(i, millis() + (int)random(5000, 10000));
+          }
+          else
+          {
+            time.set(i, millis() + (int)random(20000, 30000));
+          }
         }
         if (noEnemies.get(i) > 0 && i <= curMap && spawn.get(i))
         {
@@ -604,8 +619,21 @@ void createEnemy(int road)
   // If the spawn point is empty add a new enemy
   if (empty)
   {
+    int noEdges;
+    
+    // Add Enemies with more than 5 edges at random times
+    if ((int)random(0, 100) % (12 - curMap) == 0)
+    {
+      noEdges = (int)map(random(0, (10 - curMap) * 10), 0, (10 - curMap) * 10, 6, 10);
+      println(noEdges);
+    }
+    else
+    {
+      noEdges = 5;
+    }
+    
     // Create a new enemy
-    Enemy enemy = new Enemy(5, color(random(0, 255), random(0, 255), random(0, 255)), road);
+    Enemy enemy = new Enemy(noEdges, color(random(0, 255), random(0, 255), random(0, 255)), road);
     objects.add(enemy);
     // Decrease the amount of enemies in that road
     noEnemies.set(road - 1, noEnemies.get(road - 1) - 1);
@@ -770,6 +798,17 @@ void showGroup(String g)
   for (int i = 0 ; i < buttons.size() ; i++)
     if (buttons.get(i).group.equals(g))
       buttons.get(i).show();
+}
+
+int noEnemiesVisible()
+{
+  int count = 0;
+  for (int i = 0 ; i < objects.size() ; i++)
+  {
+    if (objects.get(i) instanceof Enemy)
+      count++;
+  }
+  return count;
 }
 
 void mouseHover()
