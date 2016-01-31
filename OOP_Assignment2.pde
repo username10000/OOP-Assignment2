@@ -1,5 +1,12 @@
+import ddf.minim.*;
+import ddf.minim.analysis.*;
+import ddf.minim.effects.*;
+import ddf.minim.signals.*;
+import ddf.minim.spi.*;
+import ddf.minim.ugens.*;
 import java.util.Hashtable;
 import java.util.Map;
+
 
 int cellsPerHeight;
 int startCell, endCell;
@@ -40,6 +47,7 @@ int seed;
 int maxLevel;
 PVector towerMenu = new PVector(-1, -1, 0);
 PVector upgradeMenu = new PVector(-1, -1, 0);
+Minim minim;
 
 void setup()
 {
@@ -56,6 +64,8 @@ void setup()
 
   // Import a map from a file
   //importMap = new MapObject("map.txt");
+  
+  minim = new Minim(this);
 
   // Random maps
   for (int i = 0; i < maps.length; i++)

@@ -12,7 +12,8 @@ public class Tower extends GameObject
   color colour;
   PShape towerShape;
   PVector cellPosition;
-  
+  AudioPlayer audio;
+
   Tower(int x, int y)
   {
     //this.type = type;

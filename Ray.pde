@@ -5,6 +5,7 @@ public class Ray extends Weapon
   PVector ePos;
   float lastFired;
   float fieldRadius;
+  AudioPlayer audio;
   
   Ray(float sX, float sY, color colour, float speed, float damage)
   {
@@ -70,6 +71,8 @@ public class Ray extends Weapon
         e.health -= damage;
         lastFired = millis();
       }
+      audio.rewind();
+      audio.play();
     }
     
   }

@@ -3,6 +3,7 @@ public class Field extends Weapon
   PVector cellPosition;
   float fieldRadius;
   int lastFired;
+  AudioPlayer audio;
   
   Field(float x, float y, color colour, float speed, float damage)
   {
@@ -36,19 +37,27 @@ public class Field extends Weapon
       position.x = border.get("left") + cellSize / 2 + cellPosition.x * cellSize;
       position.y = border.get("top") + cellSize / 2 + (cellPosition.y - startCell) * cellSize + offset;
       
+      boolean soundPlayer = false;
       for (int i = 0 ; i < objects.size() ; i++)
       {
         if (objects.get(i) instanceof Enemy)
         {
-          // Reset the enemy speed
           Enemy e = (Enemy)objects.get(i);
           
-          // Slow down the Enemy
+          // Damage the enemy in the area
           if (dist(position.x, position.y, objects.get(i).position.x, objects.get(i).position.y) <= fieldRadius)
           {
             e.health -= damage;
+            audio.loop();
+            soundPlayer = true;
           }
         }
+      }
+      
+      if (!soundPlayer)
+      {
+        audio.pause();
+        audio.rewind();
       }
       
       // Reset time

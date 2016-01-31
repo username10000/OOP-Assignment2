@@ -8,6 +8,7 @@ public class TowerBullet extends Tower implements DamageUp, SpeedUp, RangeUp
     colour = color(255, 0, 0);
     drawShape();
     type = 0;
+    audio = minim.loadFile("/Sounds/zap.mp3");
   }
   TowerBullet()
   {
@@ -29,6 +30,8 @@ public class TowerBullet extends Tower implements DamageUp, SpeedUp, RangeUp
           bullet.direction = new PVector(lengthX / 15, lengthY / 15);
           bullet.fieldRadius = fieldRadius;
           weapons.add(bullet);
+          audio.rewind();
+          audio.play();
           break;
         }
       }

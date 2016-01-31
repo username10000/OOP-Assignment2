@@ -8,12 +8,15 @@ public class TowerField extends Tower implements DamageUp, SpeedUp, RangeUp
     colour = color(0, 0, 255);
     drawShape();
     type = 2;
+    audio = minim.loadFile("/Sounds/robot-cicada.wav");
+    createField();
   }
   TowerField()
   {
     this(0, 0);
   }
   
+  /*
   public void update()
   {
     // Create the field
@@ -23,6 +26,15 @@ public class TowerField extends Tower implements DamageUp, SpeedUp, RangeUp
       weapons.add(field);
       created = true;
     }
+  }
+  */
+  
+  private void createField()
+  {
+    Field field = new Field(cellPosition.x, cellPosition.y, colour, speed, damage);
+    field.audio = this.audio;
+    weapons.add(field);
+    created = true;
   }
   
   public void DamageIncrease()
