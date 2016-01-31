@@ -2,9 +2,9 @@ public class Player
 {
   int lives;
   int points;
-  int score;
+  int[] score;
   
-  Player(int score)
+  Player(int[] score)
   {
     lives = 10;
     points = 1000;
@@ -12,6 +12,6 @@ public class Player
   }
   Player()
   {
-    this(0);
+    this(new int[9]);
   }
 }

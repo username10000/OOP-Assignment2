@@ -7,7 +7,6 @@ import ddf.minim.ugens.*;
 import java.util.Hashtable;
 import java.util.Map;
 
-
 int cellsPerHeight;
 int startCell, endCell;
 //int lastCheck = millis();
@@ -43,6 +42,7 @@ boolean levelSelect = false;
 boolean won = false;
 int towerNo = 3;
 int totalScore;
+int[] score = new int[9];
 int seed;
 int maxLevel;
 PVector towerMenu = new PVector(-1, -1, 0);
@@ -53,9 +53,13 @@ void setup()
 {
   //size(displayWidth, displayHeight);
   fullScreen();
+  
   background(0);
   stroke(255);
   textAlign(CENTER);
+  
+  minim = new Minim(this);
+  
   //randomSeed((int)random(5000));
   //randomSeed(5000);
 
@@ -64,16 +68,6 @@ void setup()
 
   // Import a map from a file
   //importMap = new MapObject("map.txt");
-  
-  minim = new Minim(this);
-
-  // Random maps
-  for (int i = 0; i < maps.length; i++)
-  {
-    maps[i] = new MapObject(i + 1);
-  }
-
-  player = new Player();
 
   //maps[8] = new MapObject("map.txt");
 
@@ -95,25 +89,8 @@ void setup()
 
   // Initial Settings
   initialSettings();
-
-  // New Enemy
-  //createEnemy(1);
-  /*
-  for (int i = 0; i < noEnemies.length; i++)
-  {
-    noEnemies[i] = (int)random(1, 5);
-  }*/
   
-  for (int i = 0 ; i < noEnemiesTotal.length ; i++)
-  {
-    noEnemiesTotal[i] = new ArrayList<Integer>();
-    for (int j = 0 ; j <= i ; j++)
-    {
-      noEnemiesTotal[i].add((int)random(40, 50));
-      print(noEnemiesTotal[i].get(j) + " ");
-    }
-    println();
-  }
+  //randomVariables((int)random(99999));
 
   // Main Menu Buttons
   int noButtons = 3;  
@@ -499,6 +476,29 @@ void initialSettings()
   heart.vertex(halfD, halfD);
   heart.vertex(-halfD, halfD);
   heart.endShape(CLOSE);
+}
+
+void randomVariables(int rSeed)
+{
+  randomSeed(rSeed);
+  
+  // Random maps
+  for (int i = 0; i < maps.length; i++)
+  {
+    maps[i] = new MapObject(i + 1);
+  }
+
+  player = new Player();
+  
+  // Create enemies
+  for (int i = 0 ; i < noEnemiesTotal.length ; i++)
+  {
+    noEnemiesTotal[i] = new ArrayList<Integer>();
+    for (int j = 0 ; j <= i ; j++)
+    {
+      noEnemiesTotal[i].add((int)random(40, 50));
+    }
+  }
 }
 
 void refreshSettings()
@@ -1140,14 +1140,40 @@ void mouseClicked()
             {
               mainMenu = false;
               levelSelect = true;
-              seed = (int)random(99999);
               totalScore = 0;
               maxLevel = 0;
+              seed = (int)random(99999);
+              randomVariables(seed);
+              
+              // Save the data
+              String[] output = new String[score.length + 2];
+              output[0] = "" + seed;
+              for (int j = 0 ; j < score.length ; j++)
+              {
+                output[j + 1] = "" + 0;
+              }
+              output[score.length + 1] = "" + 0;
+              saveStrings("/data/Save/save.txt", output);
+              
               break;
             }
             case "Load Game":
             {
               mainMenu = false;
+              levelSelect = true;
+              
+              // Load the data
+              String[] input = loadStrings("/Save/save.txt");
+              seed = Integer.parseInt(input[0]);
+              for (int j = 0 ; j < score.length ; j++)
+              {
+                score[j] = Integer.parseInt(input[j + 1]);
+                totalScore += score[j];
+              }
+              maxLevel = Integer.parseInt(input[score.length + 1]);
+              
+              randomVariables(seed);
+              
               break;
             }
             case "Exit":
