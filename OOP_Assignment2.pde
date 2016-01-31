@@ -33,12 +33,13 @@ boolean hoverEnemy = false;
 boolean mainMenu = true;
 boolean menu = false;
 boolean levelSelect = false;
+boolean won = false;
 int towerNo = 3;
 int totalScore;
 int seed;
 int maxLevel;
 PVector towerMenu = new PVector(-1, -1, 0);
-PVector upgradeMenu = new PVector(-1, -1);
+PVector upgradeMenu = new PVector(-1, -1, 0);
 
 void setup()
 {
@@ -187,6 +188,7 @@ void draw()
       showGroup("Menu");
       pause = true;
     }
+    
     // Draw the borders of the screen
     fill(0, 92, 9);
     noStroke();
@@ -398,7 +400,7 @@ void draw()
       textSize(12);
       
       // Get the Tower location
-      int towerClicked = checkTower((int)upgradeMenu.x, (int)upgradeMenu.y);
+      int towerClicked = checkTower((int)upgradeMenu.x + (int)upgradeMenu.z, (int)upgradeMenu.y);
       
       // First Upgrade
       if (((Tower)objects.get(towerClicked)).upgradeLevel[0] < 3 && player.points >= pow((towerPoints[((Tower)objects.get(towerClicked)).type] / 10), (((Tower)objects.get(towerClicked)).upgradeLevel[0] + 1)))
@@ -429,6 +431,16 @@ void draw()
     // Check if it's game over
     if (player.lives == 0)
       gameOver();
+      
+    if (gameWon())
+    {
+      buttons.get(13).show();
+      textSize(30);
+      textAlign(CENTER, CENTER);
+      fill(0, 255, 0);
+      text("You Won!", buttons.get(13).position.x, buttons.get(13).position.y - buttons.get(13).bHeight);
+      won = true; 
+    }
       
     if (menu)
     {
@@ -811,10 +823,29 @@ int noEnemiesVisible()
   return count;
 }
 
+boolean gameWon()
+{
+  int count = 0;
+  for (int i = 0 ; i < objects.size() ; i++)
+  {
+    if (objects.get(i) instanceof Enemy)
+      count ++;
+  }
+  if (count == 0)
+  {
+    for (int i = 0 ; i < noEnemies.size() ; i++)
+      if (noEnemies.get(i) != 0)
+        count ++;
+    if (count == 0)
+      return true;
+  }
+  return false;
+}
+
 void mouseHover()
 { 
   // Mark the selected cell
-  if (mouseX > border.get("left") && mouseX < width - border.get("right") && mouseY > border.get("top") && mouseY < height - border.get("bottom") && !menu)
+  if (mouseX > border.get("left") && mouseX < width - border.get("right") && mouseY > border.get("top") && mouseY < height - border.get("bottom") && !menu && !won)
   {
     mousePosition.x = (int)map(mouseX, border.get("left"), width - border.get("right"), 0, maps[curMap].cellsPerLine);
     mousePosition.y = (int)map(mouseY, border.get("top") + offset, height - border.get("bottom") + offset, 0, cellsPerHeight);
@@ -920,36 +951,52 @@ void mouseClicked()
     if (towerMenu.x == -1 && upgradeMenu.x == -1 && maps[curMap].map[(int)mousePosition.y + startCell][(int)mousePosition.x] == '0')
     {
       // There is no Menu currently opened
-      
       if (checkTower((int)mousePosition.x, (int)mousePosition.y + startCell) == -1)
       {
         // Open Tower Menu
         if (mousePosition.x == 0)
+        {
           towerMenu.x = 1;
+          towerMenu.z = -1;
+        }
         else
           if (mousePosition.x == maps[curMap].cellsPerLine - 1)
+          {
             towerMenu.x = maps[curMap].cellsPerLine - 2;
+            towerMenu.z = 1;
+          }
           else
+          {
             towerMenu.x = (int)mousePosition.x;
+            towerMenu.z = 0;
+          }
         towerMenu.y = (int)mousePosition.y + startCell;
       }
       else
       {
         // Open Upgrade Menu
         if (mousePosition.x == 0)
+        {
           upgradeMenu.x = 1;
+          upgradeMenu.z = -1;
+        }
         else
           if (mousePosition.x == maps[curMap].cellsPerLine - 1)
+          {
             upgradeMenu.x = maps[curMap].cellsPerLine - 2;
+            upgradeMenu.z = 1;
+          }
           else
+          {
             upgradeMenu.x = (int)mousePosition.x;
+            upgradeMenu.z = 0;
+          }
         upgradeMenu.y = (int)mousePosition.y + startCell;
       }
     }
     else
     {
       // A Menu is already opened
-      
       if (towerMenu.x != -1)
       {
         // Tower Menu is opened
@@ -958,6 +1005,7 @@ void mouseClicked()
           // Outside the Tower Menu
           towerMenu.x = -1;
           towerMenu.y = -1;
+          towerMenu.z = -1;
         }
         else
         {
@@ -977,19 +1025,19 @@ void mouseClicked()
                 {
                   case 0:
                   {
-                    TowerBullet tower = new TowerBullet((int)towerMenu.x, (int)towerMenu.y);
+                    TowerBullet tower = new TowerBullet((int)towerMenu.x + (int)towerMenu.z, (int)towerMenu.y);
                     objects.add(tower);
                     break;
                   }
                   case 1:
                   {
-                    TowerRay tower = new TowerRay((int)towerMenu.x, (int)towerMenu.y);
+                    TowerRay tower = new TowerRay((int)towerMenu.x + (int)towerMenu.z, (int)towerMenu.y);
                     objects.add(tower);
                     break;
                   }
                   case 2:
                   {
-                    TowerField tower = new TowerField((int)towerMenu.x, (int)towerMenu.y);
+                    TowerField tower = new TowerField((int)towerMenu.x + (int)towerMenu.z, (int)towerMenu.y);
                     objects.add(tower);
                     break;
                   }
@@ -1016,6 +1064,7 @@ void mouseClicked()
           // Outside Upgrade Menu
           upgradeMenu.x = -1;
           upgradeMenu.y = -1;
+          upgradeMenu.z = -1;
         }
         else
         {
@@ -1025,7 +1074,7 @@ void mouseClicked()
             // Check if a Tower was selected
             if ((int)mousePosition.x == (int)upgradeMenu.x + i - 1 && (int)mousePosition.y + startCell == (int)upgradeMenu.y)
             {
-              int towerClicked = checkTower((int)upgradeMenu.x, (int)upgradeMenu.y);
+              int towerClicked = checkTower((int)upgradeMenu.x + (int)upgradeMenu.z, (int)upgradeMenu.y);
               
               // Create the tower
               if (((Tower)objects.get(towerClicked)).upgradeLevel[i] < 3 && player.points >= pow((towerPoints[((Tower)objects.get(towerClicked)).type] / 10), (((Tower)objects.get(towerClicked)).upgradeLevel[i] + 1)))
@@ -1159,6 +1208,19 @@ void mouseClicked()
           pause = false;
         }
       }
+    }
+    else
+    if (won)
+    {
+      levelSelect = true;
+      pause = false;
+      hideGroup("Menu");
+      objects.clear();
+      weapons.clear();
+      menu = false;
+      hideGroup("Menu");
+      pause = false;
+      won = false;
     }
   }
 }
