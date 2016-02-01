@@ -17,6 +17,7 @@ public class Enemy extends GameObject
   {
     super(500, 500, colour);
     this.edges = edges;
+    setColour();
     health = 50 * edges;
     prevHealth = health;
     checkHealth = 0;
@@ -55,6 +56,34 @@ public class Enemy extends GameObject
     }
     polygon.endShape(CLOSE);
   }
+  
+  public void setColour()
+  {
+    switch(edges)
+    {
+      case 5:
+        colour = color(255, 0, 0);
+        break;
+      case 6:
+        colour = color(255, 127, 0);
+        break;
+      case 7:
+        colour = color(255, 255, 0);
+        break;
+      case 8:
+        colour = color(0, 255, 0);
+        break;
+      case 9:
+        colour = color(0, 0, 255);
+        break;
+      case 10:
+        colour = color(139, 0, 255);
+        break;
+      default:
+        break;
+    }
+  }
+  
   private PVector getStart(int road)
   {
     // Get the position where a road starts
@@ -303,6 +332,7 @@ public class Enemy extends GameObject
     {
       isAlive = false;
       player.points += 50;
+      tempScore += 50;
     }
     // Find the next direction
     if (getValue((int)cellPosition.x + (int)direction.x, (int)cellPosition.y + (int)direction.y) == '*' || cellPosition.x < -1 || cellPosition.x > maps[curMap].cellsPerLine || cellPosition.y < -1)

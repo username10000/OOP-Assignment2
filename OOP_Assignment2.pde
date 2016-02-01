@@ -40,11 +40,13 @@ boolean mainMenu = true;
 boolean menu = false;
 boolean levelSelect = false;
 boolean won = false;
+boolean lost = false;
 int towerNo = 3;
-int totalScore;
-int[] score = new int[9];
-int seed;
-int maxLevel;
+int tempScore = 0;
+//int totalScore;
+//int[] score = new int[9];
+//int seed;
+//int maxLevel;
 PVector towerMenu = new PVector(-1, -1, 0);
 PVector upgradeMenu = new PVector(-1, -1, 0);
 Minim minim;
@@ -59,7 +61,7 @@ void setup()
   textAlign(CENTER);
   
   minim = new Minim(this);
-  
+
   //randomSeed((int)random(5000));
   //randomSeed(5000);
 
@@ -167,6 +169,15 @@ void draw()
         buttons.get(i).render();
       }
     }
+    
+    // Draw the Total Score in the Level Select Menu
+    fill(0);
+    rectMode(CENTER);
+    rect(width / 2, 25, 300, 50); 
+    rectMode(CORNER);
+    textAlign(CENTER, CENTER);
+    fill(255);
+    text(player.totalScore, width / 2, 25);
   }
   else
   {
@@ -450,6 +461,13 @@ void draw()
           buttons.get(i).render();
         }
       }
+      fill(0);
+      rectMode(CENTER);
+      rect(width / 2, 25, 300, 50); 
+      rectMode(CORNER);
+      textAlign(CENTER, CENTER);
+      fill(255);
+      text(tempScore, width / 2, 25);
     }
   }
 }
@@ -488,7 +506,7 @@ void randomVariables(int rSeed)
     maps[i] = new MapObject(i + 1);
   }
 
-  player = new Player();
+  //player = new Player();
   
   // Create enemies
   for (int i = 0 ; i < noEnemiesTotal.length ; i++)
@@ -700,6 +718,7 @@ void combineEnemies()
               e1.edges ++;
               e1.health += 50;
               e1.radius = map(e1.edges, 5, 10, cellSize / 4, cellSize / 2);
+              e1.setColour();
               e1.drawShape();
             }
           } else
@@ -714,6 +733,7 @@ void combineEnemies()
               e2.edges ++;
               e2.health += 50;
               e2.radius = map(e2.edges, 5, 10, cellSize / 4, cellSize / 2);
+              e2.setColour();
               e2.drawShape();
             }
 
@@ -777,7 +797,7 @@ void deleteDeadObjects()
 {
   for (int i = 0; i < objects.size(); i++)
   {
-    if (!objects.get(i).isAlive)
+    if (!objects.get(i).isAlive && objects.get(i) instanceof Enemy)
     {
       objects.remove(i);
     }
@@ -806,6 +826,7 @@ void gameOver()
   fill(255, 0, 0);
   textAlign(CENTER, CENTER);
   text("GAME OVER", width / 2, height / 2);
+  lost = true;
 }
 
 void hideGroup(String g)
@@ -1140,20 +1161,14 @@ void mouseClicked()
             {
               mainMenu = false;
               levelSelect = true;
-              totalScore = 0;
-              maxLevel = 0;
-              seed = (int)random(99999);
-              randomVariables(seed);
+              
+              player = new Player();
               
               // Save the data
-              String[] output = new String[score.length + 2];
-              output[0] = "" + seed;
-              for (int j = 0 ; j < score.length ; j++)
-              {
-                output[j + 1] = "" + 0;
-              }
-              output[score.length + 1] = "" + 0;
-              saveStrings("/data/Save/save.txt", output);
+              player.saveData("/data/Save/save.txt");
+              
+              // Create the maps and enemies
+              randomVariables(player.seed);
               
               break;
             }
@@ -1162,17 +1177,13 @@ void mouseClicked()
               mainMenu = false;
               levelSelect = true;
               
-              // Load the data
-              String[] input = loadStrings("/Save/save.txt");
-              seed = Integer.parseInt(input[0]);
-              for (int j = 0 ; j < score.length ; j++)
-              {
-                score[j] = Integer.parseInt(input[j + 1]);
-                totalScore += score[j];
-              }
-              maxLevel = Integer.parseInt(input[score.length + 1]);
+              player = new Player();
               
-              randomVariables(seed);
+              // Load the data
+              player.loadData("/Save/save.txt");
+              
+              // Create the maps and enemies
+              randomVariables(player.seed);
               
               break;
             }
@@ -1203,6 +1214,7 @@ void mouseClicked()
           refreshSettings();
           player.lives = 10;
           player.points = (curMap + 1) * 1000;
+          tempScore = 0;
           break;
         }
       }
@@ -1257,6 +1269,23 @@ void mouseClicked()
       hideGroup("Menu");
       pause = false;
       won = false;
+      if (tempScore > player.score[curMap])
+      {
+        player.score[curMap] = tempScore;
+        player.saveData("/data/Save/save.txt");
+        player.setTotalScore();
+      }
+    }
+    else
+    if (lost)
+    {
+      levelSelect = true;
+      pause = false;
+      objects.clear();
+      weapons.clear();
+      menu = false;
+      pause = false;
+      lost = false;
     }
   }
 }
