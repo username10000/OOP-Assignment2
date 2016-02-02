@@ -36,9 +36,9 @@ public class Player
     output[0] = "" + seed;
     for (int j = 0 ; j < score.length ; j++)
     {
-      output[j + 1] = "" + 0;
+      output[j + 1] = "" + score[j];
     }
-    output[score.length + 1] = "" + 0;
+    output[score.length + 1] = "" + maxLevel;
     saveStrings(filename, output);
   }
   

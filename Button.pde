@@ -4,6 +4,7 @@ public class Button
   PShape shape;
   PShape hoverShape;
   PShape activeShape;
+  PShape disableShape;
   float bWidth;
   float bHeight;
   float halfWidth;
@@ -12,10 +13,13 @@ public class Button
   color hoverColour;
   color activeColour;
   color textColour;
+  color disableColour;
   boolean normal;
   boolean hover;
   boolean active;
+  boolean disable;
   String text;
+  String toolTip;
   String group;
   
   Button(String t, float x, float y, float w, float h)
@@ -27,14 +31,17 @@ public class Button
     hoverColour = color(40, 60, 255);
     activeColour = color(0, 0, 100);
     textColour = color(255, 255, 255);
+    disableColour = color(127, 127, 127);
     normal = true;
     hover = false;
     active = false;
+    disable = false;
     halfWidth = bWidth / 2;
     halfHeight = bHeight / 2;
     text = t;
     group = "Main";
     drawShape();
+    toolTip = null;
   }
   Button(String t, float x, float y, float w, float h, color c1, color c2, color c3, color c4)
   {
@@ -69,6 +76,13 @@ public class Button
     activeShape.setStroke(activeColour);
     activeShape.setStrokeWeight(1);
     activeShape.setFill(activeColour);
+    
+    // Create Disabled Button
+    disableShape = createShape(RECT, -halfWidth, -halfHeight, bWidth, bHeight);
+    disableShape.setStroke(disableColour);
+    disableShape.setStrokeWeight(1);
+    disableShape.setFill(disableColour);
+    
   }
   
   public void hide()
@@ -90,6 +104,16 @@ public class Button
     group = name;
   }
   
+  public void disable()
+  {
+    disable = true;
+  }
+  
+  public void enable()
+  {
+    disable = false;
+  }
+  
   public void render()
   {
     // Check if the button is visible
@@ -99,6 +123,9 @@ public class Button
       translate(position.x, position.y);
       
       // Check Normal State
+      if (disable)
+        shape(disableShape);
+      else
       if (normal)
       {
         shape(shape);
@@ -118,11 +145,19 @@ public class Button
       fill(textColour);
       text(text, position.x, position.y);
     }
+    
+    if (hover && toolTip != null)
+    {
+      rect(mouseX + 10, mouseY + 10, 100, 50);
+      textAlign(LEFT, LEFT);
+      text(toolTip, mouseX + 10, mouseY + 10);
+      textAlign(CENTER, CENTER);
+    }
   }
 
   public void update()
   {
-    if (normal || hover || active)
+    if ((normal || hover || active) && !disable)
     {
       if (mouseX > position.x - halfWidth && mouseX < position.x + halfWidth && mouseY > position.y - halfHeight && mouseY < position.y + halfHeight)
       {

@@ -130,6 +130,11 @@ void setup()
   buttons.add(new Button("Main Menu", width / 2, map(3, 1, noButtons, top, bottom), 250, 50));
   buttons.get(14).setGroup("Menu");
   
+  top = height / 5;
+  bottom = height - top;
+  buttons.add(new Button("Return", map(9 % 5, 0, 4, left, right), map(9 / 5, 0, 1, top, bottom), buttonWidth, buttonHeight));
+  buttons.get(15).setGroup("Level Select");
+  
   for (int i = 0 ; i < buttons.size() ; i++)
   {
     buttons.get(i).hide();
@@ -873,6 +878,26 @@ boolean gameWon()
   return false;
 }
 
+void disableButtons()
+{ 
+  int count = 0;
+  for (int i = 0 ; i < buttons.size(); i++)
+  {
+    if (buttons.get(i).group.equals("Level Select") && !buttons.get(i).text.equals("Return"))
+    {
+      if (count <= player.maxLevel)
+      {
+        buttons.get(i).enable();
+        buttons.get(i).toolTip = "" + player.score[buttons.get(i).text.charAt(buttons.get(i).text.length() - 1) - '0'];
+      }
+      else
+        buttons.get(i).disable();
+        
+      count ++;
+    }
+  }
+}
+
 void mouseHover()
 { 
   // Mark the selected cell
@@ -1170,6 +1195,9 @@ void mouseClicked()
               // Create the maps and enemies
               randomVariables(player.seed);
               
+              // Disable the buttons that are not available
+              disableButtons();
+              
               break;
             }
             case "Load Game":
@@ -1184,6 +1212,9 @@ void mouseClicked()
               
               // Create the maps and enemies
               randomVariables(player.seed);
+              
+              // Disable the butons that are not available
+              disableButtons();
               
               break;
             }
@@ -1206,7 +1237,7 @@ void mouseClicked()
     {
       for (int  i = 0 ; i < buttons.size() ; i++)
       {
-        if (buttons.get(i).group.equals("Level Select") && buttons.get(i).active)
+        if (buttons.get(i).group.equals("Level Select") && buttons.get(i).active && !buttons.get(i).text.equals("Return"))
         {
           curMap = (int)((buttons.get(i).text.charAt(buttons.get(i).text.length() - 1)) - '0') - 1;
           levelSelect = false;
@@ -1216,6 +1247,13 @@ void mouseClicked()
           player.points = (curMap + 1) * 1000;
           tempScore = 0;
           break;
+        }
+        else
+        if (buttons.get(i).text.equals("Return") && buttons.get(i).active)
+        {
+          mainMenu = true;
+          levelSelect = false;
+          hideGroup("Level Select");
         }
       }
     }
@@ -1269,12 +1307,15 @@ void mouseClicked()
       hideGroup("Menu");
       pause = false;
       won = false;
+      if (player.maxLevel < 8 && player.maxLevel == curMap)
+        player.maxLevel ++;
       if (tempScore > player.score[curMap])
       {
         player.score[curMap] = tempScore;
         player.saveData("/data/Save/save.txt");
         player.setTotalScore();
       }
+      disableButtons();
     }
     else
     if (lost)
