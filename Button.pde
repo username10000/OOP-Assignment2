@@ -148,9 +148,11 @@ public class Button
     
     if (hover && toolTip != null)
     {
-      rect(mouseX + 10, mouseY + 10, 100, 50);
-      textAlign(LEFT, LEFT);
-      text(toolTip, mouseX + 10, mouseY + 10);
+      fill(0);
+      rect(mouseX + 20, mouseY + 10, 85, 35);
+      fill(255);
+      textAlign(LEFT, CENTER);
+      text(toolTip, mouseX + 25, mouseY + 25);
       textAlign(CENTER, CENTER);
     }
   }

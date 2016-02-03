@@ -41,6 +41,7 @@ boolean menu = false;
 boolean levelSelect = false;
 boolean won = false;
 boolean lost = false;
+boolean imported = false;
 int towerNo = 3;
 int tempScore = 0;
 //int totalScore;
@@ -69,7 +70,7 @@ void setup()
   //surface.setSize(displayWidth / 2, displayHeight / 2);
 
   // Import a map from a file
-  //importMap = new MapObject("map.txt");
+  //importMap = new MapObject("/Import Map/map.txt");
 
   //maps[8] = new MapObject("map.txt");
 
@@ -95,14 +96,14 @@ void setup()
   //randomVariables((int)random(99999));
 
   // Main Menu Buttons
-  int noButtons = 3;  
+  int noButtons = 4;  
   float top = height / 5;
   float bottom = height - top;
   buttons.add(new Button("New Game", width / 2, map(1, 1, noButtons, top, bottom), 250, 50));
   ((Button)buttons.get(0)).setGroup("Main Menu");
   buttons.add(new Button("Load Game", width / 2, map(2, 1, noButtons, top, bottom), 250, 50));
   ((Button)buttons.get(1)).setGroup("Main Menu");
-  buttons.add(new Button("Exit", width / 2, map(3, 1, noButtons, top, bottom), 250, 50));
+  buttons.add(new Button("Exit", width / 2, map(4, 1, noButtons, top, bottom), 250, 50));
   ((Button)buttons.get(2)).setGroup("Main Menu");
   
   // Level Select Buttons
@@ -134,6 +135,13 @@ void setup()
   bottom = height - top;
   buttons.add(new Button("Return", map(9 % 5, 0, 4, left, right), map(9 / 5, 0, 1, top, bottom), buttonWidth, buttonHeight));
   buttons.get(15).setGroup("Level Select");
+  
+  noButtons = 4;  
+  top = height / 5;
+  bottom = height - top;
+  buttons.add(new Button("Import Map", width / 2, map(3, 1, noButtons, top, bottom), 250, 50));
+  ((Button)buttons.get(16)).setGroup("Main Menu");
+  
   
   for (int i = 0 ; i < buttons.size() ; i++)
   {
@@ -190,6 +198,15 @@ void draw()
     {
       showGroup("Menu");
       pause = true;
+      
+      // Stop sounds when the menu is opened
+      for (int i = 0 ; i < weapons.size() ; i++)
+      {
+        if (weapons.get(i) instanceof Field)
+        {
+          ((Field)weapons.get(i)).audio.pause();
+        }
+      }
     }
     
     // Draw the borders of the screen
@@ -437,11 +454,12 @@ void draw()
       
     if (gameWon())
     {
-      buttons.get(13).show();
+      //buttons.get(13).show();
       textSize(30);
       textAlign(CENTER, CENTER);
       fill(0, 255, 0);
-      text("You Won!", buttons.get(13).position.x, buttons.get(13).position.y - buttons.get(13).bHeight);
+      //text("You Won!", buttons.get(13).position.x, buttons.get(13).position.y - buttons.get(13).bHeight);
+      text("You Won!", width / 2, height / 2);
       won = true; 
     }
       
@@ -888,10 +906,12 @@ void disableButtons()
       if (count <= player.maxLevel)
       {
         buttons.get(i).enable();
-        buttons.get(i).toolTip = "" + player.score[buttons.get(i).text.charAt(buttons.get(i).text.length() - 1) - '0'];
+        buttons.get(i).toolTip = "" + player.score[(buttons.get(i).text.charAt(buttons.get(i).text.length() - 1) - '0') - 1];
       }
       else
+      {
         buttons.get(i).disable();
+      }
         
       count ++;
     }
@@ -901,7 +921,7 @@ void disableButtons()
 void mouseHover()
 { 
   // Mark the selected cell
-  if (mouseX > border.get("left") && mouseX < width - border.get("right") && mouseY > border.get("top") && mouseY < height - border.get("bottom") && !menu && !won)
+  if (mouseX > border.get("left") && mouseX < width - border.get("right") && mouseY > border.get("top") && mouseY < height - border.get("bottom") && !menu && !won && !lost)
   {
     mousePosition.x = (int)map(mouseX, border.get("left"), width - border.get("right"), 0, maps[curMap].cellsPerLine);
     mousePosition.y = (int)map(mouseY, border.get("top") + offset, height - border.get("bottom") + offset, 0, cellsPerHeight);
@@ -1218,6 +1238,54 @@ void mouseClicked()
               
               break;
             }
+            case "Import Map":
+            {
+              mainMenu = false;
+              imported = true;
+              
+              player = new Player();
+              
+              importMap = new MapObject("/Import Map/map.txt");
+              
+              randomVariables(player.seed);
+              
+              curMap = 0;
+              for (int j = 0 ; j < importMap.map.length ; j++)
+              {
+                for (int k = 0 ; k < importMap.map[j].length ; k++)
+                {
+                  if (importMap.map[j][k] > '0' && importMap.map[j][k] <= '9')
+                  {
+                    if (curMap < importMap.map[j][k] - '0')
+                    {
+                      curMap = importMap.map[j][k] - '0';
+                    }
+                  }
+                }
+              }
+              curMap --;
+              println(curMap);
+              
+              refreshSettings();
+              
+              // Calculate the cell size
+              cellSize = screenWidth / importMap.map[0].length;
+            
+              // Calculate how many rows of cols can fit on the screen and change the screen height and bottom border to match
+              cellsPerHeight = (int)(screenHeight / cellSize) + 1;
+              // Special case if the cells fit perfectly
+              if ((screenHeight / cellSize) - (int)(screenHeight / cellSize) == 0)
+              {
+                cellsPerHeight --;
+              }
+              screenHeight = cellSize * cellsPerHeight;
+              
+              player.lives = 10;
+              player.points = 99999;
+              tempScore = 0;
+              
+              break;
+            }
             case "Exit":
             {
               exit();
@@ -1298,7 +1366,15 @@ void mouseClicked()
     else
     if (won)
     {
-      levelSelect = true;
+      if (imported)
+      {
+        mainMenu = true;
+        imported = false;
+      }
+      else
+      {
+        levelSelect = true;
+      }
       pause = false;
       hideGroup("Menu");
       objects.clear();
@@ -1320,12 +1396,19 @@ void mouseClicked()
     else
     if (lost)
     {
-      levelSelect = true;
+      if (imported)
+      {
+        mainMenu = true;
+        imported = false;
+      }
+      else
+      {
+        levelSelect = true;
+      }
       pause = false;
       objects.clear();
       weapons.clear();
       menu = false;
-      pause = false;
       lost = false;
     }
   }
