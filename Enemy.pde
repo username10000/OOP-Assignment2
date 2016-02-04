@@ -33,6 +33,15 @@ public class Enemy extends GameObject
     previousCell = new PVector(cellPosition.x, cellPosition.y);
     angle = 0;
   }
+  Enemy(int edges, float radius, float x, float y)
+  {
+    super(x, y, color(255));
+    this.edges = edges;
+    this.radius = radius;
+    health = -1000;
+    setColour();
+    drawShape();
+  }
   Enemy()
   {
     this(5, color(0, 0, 0), 1);
@@ -43,7 +52,9 @@ public class Enemy extends GameObject
     // Create the shape and assign its colour
     polygon = createShape();
     polygon.beginShape();
-    polygon.stroke(colour);
+    //polygon.stroke(colour);
+    polygon.stroke(0);
+    polygon.strokeWeight(0.5);
     polygon.fill(colour);
     for (int i = 0 ; i < edges ; i++)
     {
@@ -304,9 +315,12 @@ public class Enemy extends GameObject
   }
   public void render()
   { 
-    // Calculate the coordinates of the enemy
-    position.x = border.get("left") + cellSize / 2 + (cellPosition.x + shapeOffset.x) * cellSize;
-    position.y = border.get("top") + cellSize / 2 + (cellPosition.y - startCell + shapeOffset.y) * cellSize + offset;
+    if (health != -1000)
+    {
+      // Calculate the coordinates of the enemy
+      position.x = border.get("left") + cellSize / 2 + (cellPosition.x + shapeOffset.x) * cellSize;
+      position.y = border.get("top") + cellSize / 2 + (cellPosition.y - startCell + shapeOffset.y) * cellSize + offset;
+    }
     
     // Render the enemy
     if (position.x > border.get("left") && position.x < width - border.get("right") && position.y + radius > border.get("top") && position.y - radius < height - border.get("bottom"))
@@ -314,7 +328,7 @@ public class Enemy extends GameObject
       pushMatrix();
       
       translate(position.x, position.y);
-      polygon.rotate(0.01);
+      polygon.rotate(0.01); //<>//
       angle += 0.01;
       shape(polygon);
       

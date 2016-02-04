@@ -1,4 +1,4 @@
-public class TowerBullet extends Tower implements DamageUp, SpeedUp, RangeUp
+public class TowerBullet extends Tower implements DamageUp, SpeedUp, RangeUp, Pause
 {
   TowerBullet(int x, int y)
   {
@@ -55,5 +55,10 @@ public class TowerBullet extends Tower implements DamageUp, SpeedUp, RangeUp
   {
     fieldRadius += cellSize;
     upgradeLevel[2] ++;
+  }
+  
+  public void pause()
+  {
+    audio.pause();
   }
 }

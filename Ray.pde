@@ -1,4 +1,4 @@
-public class Ray extends Weapon
+public class Ray extends Weapon implements Pause
 {
   PVector sCell;
   PVector sPos;
@@ -21,6 +21,10 @@ public class Ray extends Weapon
     this(0, 0, color(random(0, 255), random(0, 255), random(0, 255)), 0.5, 1);
   }
   
+  public void pause()
+  {
+    audio.pause();
+  }
   public void render()
   {
     if (isAlive && !pause)
@@ -74,6 +78,5 @@ public class Ray extends Weapon
       audio.rewind();
       audio.play();
     }
-    
   }
 }

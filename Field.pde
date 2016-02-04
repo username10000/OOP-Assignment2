@@ -1,4 +1,4 @@
-public class Field extends Weapon
+public class Field extends Weapon implements Pause
 {
   PVector cellPosition;
   float fieldRadius;
@@ -17,6 +17,10 @@ public class Field extends Weapon
     this(0, 0, color(255), 0.5, 1);
   }
   
+  public void pause()
+  {
+    audio.pause();
+  }
   public void render()
   {
     // Calculate the coordinates

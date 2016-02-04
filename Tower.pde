@@ -40,7 +40,8 @@ public class Tower extends GameObject
     
     towerShape = createShape();
     towerShape.beginShape();
-    towerShape.stroke(colour);
+    towerShape.stroke(0);
+    //towerShape.stroke(colour);
     towerShape.fill(colour);
     towerShape.vertex(0, - halfSize);
     towerShape.vertex(- halfSize, halfSize);

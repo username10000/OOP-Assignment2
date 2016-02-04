@@ -140,12 +140,15 @@ public class Button
       }
       
       popMatrix();
+      
+      // Display Text on the Button
       textAlign(CENTER, CENTER);
       textSize(20);
       fill(textColour);
       text(text, position.x, position.y);
     }
     
+    // Display the ToolTip
     if (hover && toolTip != null)
     {
       fill(0);

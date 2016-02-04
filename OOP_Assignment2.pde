@@ -30,6 +30,7 @@ MapObject importMap;
 ArrayList<GameObject> objects = new ArrayList<GameObject>();
 ArrayList<Weapon> weapons = new ArrayList<Weapon>();
 ArrayList<Button> buttons = new ArrayList<Button>();
+ArrayList<GameObject> menuObjects = new ArrayList<GameObject>();
 Player player;
 PImage background;
 PShape heart;
@@ -148,7 +149,16 @@ void setup()
     buttons.get(i).hide();
   }
   
-  //createMapImage();
+  // Load an audio file so there is no lag when the first tower is placed
+  AudioPlayer audio = minim.loadFile("/Sounds/zap.mp3");
+  audio.pause();
+  
+  // Create Main Menu Enemies
+  for (int i = 5 ; i <= 10 ; i++)
+  {
+    menuObjects.add(new Enemy(i, (height - 200) / 12, (height - 200) / 12 + 25, map(i, 5, 10, 100, height - 100)));
+  }
+  
 }
 
 void draw()
@@ -168,6 +178,27 @@ void draw()
         buttons.get(i).render();
       }
     }
+    for (int i = 0 ; i < menuObjects.size() ; i++)
+    {
+      menuObjects.get(i).render();
+    }
+    
+    float x = width - menuObjects.get(0).position.y;
+    float y = map(1, 1, 3, 100, height - 100);
+    float radius = 50;
+    stroke(0);
+    fill(255, 0, 0);
+    triangle(x, y - radius, x - radius, y + radius, x + radius, y + radius);
+    
+    y = map(2, 1, 3, 100, height - 100);
+    stroke(0);
+    fill(0, 255, 0);
+    triangle(x, y - radius, x - radius, y + radius, x + radius, y + radius);
+    
+    y = map(3, 1, 3, 100, height - 100);
+    stroke(0);
+    fill(0, 0, 255);
+    triangle(x, y - radius, x - radius, y + radius, x + radius, y + radius);
   }
   else
   if (levelSelect)
@@ -202,15 +233,16 @@ void draw()
       // Stop sounds when the menu is opened
       for (int i = 0 ; i < weapons.size() ; i++)
       {
-        if (weapons.get(i) instanceof Field)
+        if (weapons.get(i) instanceof Pause)
         {
-          ((Field)weapons.get(i)).audio.pause();
+          ((Pause)weapons.get(i)).pause();
         }
       }
     }
     
     // Draw the borders of the screen
-    fill(0, 92, 9);
+    fill(0, 127, 127);
+    //fill(0, 92, 9);
     noStroke();
     rect(border.get("left"), border.get("top"), screenWidth, screenHeight);
   
@@ -371,7 +403,8 @@ void draw()
       tempPos.x += cellSize / 2;
       tempPos.y += cellSize / 2;
       
-      stroke(tempColour);
+      //stroke(tempColour);
+      stroke(0);
       fill(tempColour);
       triangle(tempPos.x, tempPos.y - halfSize, tempPos.x - halfSize, tempPos.y + halfSize, tempPos.x + halfSize, tempPos.y + halfSize);
       
@@ -382,7 +415,8 @@ void draw()
         tempColour = color(0, 100, 0);
       tempPos.x += cellSize;
       
-      stroke(tempColour);
+      //stroke(tempColour);
+      stroke(0);
       fill(tempColour);
       triangle(tempPos.x, tempPos.y - halfSize, tempPos.x - halfSize, tempPos.y + halfSize, tempPos.x + halfSize, tempPos.y + halfSize);
       
@@ -393,7 +427,8 @@ void draw()
         tempColour = color(0, 0, 100);
       tempPos.x += cellSize;
       
-      stroke(tempColour);
+      //stroke(tempColour);
+      stroke(0);
       fill(tempColour);
       triangle(tempPos.x, tempPos.y - halfSize, tempPos.x - halfSize, tempPos.y + halfSize, tempPos.x + halfSize, tempPos.y + halfSize);
     }
@@ -471,9 +506,14 @@ void draw()
       rect(0, 0, width, height);
       
       // Make a menu background
-      stroke(255, 255, 255);
-      fill(0, 255, 72);
-      rect(width / 3, height / 4 - 50, width - 2 * width / 3, height - 2 * height / 4 + 100);
+      //stroke(255, 255, 255);
+      //fill(0, 255, 72);
+      stroke(0, 255, 72, 175);
+      fill(0, 255, 72, 175);
+      //rect(width / 3, height / 4 - 50, width - 2 * width / 3, height - 2 * height / 4 + 100);
+      rectMode(CENTER);
+      rect(width / 2, height / 2, buttons.get(12).bWidth + buttons.get(12).bWidth / 2, buttons.get(12).bHeight * 10);
+      rectMode(CORNER);
       
       // Draw the menu buttons
       for (int i = 0 ; i < buttons.size() ; i++)
@@ -484,6 +524,8 @@ void draw()
           buttons.get(i).render();
         }
       }
+      
+      stroke(255);
       fill(0);
       rectMode(CENTER);
       rect(width / 2, 25, 300, 50); 
@@ -583,8 +625,8 @@ void drawRoad()
     {
       if (maps[curMap].map[i + startCell][j] >= '1' && maps[curMap].map[i + startCell][j] <= '9')
       {
-        fill(255);
-        stroke(255);
+        fill(255, 255, 255);
+        stroke(255, 255, 255);
         rect(border.get("left") + j * cellSize, border.get("top") + i * cellSize + offset, cellSize, cellSize);
       }
       if (maps[curMap].map[i + startCell][j] == '*')
