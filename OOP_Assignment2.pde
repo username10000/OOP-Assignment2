@@ -216,6 +216,7 @@ void draw()
     
     // Draw the Total Score in the Level Select Menu
     fill(0);
+    stroke(255);
     rectMode(CENTER);
     rect(width / 2, 25, 300, 50); 
     rectMode(CORNER);
@@ -512,7 +513,7 @@ void draw()
       fill(0, 255, 72, 175);
       //rect(width / 3, height / 4 - 50, width - 2 * width / 3, height - 2 * height / 4 + 100);
       rectMode(CENTER);
-      rect(width / 2, height / 2, buttons.get(12).bWidth + buttons.get(12).bWidth / 2, buttons.get(12).bHeight * 10);
+      rect(width / 2, height / 2, buttons.get(12).bWidth + buttons.get(12).bWidth / 2, (buttons.get(13).position.y - buttons.get(12).position.y + buttons.get(12).bHeight) * 2); //buttons.get(12).bHeight * 10
       rectMode(CORNER);
       
       // Draw the menu buttons
