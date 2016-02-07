@@ -8,7 +8,7 @@ public class TowerField extends Tower implements DamageUp, SpeedUp, RangeUp
     colour = color(0, 0, 255);
     drawShape();
     type = 2;
-    audio = minim.loadFile("/Sounds/robot-cicada.wav");
+    audio = minim.loadFile("/Sounds/robot-cicada.mp3");
     createField();
   }
   TowerField()

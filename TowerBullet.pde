@@ -41,13 +41,13 @@ public class TowerBullet extends Tower implements DamageUp, SpeedUp, RangeUp, Pa
     
   public void DamageIncrease()
   {
-    damage += 15;
+    damage += 5;
     upgradeLevel[0] ++;
   }
   
   public void SpeedIncrease()
   {
-    speed -= 0.25;
+    speed -= 0.15;
     upgradeLevel[1] ++;
   }
   

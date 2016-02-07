@@ -9,11 +9,8 @@ import java.util.Map;
 
 int cellsPerHeight;
 int startCell, endCell;
-//int lastCheck = millis();
 int curMap;
 int timePaused = 0;
-//int[] noEnemies = new int[9];
-//int[][] noEnemies = new int[9][9];
 ArrayList<Integer>[] noEnemiesTotal = (ArrayList<Integer>[]) new ArrayList[9];
 ArrayList<Integer> noEnemies = new ArrayList<Integer>();
 ArrayList<Integer> time = new ArrayList<Integer>();
@@ -45,10 +42,6 @@ boolean lost = false;
 boolean imported = false;
 int towerNo = 3;
 int tempScore = 0;
-//int totalScore;
-//int[] score = new int[9];
-//int seed;
-//int maxLevel;
 PVector towerMenu = new PVector(-1, -1, 0);
 PVector upgradeMenu = new PVector(-1, -1, 0);
 Minim minim;
@@ -62,43 +55,15 @@ void setup()
   stroke(255);
   textAlign(CENTER);
   
+  // Start the audio
   minim = new Minim(this);
-
-  //randomSeed((int)random(5000));
-  //randomSeed(5000);
-
-  // Change the size of the screen
-  //surface.setSize(displayWidth / 2, displayHeight / 2);
-
-  // Import a map from a file
-  //importMap = new MapObject("/Import Map/map.txt");
-
-  //maps[8] = new MapObject("map.txt");
-
-  // Output current array
-  /*
-  String[] output = new String[maps[curMap].map.length];
-   for (int i = 0 ; i < maps[curMap].map.length ; i++)
-   {
-   for (int j = 0 ; j <maps[curMap].map[i].length ; j++)
-   {
-   if (j == 0)
-   output[i] = "" + maps[curMap].map[i][j];
-   else
-   output[i] = output[i] + maps[curMap].map[i][j];
-   }
-   }
-   saveStrings("array.txt", output);
-   */
 
   // Initial Settings
   initialSettings();
-  
-  //randomVariables((int)random(99999));
 
   // Main Menu Buttons
   int noButtons = 4;  
-  float top = height / 5;
+  float top = height / 3;
   float bottom = height - top;
   buttons.add(new Button("New Game", width / 2, map(1, 1, noButtons, top, bottom), 250, 50));
   ((Button)buttons.get(0)).setGroup("Main Menu");
@@ -138,7 +103,7 @@ void setup()
   buttons.get(15).setGroup("Level Select");
   
   noButtons = 4;  
-  top = height / 5;
+  top = height / 3;
   bottom = height - top;
   buttons.add(new Button("Import Map", width / 2, map(3, 1, noButtons, top, bottom), 250, 50));
   ((Button)buttons.get(16)).setGroup("Main Menu");
@@ -199,6 +164,11 @@ void draw()
     stroke(0);
     fill(0, 0, 255);
     triangle(x, y - radius, x - radius, y + radius, x + radius, y + radius);
+    
+    fill(0);
+    textSize(100);
+    textAlign(CENTER, CENTER);
+    text("Polygon Wars", width / 2, height / 3 / 2);
   }
   else
   if (levelSelect)
@@ -306,6 +276,13 @@ void draw()
     {
       if (timePaused == 0)
         timePaused = millis();
+      for (int i = 0 ; i < weapons.size() ; i++)
+      {
+        if (weapons.get(i) instanceof Pause)
+        {
+          ((Pause)weapons.get(i)).pause();
+        }
+      }
     }
   
     // Render enemies
@@ -404,10 +381,16 @@ void draw()
       tempPos.x += cellSize / 2;
       tempPos.y += cellSize / 2;
       
-      //stroke(tempColour);
+      // Draw Triangle
       stroke(0);
       fill(tempColour);
       triangle(tempPos.x, tempPos.y - halfSize, tempPos.x - halfSize, tempPos.y + halfSize, tempPos.x + halfSize, tempPos.y + halfSize);
+      
+      // Display Tower Cost
+      textAlign(CENTER, CENTER);
+      fill(0);
+      textSize(12);
+      text(towerPoints[0], tempPos.x, tempPos.y + cellSize - halfSize / 2);
       
       // Type 1 Tower
       if (player.points >= towerPoints[1])
@@ -416,10 +399,16 @@ void draw()
         tempColour = color(0, 100, 0);
       tempPos.x += cellSize;
       
-      //stroke(tempColour);
+      // Draw Triangle
       stroke(0);
       fill(tempColour);
       triangle(tempPos.x, tempPos.y - halfSize, tempPos.x - halfSize, tempPos.y + halfSize, tempPos.x + halfSize, tempPos.y + halfSize);
+      
+      // Display Tower Cost
+      textAlign(CENTER, CENTER);
+      fill(0);
+      textSize(12);
+      text(towerPoints[1], tempPos.x, tempPos.y + cellSize - halfSize / 2);
       
       // Type 2 Tower
       if (player.points >= towerPoints[1])
@@ -428,10 +417,16 @@ void draw()
         tempColour = color(0, 0, 100);
       tempPos.x += cellSize;
       
-      //stroke(tempColour);
+      // Draw Triangle
       stroke(0);
       fill(tempColour);
       triangle(tempPos.x, tempPos.y - halfSize, tempPos.x - halfSize, tempPos.y + halfSize, tempPos.x + halfSize, tempPos.y + halfSize);
+      
+      // Display Tower Cost
+      textAlign(CENTER, CENTER);
+      fill(0);
+      textSize(12);
+      text(towerPoints[2], tempPos.x, tempPos.y + cellSize - halfSize / 2);
     }
     
     // Draw the upgrade menu
@@ -467,6 +462,15 @@ void draw()
       tempPos.y += cellSize / 2;
       text("+DMG", tempPos.x, tempPos.y);
       
+      // Display Upgrade Cost
+      if (((Tower)objects.get(towerClicked)).upgradeLevel[0] < 3)
+      {
+        textAlign(CENTER, CENTER);
+        fill(0);
+        textSize(12);
+        text((int)pow((towerPoints[((Tower)objects.get(towerClicked)).type] / 10), (((Tower)objects.get(towerClicked)).upgradeLevel[0] + 1)), tempPos.x, tempPos.y + cellSize - cellSize / 4);
+      }
+      
       // Second Upgrade
         if (((Tower)objects.get(towerClicked)).upgradeLevel[1] < 3 && player.points >= pow((towerPoints[((Tower)objects.get(towerClicked)).type] / 10), (((Tower)objects.get(towerClicked)).upgradeLevel[1] + 1)))
         fill(0);
@@ -475,6 +479,15 @@ void draw()
       tempPos.x += cellSize;
       text("+SPD", tempPos.x, tempPos.y);
       
+      // Display Upgrade Cost
+      if (((Tower)objects.get(towerClicked)).upgradeLevel[1] < 3)
+      {
+        textAlign(CENTER, CENTER);
+        fill(0);
+        textSize(12);
+        text((int)pow((towerPoints[((Tower)objects.get(towerClicked)).type] / 10), (((Tower)objects.get(towerClicked)).upgradeLevel[1] + 1)), tempPos.x, tempPos.y + cellSize - cellSize / 4);
+      }
+      
       // Third Upgrade
       if (((Tower)objects.get(towerClicked)).upgradeLevel[2] < 3 && player.points >= pow((towerPoints[((Tower)objects.get(towerClicked)).type] / 10), (((Tower)objects.get(towerClicked)).upgradeLevel[2] + 1)))
         fill(0);
@@ -482,6 +495,15 @@ void draw()
         fill(255, 0, 0);
       tempPos.x += cellSize;
       text("+RNG", tempPos.x, tempPos.y);
+      
+      // Display Upgrade Cost
+      if (((Tower)objects.get(towerClicked)).upgradeLevel[2] < 3)
+      {
+        textAlign(CENTER, CENTER);
+        fill(0);
+        textSize(12);
+        text((int)pow((towerPoints[((Tower)objects.get(towerClicked)).type] / 10), (((Tower)objects.get(towerClicked)).upgradeLevel[2] + 1)), tempPos.x, tempPos.y + cellSize - cellSize / 4);
+      }
     }
   
     // Check if it's game over
@@ -511,7 +533,6 @@ void draw()
       //fill(0, 255, 72);
       stroke(0, 255, 72, 175);
       fill(0, 255, 72, 175);
-      //rect(width / 3, height / 4 - 50, width - 2 * width / 3, height - 2 * height / 4 + 100);
       rectMode(CENTER);
       rect(width / 2, height / 2, buttons.get(12).bWidth + buttons.get(12).bWidth / 2, (buttons.get(13).position.y - buttons.get(12).position.y + buttons.get(12).bHeight) * 2); //buttons.get(12).bHeight * 10
       rectMode(CORNER);
@@ -731,7 +752,6 @@ void createEnemy(int road)
     if ((int)random(0, 100) % (12 - curMap) == 0)
     {
       noEdges = (int)map(random(0, (10 - curMap) * 10), 0, (10 - curMap) * 10, 6, 10);
-      println(noEdges);
     }
     else
     {
@@ -1307,7 +1327,6 @@ void mouseClicked()
                 }
               }
               curMap --;
-              println(curMap);
               
               refreshSettings();
               
