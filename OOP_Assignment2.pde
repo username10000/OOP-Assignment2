@@ -267,7 +267,6 @@ void draw()
         {
           createEnemy(i + 1);
         }
-        println(noEnemies.get(i));
       }
   
       // Update objects
