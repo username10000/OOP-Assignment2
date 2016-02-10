@@ -42,6 +42,7 @@ boolean lost = false;
 boolean imported = false;
 int towerNo = 3;
 int tempScore = 0;
+int enemiesLeft = 0;
 PVector towerMenu = new PVector(-1, -1, 0);
 PVector upgradeMenu = new PVector(-1, -1, 0);
 Minim minim;
@@ -143,6 +144,8 @@ void draw()
         buttons.get(i).render();
       }
     }
+    
+    // Draw the entities from the main menu
     for (int i = 0 ; i < menuObjects.size() ; i++)
     {
       menuObjects.get(i).render();
@@ -209,11 +212,16 @@ void draw()
           ((Pause)weapons.get(i)).pause();
         }
       }
+      
+      // Don't display the level select button if the user is in the imported map
+      if (imported)
+      {
+        buttons.get(13).hide();
+      }
     }
     
-    // Draw the borders of the screen
-    fill(0, 127, 127);
-    //fill(0, 92, 9);
+    // Draw the background
+    fill(maps[curMap].bColour);
     noStroke();
     rect(border.get("left"), border.get("top"), screenWidth, screenHeight);
   
@@ -235,7 +243,7 @@ void draw()
       // Check if there are no enemies on the screen
       if (noEnemiesVisible() == 0)
       {
-        int roadNo = (int)random(0, spawn.size() - 1);
+        int roadNo = (int)random(0, spawn.size() - 0.01);
         spawn.set(roadNo, true);
         time.set(roadNo, millis() + (int)random(5000, 10000));
       }
@@ -259,6 +267,7 @@ void draw()
         {
           createEnemy(i + 1);
         }
+        println(noEnemies.get(i));
       }
   
       // Update objects
@@ -274,6 +283,7 @@ void draw()
     }
     else
     {
+      // Get the time the game was paused for
       if (timePaused == 0)
         timePaused = millis();
       for (int i = 0 ; i < weapons.size() ; i++)
@@ -626,11 +636,13 @@ void refreshSettings()
   noEnemies.clear();
   time.clear();
   spawn.clear();
+  enemiesLeft = 0;
   //spawnDelay.clear();
   //spawnTime.clear();
   for (int i = 0 ; i < noEnemiesTotal[curMap].size() ; i++)
   {
     noEnemies.add(noEnemiesTotal[curMap].get(i));
+    enemiesLeft += noEnemiesTotal[curMap].get(i);
     time.add(millis() + (int)random(5000, 10000));
     spawn.add(false);
     //spawnDelay.add(millis() + (int)random(5000, 10000));
@@ -723,6 +735,15 @@ void printInfo()
     shape(heart);
     popMatrix();
   }
+  
+  // Draw number of enemies left
+  padding = 2;
+  noStroke();
+  fill(0, 0, 0, 100);
+  rect(width / 99 - padding, height - 30 - padding, 180, 30);
+  fill(255);
+  textAlign(LEFT, TOP);
+  text("Enemies left: " + enemiesLeft, width / 99 + padding, height - 30 + padding);
 }
 
 void createEnemy(int road)
@@ -837,6 +858,7 @@ void combineEnemies()
     if (!objects.get(i).isAlive)
     {
       objects.remove(i);
+      enemiesLeft --;
     }
   }
 }
@@ -886,6 +908,7 @@ void deleteDeadObjects()
     if (!objects.get(i).isAlive && objects.get(i) instanceof Enemy)
     {
       objects.remove(i);
+      enemiesLeft --;
     }
   }
 }
@@ -1328,6 +1351,8 @@ void mouseClicked()
               }
               curMap --;
               
+              maps[curMap] = new MapObject("/Import Map/map.txt");
+              
               refreshSettings();
               
               // Calculate the cell size
@@ -1412,6 +1437,7 @@ void mouseClicked()
               hideGroup("Menu");
               objects.clear();
               weapons.clear();
+              imported = false;
               break;
             }
             default:
@@ -1431,7 +1457,6 @@ void mouseClicked()
       if (imported)
       {
         mainMenu = true;
-        imported = false;
       }
       else
       {
@@ -1447,12 +1472,14 @@ void mouseClicked()
       won = false;
       if (player.maxLevel < 8 && player.maxLevel == curMap)
         player.maxLevel ++;
-      if (tempScore > player.score[curMap])
+      if (tempScore > player.score[curMap] && !imported)
       {
         player.score[curMap] = tempScore;
         player.saveData("/data/Save/save.txt");
         player.setTotalScore();
       }
+      if (imported)
+        imported = false;
       disableButtons();
     }
     else

@@ -4,17 +4,57 @@ public class MapObject
   int cellsPerLine;
   int cellsPerCol;
   int numRoads;
+  color bColour;
   
   MapObject(String name)
   {
     importMap(name);
+    backgroundColour(1);
   }
   MapObject(int numRoads)
   {
     this.numRoads = numRoads;
+    backgroundColour(numRoads);
     randomMap();
   }
   
+  private void backgroundColour(int road)
+  {
+    // Assign background colours for each type of map
+    switch(road)
+    {
+      case 1:
+        bColour = color(0, 127, 127);
+        break;
+      case 2:
+        bColour = color(50, 161, 66);
+        break;
+      case 3:
+        bColour = color(170, 61, 14);
+        break;
+      case 4:
+        bColour = color(142, 146, 241);
+        break;
+      case 5:
+        bColour = color(141, 106, 85);
+        break;
+      case 6:
+        bColour = color(211, 101, 195);
+        break;
+      case 7:
+        bColour = color(107, 33, 198);
+        break;
+      case 8:
+        bColour = color(170, 122, 1);
+        break;
+      case 9:
+        bColour = color(185, 43, 51);
+        break;
+      default:
+        bColour = color(0, 127, 127);
+        break;
+    }
+  }
   private boolean checkAround(PVector pos, int roadNo)
   {
     // Check the next position to verify if there are any roads around it
