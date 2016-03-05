@@ -28,6 +28,7 @@ ArrayList<GameObject> objects = new ArrayList<GameObject>();
 ArrayList<Weapon> weapons = new ArrayList<Weapon>();
 ArrayList<Button> buttons = new ArrayList<Button>();
 ArrayList<GameObject> menuObjects = new ArrayList<GameObject>();
+ArrayList<Destroyed> destroyed = new ArrayList<Destroyed>();
 Player player;
 PImage background;
 PShape heart;
@@ -270,7 +271,7 @@ void draw()
       }
   
       // Update objects
-      for (int i = 0; i < objects.size() || i < weapons.size() || i < buttons.size(); i++)
+      for (int i = 0; i < objects.size() || i < weapons.size() || i < buttons.size() || i < destroyed.size(); i++)
       {
         if (i < objects.size())
           objects.get(i).update();
@@ -278,6 +279,8 @@ void draw()
           weapons.get(i).update();
         if (i < buttons.size())
           buttons.get(i).update();
+        if (i < destroyed.size())
+          destroyed.get(i).update();
       }
     }
     else
@@ -297,11 +300,11 @@ void draw()
       fill(0);
       textSize(24);
       textAlign(CENTER, CENTER);
-      text("Press SPACE to Resume", width / 2, height / 2);
+      text("Press 'SPACE' to Resume", width / 2, height / 2);
     }
   
     // Render enemies
-    for (int i = 0; i < objects.size() || i < weapons.size() || i < buttons.size(); i++)
+    for (int i = 0; i < objects.size() || i < weapons.size() || i < buttons.size() || i < destroyed.size(); i++)
     {
       if (i < objects.size())
       {
@@ -316,6 +319,8 @@ void draw()
         weapons.get(i).render();
       if (i < buttons.size())
         buttons.get(i).render();
+      if (i < destroyed.size())
+        destroyed.get(i).render();
     }
   
     // Mark the cell if it's hovered
@@ -862,6 +867,18 @@ void combineEnemies()
   {
     if (!objects.get(i).isAlive)
     {
+      // Create a Destroyed Object at the enemy's location
+      if (objects.get(i) instanceof Enemy)
+      {
+        if (((Enemy)objects.get(i)).health <= 0)
+        {
+          PVector p = ((Enemy)objects.get(i)).cellPosition;
+          PVector o = ((Enemy)objects.get(i)).shapeOffset;
+          float r = ((Enemy)objects.get(i)).radius;
+          destroyed.add(new Destroyed(p.x, p.y, o.x, o.y, r));
+          //println("Destoyed");
+        }
+      }
       objects.remove(i);
       enemiesLeft --;
     }

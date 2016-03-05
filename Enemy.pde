@@ -45,6 +45,7 @@ public class Enemy extends GameObject
     health = -1000;
     setColour();
     drawShape();
+    rotSpeed = 0.01;
   }
   Enemy()
   {
