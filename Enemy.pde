@@ -5,9 +5,11 @@ public class Enemy extends GameObject
   int prevHealth;
   int checkHealth;
   int road;
+  int removedTime;
   float radius;
   float speed;
   float angle;
+  float rotSpeed;
   PShape polygon;
   PVector cellPosition;
   PVector previousCell;
@@ -32,6 +34,8 @@ public class Enemy extends GameObject
     shapeOffset = new PVector(0, 0);
     previousCell = new PVector(cellPosition.x, cellPosition.y);
     angle = 0;
+    rotSpeed = 0.03;
+    removedTime = 0;
   }
   Enemy(int edges, float radius, float x, float y)
   {
@@ -66,6 +70,29 @@ public class Enemy extends GameObject
       polygon.vertex(x, y);
     }
     polygon.endShape(CLOSE);
+  }
+  
+  public void removeAnimation()
+  {
+    println(removedTime);
+    if (removedTime == 0)
+    {
+      removedTime = millis();
+      
+    }
+    else
+    {
+      if (removedTime - millis() < 1000)
+      {
+        // Animate
+        println("Animate?");
+      }
+      else
+      {
+        // Delete
+        objects.remove(this);
+      }
+    }
   }
   
   public void setColour()
@@ -181,10 +208,16 @@ public class Enemy extends GameObject
     
     // Go to left if it's smaller
     if (getValue((int)cellLeft.x, (int)cellLeft.y) <= getValue((int)cell.x, (int)cell.y) && getValue((int)cellLeft.x, (int)cellLeft.y) != '0')
+    {
+      rotSpeed *= -1;
       return dirLeft;
+    }
     // Go to right if it's smaller
     if (getValue((int)cellRight.x, (int)cellRight.y) <= getValue((int)cell.x, (int)cell.y) && getValue((int)cellRight.x, (int)cellRight.y) != '0')
+    {
+      rotSpeed *= -1;
       return dirRight;
+    }
     // Go straight otherwise
     return dir;
   }
@@ -328,8 +361,8 @@ public class Enemy extends GameObject
       pushMatrix();
       
       translate(position.x, position.y);
-      polygon.rotate(0.01); //<>//
-      angle += 0.01;
+      polygon.rotate(rotSpeed); //<>//
+      angle += rotSpeed;
       shape(polygon);
       
       popMatrix();
@@ -366,6 +399,7 @@ public class Enemy extends GameObject
           if (enemy.cellPosition.x == cellPosition.x && enemy.cellPosition.y == cellPosition.y)
           {
             objects.remove(i);
+            enemiesLeft --;
             break;
           }
         }

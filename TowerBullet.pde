@@ -27,6 +27,7 @@ public class TowerBullet extends Tower implements DamageUp, SpeedUp, RangeUp, Pa
           float lengthY = position.y - objects.get(i).position.y;
           float lengthX = position.x - objects.get(i).position.x;
           Bullet bullet = new Bullet(cellPosition.x, cellPosition.y, colour, 0.2, damage);
+          bullet.setRadius(10 + upgradeLevel[0] * 2);
           bullet.direction = new PVector(lengthX / 15, lengthY / 15);
           bullet.fieldRadius = fieldRadius;
           weapons.add(bullet);

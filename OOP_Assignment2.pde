@@ -292,6 +292,12 @@ void draw()
           ((Pause)weapons.get(i)).pause();
         }
       }
+      
+      // Pause message
+      fill(0);
+      textSize(24);
+      textAlign(CENTER, CENTER);
+      text("Press SPACE to Resume", width / 2, height / 2);
     }
   
     // Render enemies
@@ -906,6 +912,8 @@ void deleteDeadObjects()
   {
     if (!objects.get(i).isAlive && objects.get(i) instanceof Enemy)
     {
+      //objects.remove(i);
+      //println("Delete?");
       objects.remove(i);
       enemiesLeft --;
     }

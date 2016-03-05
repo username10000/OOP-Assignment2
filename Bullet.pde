@@ -5,6 +5,7 @@ public class Bullet extends Weapon
   PVector positionOffset;
   PVector forward;
   float fieldRadius;
+  float radius;
   
   Bullet(float x, float y, color colour, float speed, float damage)
   {
@@ -13,10 +14,16 @@ public class Bullet extends Weapon
     originCell = new PVector(x, y);
     positionOffset = new PVector(0, 0);
     forward = new PVector(0, 0);
+    radius = 10;
   }
   Bullet()
   {
     super(0, 0, color(random(0, 255), random(0, 255), random(0, 255)), 0.1, 10);
+  }
+  
+  public void setRadius(float r)
+  {
+    radius = r;
   }
   
   public void render()
@@ -27,7 +34,7 @@ public class Bullet extends Weapon
     //stroke(0);
     noStroke();
     fill(colour);
-    ellipse(position.x, position.y, 10, 10);
+    ellipse(position.x, position.y, radius, radius);
   }
   public void update()
   {
