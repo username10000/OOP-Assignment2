@@ -119,7 +119,7 @@ void setup()
   }
 
   // Load an audio file so there is no lag when the first tower is placed
-  AudioPlayer audio = minim.loadFile("/Sounds/zap.mp3");
+  AudioPlayer audio = minim.loadFile("/Sounds/T0.wav");
   audio.pause();
 
   // Create Main Menu Enemies
@@ -925,9 +925,10 @@ void combineEnemies()
         {
           PVector p = ((Enemy)objects.get(i)).cellPosition;
           PVector o = ((Enemy)objects.get(i)).shapeOffset;
-          float r = ((Enemy)objects.get(i)).radius;
-          destroyed.add(new Destroyed(p.x, p.y, o.x, o.y, r));
-          //println("Destoyed");
+          int  e = ((Enemy)objects.get(i)).edges;
+          color c = ((Enemy)objects.get(i)).colour;
+          destroyed.add(new Destroyed(p.x, p.y, o.x, o.y, e, c));
+          //println(destroyed.size());
         }
       }
       objects.remove(i);

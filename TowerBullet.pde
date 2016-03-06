@@ -8,7 +8,7 @@ public class TowerBullet extends Tower implements DamageUp, SpeedUp, RangeUp, Pa
     colour = color(255, 0, 0);
     drawShape();
     type = 0;
-    audio = minim.loadFile("/Sounds/zap.mp3");
+    audio = minim.loadFile("/Sounds/T0.wav");
   }
   TowerBullet()
   {

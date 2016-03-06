@@ -8,7 +8,7 @@ public class TowerRay extends Tower implements DamageUp, SpeedUp, RangeUp
     colour = color(0, 255, 0);
     drawShape();
     type = 1;
-    audio = minim.loadFile("/Sounds/spark.wav");
+    audio = minim.loadFile("/Sounds/T1.wav");
     createRay();
   }
   TowerRay()

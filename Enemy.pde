@@ -14,6 +14,7 @@ public class Enemy extends GameObject
   PVector cellPosition;
   PVector previousCell;
   PVector shapeOffset;
+
   
   Enemy(int edges, color colour, int road)
   {
