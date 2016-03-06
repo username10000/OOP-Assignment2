@@ -4,7 +4,7 @@ public class TowerField extends Tower implements DamageUp, SpeedUp, RangeUp
   {
     super(x, y);
     speed = 0.7;
-    damage = 4;
+    damage = 2;
     colour = color(0, 0, 255);
     drawShape();
     type = 2;
@@ -46,7 +46,7 @@ public class TowerField extends Tower implements DamageUp, SpeedUp, RangeUp
         Field field = (Field)weapons.get(i);
         if (field.cellPosition.x == cellPosition.x && field.cellPosition.y == cellPosition.y)
         {
-          field.damage += 4;
+          field.damage += 2;
           break;
         }
       }
@@ -63,7 +63,7 @@ public class TowerField extends Tower implements DamageUp, SpeedUp, RangeUp
         Field field = (Field)weapons.get(i);
         if (field.cellPosition.x == cellPosition.x && field.cellPosition.y == cellPosition.y)
         {
-          field.speed -= 0.2;
+          field.speed -= 0.1;
           break;
         }
       }
