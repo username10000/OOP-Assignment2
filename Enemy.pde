@@ -25,7 +25,8 @@ public class Enemy extends GameObject
     prevHealth = health;
     checkHealth = 0;
     radius = map(edges, 5, 10, cellSize / 4, cellSize / 2);
-    speed = 0.012;
+    //speed = 0.012;
+    speed = 0.010;
     drawShape();
     this.road = road;
     cellPosition = getStart(road);

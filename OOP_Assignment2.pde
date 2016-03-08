@@ -245,7 +245,7 @@ void draw()
         {
           int roadNo = (int)random(0, spawn.size() - 0.01);
           spawn.set(roadNo, true);
-          time.set(roadNo, millis() + 2000 + (totalEnemies - enemiesLeft) * 1000);
+          time.set(roadNo, millis() + 2000 + (totalEnemies - enemiesLeft) * 100);
           //time.set(roadNo, millis() + (int)random(5000, 10000));
         }
 
@@ -257,7 +257,7 @@ void draw()
             spawn.set(i, !spawn.get(i));
             if (spawn.get(i))
             {
-              time.set(i, millis() + 2000 + (totalEnemies - enemiesLeft) * 1000);
+              time.set(i, millis() + 2000 + (totalEnemies - enemiesLeft) * 100);
               //println(totalEnemies, enemiesLeft);
               //time.set(i, millis() + (int)random(5000, 10000));
             } else
@@ -625,6 +625,30 @@ void draw()
         textAlign(CENTER, CENTER);
         fill(255);
         text(tempScore, width / 2, 25);
+        
+        // Tutorial Messages
+        float startPos = (textAscent() + textDescent()) * 2;
+        textAlign(CENTER, CENTER);
+        text("/\\", textWidth("Points: 9000") / 2 + 20, startPos);
+        text("|", textWidth("Points: 9000") / 2 + 20, startPos + textAscent() + textDescent());
+        text("Available Points", textWidth("Available Points") / 2 + 20, startPos + (textAscent() + textDescent()) * 2);
+        
+        text("/\\", width - textWidth("Points: 9000") + 20, startPos);
+        text("|", width - textWidth("Points: 9000") + 20, startPos + textAscent() + textDescent());
+        text("Lives", width - textWidth("Points: 9000") + 20, startPos + (textAscent() + textDescent()) * 2);
+        
+        text("/\\", width / 2, startPos + (textAscent() + textDescent()));
+        text("|", width / 2, startPos + (textAscent() + textDescent()) * 2);
+        text("Score", width / 2, startPos + (textAscent() + textDescent()) * 3);
+        
+        //text("\\/", textWidth("Points: 9000") / 2 + 20, height - startPos);
+        //text("|", textWidth("Points: 9000") / 2 + 20, height - startPos - textAscent() - textDescent());
+        //text("Available Points", textWidth("Available Points") / 2 + 20, startPos + (textAscent() + textDescent()) * 2);
+        
+        fill(255);
+        startPos = height / 2;
+        text("Press on any valid cell to open the Tower Menu", width / 4, startPos);
+        text("Press on any placed Tower to open the Upgrade Menu", width / 4, startPos + textAscent() + textDescent());
       }
     }
 }
@@ -806,6 +830,13 @@ void printInfo()
   fill(255);
   textAlign(LEFT, TOP);
   text("Enemies left: " + enemiesLeft, width / 99 + padding, height - 30 + padding);
+  
+  // Draw information about the menu
+  String str = "Press 'Esc' for Menu";
+  fill(0, 0, 0, 100);
+  rect(width - textWidth(str) - padding * 12, height - textAscent() - textDescent() - padding * 3, textWidth(str) + padding * 4, textAscent() + textDescent() + padding * 2);
+  fill(255);
+  text(str, width - textWidth(str) - padding * 10, height - textAscent() - textDescent() - padding * 2);
 }
 
 void createEnemy(int road)
@@ -834,14 +865,16 @@ void createEnemy(int road)
     // Add Enemies with more than 5 edges at random times
     if ((int)random(0, 100) % (12 - curMap) == 0)
     {
-      noEdges = (int)map(random(0, (10 - curMap) * 10) + enemiesLeft * 10, 0, (10 - curMap) * 10 + enemiesLeft * 10, 6, 10);
-    } else
+      noEdges = (int)map(random(0, (10 - curMap) * 10), 0, (10 - curMap) * 10, 6, 10); //  + enemiesLeft * 10
+    } 
+    else
     {
       noEdges = 5;
     }
 
     // Create a new enemy
     Enemy enemy = new Enemy(noEdges, color(random(0, 255), random(0, 255), random(0, 255)), road);
+    enemy.speed += (int)((totalEnemies - enemiesLeft) / 10) * 0.001;
     objects.add(enemy);
     // Decrease the amount of enemies in that road
     noEnemies.set(road - 1, noEnemies.get(road - 1) - 1);
