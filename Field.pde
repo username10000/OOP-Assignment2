@@ -4,6 +4,7 @@ public class Field extends Weapon implements Pause
   float fieldRadius;
   int lastFired;
   AudioPlayer audio;
+  AudioSample sample;
   
   Field(float x, float y, color colour, float speed, float damage)
   {
@@ -52,7 +53,8 @@ public class Field extends Weapon implements Pause
           if (dist(position.x, position.y, objects.get(i).position.x, objects.get(i).position.y) <= fieldRadius)
           {
             e.health -= damage;
-            audio.loop();
+            //audio.loop();
+            sample.trigger();
             soundPlayer = true;
           }
         }

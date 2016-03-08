@@ -13,6 +13,7 @@ public class Tower extends GameObject
   PShape towerShape;
   PVector cellPosition;
   AudioPlayer audio;
+  AudioSample sample;
 
   Tower(int x, int y)
   {

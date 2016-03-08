@@ -6,6 +6,7 @@ public class Ray extends Weapon implements Pause
   float lastFired;
   float fieldRadius;
   AudioPlayer audio;
+  AudioSample sample;
   
   Ray(float sX, float sY, color colour, float speed, float damage)
   {
@@ -75,8 +76,9 @@ public class Ray extends Weapon implements Pause
         e.health -= damage;
         lastFired = millis();
       }
-      audio.rewind();
-      audio.play();
+      sample.trigger();
+      //audio.rewind();
+      //audio.play();
     }
   }
 }

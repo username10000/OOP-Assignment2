@@ -9,6 +9,7 @@ public class TowerField extends Tower implements DamageUp, SpeedUp, RangeUp
     drawShape();
     type = 2;
     audio = minim.loadFile("/Sounds/T2.wav");
+    sample = minim.loadSample("/Sounds/T2.wav", 512);
     createField();
   }
   TowerField()
@@ -33,6 +34,7 @@ public class TowerField extends Tower implements DamageUp, SpeedUp, RangeUp
   {
     Field field = new Field(cellPosition.x, cellPosition.y, colour, speed, damage);
     field.audio = this.audio;
+    field.sample = this.sample;
     weapons.add(field);
     created = true;
   }

@@ -300,7 +300,8 @@ void draw()
         fill(0);
         textSize(24);
         textAlign(CENTER, CENTER);
-        text("Press 'SPACE' to Resume", width / 2, height / 2);
+        if (!lost)
+          text("Press 'SPACE' to Resume", width / 2, height / 2);
       }
 
       // Render enemies
@@ -587,7 +588,7 @@ void draw()
         textAlign(CENTER, CENTER);
         fill(0, 255, 0);
         //text("You Won!", buttons.get(13).position.x, buttons.get(13).position.y - buttons.get(13).bHeight);
-        text("You Won!", width / 2, height / 2);
+        text("You Won!\nPress 'Enter' to Return", width / 2, height / 2);
         won = true;
       }
 
@@ -646,9 +647,28 @@ void draw()
         //text("Available Points", textWidth("Available Points") / 2 + 20, startPos + (textAscent() + textDescent()) * 2);
         
         fill(255);
-        startPos = height / 2;
-        text("Press on any valid cell to open the Tower Menu", width / 4, startPos);
-        text("Press on any placed Tower to open the Upgrade Menu", width / 4, startPos + textAscent() + textDescent());
+        startPos = height / 2 - ((buttons.get(13).position.y - buttons.get(12).position.y + buttons.get(12).bHeight) * 2) / 2 + textAscent() + textDescent();
+        // Left
+        text("Press on any valid cell \nto open the Tower Menu", width / 5, startPos);
+        text("Press on any placed Tower \nto open the Upgrade Menu", width / 5, startPos + (textAscent() + textDescent()) * 3);
+        text("Press 'Space' to Pause the game", width / 5, startPos + (textAscent() + textDescent()) * 6);
+        
+        // Right
+        fill(255, 0, 0);
+        text("Red Tower", width - width / 5 - textWidth("          shoots bullets at") / 2, startPos - (textAscent() + textDescent()) * 0.6);
+        fill(255);
+        text("          shoots bullets at \nthe enemy closest to the goal", width - width / 5, startPos);
+        fill(0, 255, 0);
+        text("Green Tower", width - width / 5 - textWidth("            fires a laser at") / 2, startPos + (textAscent() + textDescent()) * 2.3);
+        fill(255);
+        text("            fires a laser at \nthe enemy closest to it", width - width / 5, startPos + (textAscent() + textDescent()) * 3);
+        fill(0, 0, 255);
+        text("Blue Tower", width - width / 5 - textWidth("           deals damage over") / 2, startPos + (textAscent() + textDescent()) * 5.4);
+        fill(255);
+        text("           deals damage over \ntime to the enemies in its field", width - width / 5, startPos + (textAscent() + textDescent()) * 6);
+        text("+DMG - Increases Damage\n+SPD - Increases Speed\n+RNG - Increases Range", width - width / 5, startPos + (textAscent() + textDescent()) * 10);
+        //text("+SPD - Increases Speed", width - width / 5, startPos + (textAscent() + textDescent()) * 12);
+        //text("+RNG - Increases Range", width - width / 5, startPos + (textAscent() + textDescent()) * 15);
       }
     }
 }
@@ -832,7 +852,7 @@ void printInfo()
   text("Enemies left: " + enemiesLeft, width / 99 + padding, height - 30 + padding);
   
   // Draw information about the menu
-  String str = "Press 'Esc' for Menu";
+  String str = "Press 'Esc' for Menu and Tutorial";
   fill(0, 0, 0, 100);
   rect(width - textWidth(str) - padding * 12, height - textAscent() - textDescent() - padding * 3, textWidth(str) + padding * 4, textAscent() + textDescent() + padding * 2);
   fill(255);
@@ -922,6 +942,12 @@ void combineEnemies()
               e1.setColour();
               e1.drawShape();
             }
+            else
+            {
+              e1.health += 50;
+              if (e1.health > e1.edges * 50)
+                e1.health = e1.edges * 50;
+            }
           } else
           {
             // Kill the smaller enemy
@@ -936,6 +962,12 @@ void combineEnemies()
               e2.radius = map(e2.edges, 5, 10, cellSize / 4, cellSize / 2);
               e2.setColour();
               e2.drawShape();
+            }
+            else
+            {
+              e2.health += 50;
+              if (e2.health > e2.edges * 50)
+                e2.health = e2.edges * 50;
             }
 
             // Break the inner loop because the first enemy is dead so there is no need to check it
@@ -1043,7 +1075,7 @@ void gameOver()
   textSize(30);
   fill(255, 0, 0);
   textAlign(CENTER, CENTER);
-  text("GAME OVER", width / 2, height / 2);
+  text("GAME OVER\nPress 'Enter' to Return", width / 2, height / 2);
   lost = true;
 }
 
@@ -1240,6 +1272,54 @@ void keyPressed()
   if (key == ' ')
   {
     pause = !pause;
+  }
+  
+  if (keyCode == ENTER && won)
+  {
+      if (imported)
+      {
+        mainMenu = true;
+      } 
+      else
+      {
+        levelSelect = true;
+      }
+      pause = false;
+      hideGroup("Menu");
+      objects.clear();
+      weapons.clear();
+      menu = false;
+      hideGroup("Menu");
+      pause = false;
+      won = false;
+      if (player.maxLevel < 8 && player.maxLevel == curMap)
+        player.maxLevel ++;
+      if (tempScore > player.score[curMap] && !imported)
+      {
+        player.score[curMap] = tempScore;
+        player.saveData("/data/Save/save.txt");
+        player.setTotalScore();
+      }
+      if (imported)
+        imported = false;
+      disableButtons();
+  } 
+  if (keyCode == ENTER && lost)
+  {
+    if (imported)
+    {
+      mainMenu = true;
+      imported = false;
+    } 
+    else
+    {
+      levelSelect = true;
+    }
+    pause = false;
+    objects.clear();
+    weapons.clear();
+    menu = false;
+    lost = false;
   }
 }
 
@@ -1543,6 +1623,7 @@ void mouseClicked()
             player.lives = 10;
             player.points = (curMap + 1) * 1000;
             tempScore = 0;
+            randomSeed(player.seed);
             break;
           } else
             if (buttons.get(i).text.equals("Return") && buttons.get(i).active)
@@ -1590,51 +1671,51 @@ void mouseClicked()
               pause = false;
             }
           }
-        } else
-          if (won)
-          {
-            if (imported)
-            {
-              mainMenu = true;
-            } else
-            {
-              levelSelect = true;
-            }
-            pause = false;
-            hideGroup("Menu");
-            objects.clear();
-            weapons.clear();
-            menu = false;
-            hideGroup("Menu");
-            pause = false;
-            won = false;
-            if (player.maxLevel < 8 && player.maxLevel == curMap)
-              player.maxLevel ++;
-            if (tempScore > player.score[curMap] && !imported)
-            {
-              player.score[curMap] = tempScore;
-              player.saveData("/data/Save/save.txt");
-              player.setTotalScore();
-            }
-            if (imported)
-              imported = false;
-            disableButtons();
-          } else
-            if (lost)
-            {
-              if (imported)
-              {
-                mainMenu = true;
-                imported = false;
-              } else
-              {
-                levelSelect = true;
-              }
-              pause = false;
-              objects.clear();
-              weapons.clear();
-              menu = false;
-              lost = false;
-            }
+        } //else
+          //if (won)
+          //{
+          //  if (imported)
+          //  {
+          //    mainMenu = true;
+          //  } else
+          //  {
+          //    levelSelect = true;
+          //  }
+          //  pause = false;
+          //  hideGroup("Menu");
+          //  objects.clear();
+          //  weapons.clear();
+          //  menu = false;
+          //  hideGroup("Menu");
+          //  pause = false;
+          //  won = false;
+          //  if (player.maxLevel < 8 && player.maxLevel == curMap)
+          //    player.maxLevel ++;
+          //  if (tempScore > player.score[curMap] && !imported)
+          //  {
+          //    player.score[curMap] = tempScore;
+          //    player.saveData("/data/Save/save.txt");
+          //    player.setTotalScore();
+          //  }
+          //  if (imported)
+          //    imported = false;
+          //  disableButtons();
+          //} else
+          //  if (lost)
+          //  {
+          //    if (imported)
+          //    {
+          //      mainMenu = true;
+          //      imported = false;
+          //    } else
+          //    {
+          //      levelSelect = true;
+          //    }
+          //    pause = false;
+          //    objects.clear();
+          //    weapons.clear();
+          //    menu = false;
+          //    lost = false;
+          //  }
   }
 }
