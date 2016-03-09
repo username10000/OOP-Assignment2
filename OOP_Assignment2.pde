@@ -683,6 +683,7 @@ void draw()
         text("Press on any valid cell \nto open the Tower Menu", width / 5, startPos);
         text("Press on any placed Tower \nto open the Upgrade Menu", width / 5, startPos + (textAscent() + textDescent()) * 3);
         text("Press 'Space' to Pause the game", width / 5, startPos + (textAscent() + textDescent()) * 6);
+        text("Hover the Top or the Bottom\nof the screen to move the camera", width / 5, startPos + (textAscent() + textDescent()) * 9);
         
         // Right
         fill(255, 0, 0);
@@ -888,6 +889,12 @@ void printInfo()
   rect(width - textWidth(str) - padding * 12, height - textAscent() - textDescent() - padding * 3, textWidth(str) + padding * 4, textAscent() + textDescent() + padding * 2);
   fill(255);
   text(str, width - textWidth(str) - padding * 10, height - textAscent() - textDescent() - padding * 2);
+  
+  fill(0);
+  if (startCell != 0 || (startCell == 0 && offset != 0))
+    text("/\\", width / 2, 0);
+  if (endCell < maps[curMap].cellsPerCol - 1)
+    text("\\/", width / 2, height - textAscent() - textDescent());
 }
 
 void createEnemy(int road)
