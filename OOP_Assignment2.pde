@@ -54,7 +54,7 @@ void setup()
 {
   //size(displayWidth, displayHeight);
   fullScreen();
-
+  
   background(0);
   stroke(255);
   textAlign(CENTER);
@@ -119,8 +119,8 @@ void setup()
   }
 
   // Load an audio file so there is no lag when the first tower is placed
-  AudioPlayer audio = minim.loadFile("/Sounds/T0.wav");
-  audio.pause();
+  //AudioPlayer audio = minim.loadFile("/Sounds/T0.wav");
+  //audio.pause();
 
   // Create Main Menu Enemies
   for (int i = 5; i <= 10; i++)
@@ -133,10 +133,14 @@ void draw()
 {
   // Draw the background
   background(232, 185, 12);
+  //noCursor();
 
   if (mainMenu)
   {
     showGroup("Main Menu");
+    cursor(ARROW);
+    towerMenu.x = -1;
+    upgradeMenu.x = -1;
     // Draw the Main Menu
     for (int i = 0; i < buttons.size(); i++)
     {
@@ -178,6 +182,9 @@ void draw()
     if (levelSelect)
     {
       showGroup("Level Select");
+      cursor(ARROW);
+      towerMenu.x = -1;
+      upgradeMenu.x = -1;
       // Draw the Level Select Screen
       for (int i = 0; i < buttons.size(); i++)
       {
@@ -202,16 +209,17 @@ void draw()
       if (menu)
       {
         showGroup("Menu");
+        cursor(ARROW);
         pause = true;
 
         // Stop sounds when the menu is opened
-        for (int i = 0; i < weapons.size(); i++)
-        {
-          if (weapons.get(i) instanceof Pause)
-          {
-            ((Pause)weapons.get(i)).pause();
-          }
-        }
+        //for (int i = 0; i < weapons.size(); i++)
+        //{
+        //  if (weapons.get(i) instanceof Pause)
+        //  {
+        //    ((Pause)weapons.get(i)).pause();
+        //  }
+        //}
 
         // Don't display the level select button if the user is in the imported map
         if (imported)
@@ -402,8 +410,8 @@ void draw()
           tempColour = color(255, 0, 0);
           if (hoverMenu == 0)
           {
-            strokeWeight(2);
-            stroke(255);
+            strokeWeight(3);
+            stroke(255, 0, 0);
           }
         }
         else
@@ -431,8 +439,8 @@ void draw()
           tempColour = color(0, 255, 0);
           if (hoverMenu == 1)
           {
-            strokeWeight(2);
-            stroke(255);
+            strokeWeight(3);
+            stroke(0, 255, 0);
           }
         }
         else
@@ -459,8 +467,8 @@ void draw()
           tempColour = color(0, 0, 255);
           if (hoverMenu == 2)
           {
-            strokeWeight(2);
-            stroke(255);
+            strokeWeight(3);
+            stroke(0, 0, 255);
           }
         }
         else
@@ -585,6 +593,9 @@ void draw()
       {
         //buttons.get(13).show();
         textSize(30);
+        noStroke();
+        fill(0, 0, 0, 100);
+        rect(width / 2 - textWidth("Press 'Enter' to Return") / 2 - 10, height / 2 - (textAscent() + textDescent()) * 1.5, textWidth("Press 'Enter' to Return") + 20, (textAscent() + textDescent()) * 3);
         textAlign(CENTER, CENTER);
         fill(0, 255, 0);
         //text("You Won!", buttons.get(13).position.x, buttons.get(13).position.y - buttons.get(13).bHeight);
@@ -1073,6 +1084,9 @@ void gameOver()
   // Display Game Over Message
   pause = true;
   textSize(30);
+  noStroke();
+  fill(0, 0, 0, 100);
+  rect(width / 2 - textWidth("Press 'Enter' to Return") / 2 - 10, height / 2 - (textAscent() + textDescent()) * 1.5, textWidth("Press 'Enter' to Return") + 20, (textAscent() + textDescent()) * 3);
   fill(255, 0, 0);
   textAlign(CENTER, CENTER);
   text("GAME OVER\nPress 'Enter' to Return", width / 2, height / 2);

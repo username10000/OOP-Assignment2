@@ -3,6 +3,7 @@ public class Field extends Weapon implements Pause
   PVector cellPosition;
   float fieldRadius;
   int lastFired;
+  int lastLine;
   AudioPlayer audio;
   AudioSample sample;
   
@@ -12,6 +13,7 @@ public class Field extends Weapon implements Pause
     cellPosition = new PVector(x, y);
     fieldRadius = 2 * cellSize + cellSize / 2;
     lastFired = millis();
+    lastLine = millis();
   }
   Field()
   {
@@ -20,7 +22,7 @@ public class Field extends Weapon implements Pause
   
   public void pause()
   {
-    audio.pause();
+    //audio.pause();
   }
   public void render()
   {
@@ -33,6 +35,31 @@ public class Field extends Weapon implements Pause
     fill(0, 0, 255, 50);
     ellipse(position.x, position.y, fieldRadius * 2, fieldRadius * 2);
     strokeWeight(1);
+    
+    if (lastLine + 1000 * speed < millis())
+    {
+      float angle = random(0, TWO_PI);
+      float x = position.x + sin(angle) * fieldRadius / 2;
+      float y = position.y - cos(angle) * fieldRadius / 2;
+      stroke(0, 255, 255);
+      strokeWeight(5);
+      line(position.x, position.y, x, y);
+      if (random(-1, 1) < 0)
+        angle += PI / 5;
+      else
+        angle -= PI / 5;
+      float newX = position.x + sin(angle) * fieldRadius / 2;
+      float newY = position.y - cos(angle) * fieldRadius / 2;
+      line(x, y, newX, newY);
+      x = newX;
+      y = newY;
+      newX = position.x + sin(angle) * fieldRadius;
+      newY = position.y - cos(angle) * fieldRadius;
+      line(x, y, newX, newY);
+      strokeWeight(1);
+      lastLine = millis();
+    }
+    
   }
   public void update()
   {
@@ -62,8 +89,8 @@ public class Field extends Weapon implements Pause
       
       if (!soundPlayer)
       {
-        audio.pause();
-        audio.rewind();
+        //audio.pause();
+        //audio.rewind();
       }
       
       // Reset time

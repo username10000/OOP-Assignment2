@@ -5,6 +5,7 @@ public class Ray extends Weapon implements Pause
   PVector ePos;
   float lastFired;
   float fieldRadius;
+  //ArrayList<Particle> particle = new ArrayList<Particle>();
   AudioPlayer audio;
   AudioSample sample;
   
@@ -24,7 +25,7 @@ public class Ray extends Weapon implements Pause
   
   public void pause()
   {
-    audio.pause();
+    //audio.pause();
   }
   public void render()
   {
@@ -38,6 +39,12 @@ public class Ray extends Weapon implements Pause
       stroke(0);
       line(sPos.x, sPos.y, ePos.x, ePos.y);
       strokeWeight(1);
+      
+      //for (int i = 0 ; i < particle.size() ; i++)
+      //{
+      //  particle.get(i).update();
+      //  particle.get(i).render();
+      //}
     }
   }
   public void update()
@@ -77,6 +84,12 @@ public class Ray extends Weapon implements Pause
         lastFired = millis();
       }
       sample.trigger();
+      
+      //particle.add(new Particle(sCell.x, sCell.y, ePos.x, ePos.y));
+      
+      //for (int i = 0 ; i < particle.size() ; i++)
+      //  if (particle.get(i).lifeTime < millis())
+      //    particle.remove(i);
       //audio.rewind();
       //audio.play();
     }

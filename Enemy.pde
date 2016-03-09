@@ -6,6 +6,7 @@ public class Enemy extends GameObject
   int checkHealth;
   int road;
   int removedTime;
+  //int prevEdges;
   float radius;
   float speed;
   float angle;
@@ -14,18 +15,23 @@ public class Enemy extends GameObject
   PVector cellPosition;
   PVector previousCell;
   PVector shapeOffset;
-
+  int colourRef;
+  int colourChange;
+  int colourDir;
+  float colourSpeed;
+  PVector colourValue;
   
   Enemy(int edges, color colour, int road)
   {
     super(500, 500, colour);
     this.edges = edges;
+    //prevEdges = edges;
     setColour();
     health = 50 * edges;
     prevHealth = health;
     checkHealth = 0;
     radius = map(edges, 5, 10, cellSize / 4, cellSize / 2);
-    //speed = 0.012;
+    //speed = 0.1;
     speed = 0.010;
     drawShape();
     this.road = road;
@@ -36,8 +42,13 @@ public class Enemy extends GameObject
     shapeOffset = new PVector(0, 0);
     previousCell = new PVector(cellPosition.x, cellPosition.y);
     angle = 0;
-    rotSpeed = 0.03;
+    //rotSpeed = 0.03;
+    rotSpeed = 0.01 * edges;
     removedTime = 0;
+    colourDir = -1;
+    //colourSpeed = 0.75;
+    colourSpeed = 1;
+    colourChange = 75;
   }
   Enemy(int edges, float radius, float x, float y)
   {
@@ -104,25 +115,36 @@ public class Enemy extends GameObject
     {
       case 5:
         colour = color(255, 0, 0);
+        colourValue = new PVector(255, 0, 0);
         break;
       case 6:
         colour = color(255, 127, 0);
+        colourValue = new PVector(255, 127, 0);
         break;
       case 7:
         colour = color(255, 255, 0);
+        colourValue = new PVector(255, 255, 0);
         break;
       case 8:
         colour = color(0, 255, 0);
+        colourValue = new PVector(0, 255, 0);
         break;
       case 9:
         colour = color(0, 0, 255);
+        colourValue = new PVector(0, 0, 255);
         break;
       case 10:
         colour = color(139, 0, 255);
+        colourValue = new PVector(139, 0, 255);
         break;
       default:
         break;
     }
+    if (colourValue.x == 255)
+      colourRef = 0;
+    else if (colourValue.y == 255)
+          colourRef = 1;
+         else colourRef = 2;
   }
   
   private PVector getStart(int road)
@@ -358,6 +380,31 @@ public class Enemy extends GameObject
       position.y = border.get("top") + cellSize / 2 + (cellPosition.y - startCell + shapeOffset.y) * cellSize + offset;
     }
     
+    //colour = color(colourValue.x, colourValue.y, colourValue.z);
+    //polygon.setFill(colour);
+    
+    switch (colourRef)
+    {
+      case 0:
+        if (colourValue.x > 255 || colourValue.x < (255 - colourChange))
+          colourDir *= -1;
+          break;
+      case 1:
+        if (colourValue.y > 255 || colourValue.y < (255 - colourChange))
+          colourDir *= -1;
+        break;
+      case 2:
+        if (colourValue.z > 255 || colourValue.z < (255 - colourChange))
+          colourDir *= -1;
+    }
+  
+    if (colourValue.x != 0)
+     colourValue.x += colourDir * colourSpeed;
+    if (colourValue.y != 0)
+     colourValue.y += colourDir * colourSpeed;
+    if (colourValue.z != 0)  
+     colourValue.z += colourDir * colourSpeed;
+    
     // Render the enemy
     if (position.x > border.get("left") && position.x < width - border.get("right") && position.y + radius > border.get("top") && position.y - radius < height - border.get("bottom"))
     {
@@ -445,5 +492,22 @@ public class Enemy extends GameObject
     {
       prevHealth = health;
     }
+    
+    rotSpeed = map(health, 0, 50 * edges, 0.01, 0.1);
+    colourSpeed = map(health, 0, 50 * edges, 0.5, 1);
+    
+    //if ((int)(health / 50) < prevEdges)
+    //{
+    //  rotSpeed -= 0.01;
+    //  colourSpeed -= 0.05;
+    //  prevEdges = (int)(health / 50);
+    //}
+    
+    //if ((int)(health / 50) > prevEdges)
+    //{
+    //  rotSpeed += 0.01;
+    //  colourSpeed += 0.05;
+    //  prevEdges = (int)(health / 50);
+    //}
   }
 }

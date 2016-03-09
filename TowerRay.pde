@@ -8,7 +8,7 @@ public class TowerRay extends Tower implements DamageUp, SpeedUp, RangeUp
     colour = color(0, 255, 0);
     drawShape();
     type = 1;
-    audio = minim.loadFile("/Sounds/T1.wav");
+    //audio = minim.loadFile("/Sounds/T1.wav");
     sample = minim.loadSample("/Sounds/T1.wav", 512);
     createRay();
   }
@@ -50,7 +50,7 @@ public class TowerRay extends Tower implements DamageUp, SpeedUp, RangeUp
         Ray ray = (Ray)weapons.get(i);
         if (ray.sCell.x == cellPosition.x && ray.sCell.y == cellPosition.y)
         {
-          ray.damage += 2;
+          ray.damage += 1;
           break;
         }
       }
@@ -67,7 +67,7 @@ public class TowerRay extends Tower implements DamageUp, SpeedUp, RangeUp
         Ray ray = (Ray)weapons.get(i);
         if (ray.sCell.x == cellPosition.x && ray.sCell.y == cellPosition.y)
         {
-          ray.speed -= 0.1;
+          ray.speed -= 0.07;
           break;
         }
       }

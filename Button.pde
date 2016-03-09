@@ -18,9 +18,12 @@ public class Button
   boolean hover;
   boolean active;
   boolean disable;
+  boolean playedSound;
+  boolean playedActive;
   String text;
   String toolTip;
   String group;
+  AudioSample hoverSample, activeSample;
   
   Button(String t, float x, float y, float w, float h)
   {
@@ -42,6 +45,9 @@ public class Button
     group = "Main";
     drawShape();
     toolTip = null;
+    hoverSample = minim.loadSample("/Sounds/B1.wav", 512);
+    activeSample = minim.loadSample("/Sounds/B0.wav", 512);
+    playedSound = false;
   }
   Button(String t, float x, float y, float w, float h, color c1, color c2, color c3, color c4)
   {
@@ -51,6 +57,8 @@ public class Button
     activeColour = c3;
     textColour = c4;
     drawShape();
+    //hoverSample = minim.loadSample("/Sounds/T0.wav", 512);
+    //activeSample = minim.loadSample("/Sounds/T1.wav", 512);
   }
   Button()
   {
@@ -168,12 +176,24 @@ public class Button
       {
         if (mousePressed)
         {
+          if (!playedActive)
+          {
+            playedActive = true;
+            activeSample.trigger();
+          }
+          
           normal = false;
           hover = false;
           active = true;
         }
         else
         {
+          if (!playedSound)
+          {
+            playedSound = true;
+            hoverSample.trigger();
+          }
+          
           normal = false;
           hover = true;
           active = false;
@@ -181,6 +201,8 @@ public class Button
       }
       else
       {
+        playedSound = false;
+        playedActive = false;
         normal = true;
         hover = false;
         active = false;
