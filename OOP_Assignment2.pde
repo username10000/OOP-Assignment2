@@ -49,6 +49,7 @@ PVector towerMenu = new PVector(-1, -1, 0);
 PVector upgradeMenu = new PVector(-1, -1, 0);
 int hoverMenu = -1;
 Minim minim;
+//PImage upImage, downImage;
 
 void setup()
 {
@@ -127,6 +128,22 @@ void setup()
   {
     menuObjects.add(new Enemy(i, (height - 200) / 12, (height - 200) / 12 + 25, map(i, 5, 10, 100, height - 100)));
   }
+  
+  //upImage = createImage(width, 5, RGB);
+  //upImage.loadPixels();
+  //for (int i = 0 ; i < upImage.pixels.length ; i++)
+  //{
+  //  upImage.pixels[i] = color(255, 0, 0, 255 - (int)(i / upImage.width) * 40);
+  //}
+  //upImage.updatePixels();
+  
+  //downImage = createImage(width, 15, RGB);
+  //downImage.loadPixels();
+  //for (int i = 0 ; i < downImage.pixels.length ; i++)
+  //{
+  //  downImage.pixels[i] = color(255, 0, 0, 255 - (int)(downImage.height - i / downImage.width) * 20);
+  //}
+  //downImage.updatePixels();
 }
 
 void draw()
@@ -602,6 +619,9 @@ void draw()
         text("You Won!\nPress 'Enter' to Return", width / 2, height / 2);
         won = true;
       }
+      
+      //image(upImage, width / 2 - upImage.width / 2, 0);
+      //image(downImage, width / 2 - downImage.width / 2, height - downImage.height);
 
       if (menu)
       {
