@@ -1,5 +1,8 @@
 # DT228 Object Oriented Programming Assignment 2
 
+## Games Fleadh
+Won the Game Studio Ireland Challenge Runners Up and Best in Game Design at Games Fleadh 2016.
+
 ## Polygon Wars
 Polygon Wars is a procedurally generated Tower Defence game. In this type of game the user must prevent the enemies from reaching the bottom of the map. This is done by using Towers to destroy the enemies. There are three types of towers: one that shoots bullets, one that fires a laser and one that has a field that damages all the enemies in it. Each Tower can also have its damage, speed and range upgraded.
 
